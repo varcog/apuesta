@@ -1,0 +1,161 @@
+/* *****************************************************************************
+                                CARGANDO
+***************************************************************************** */
+
+.cargando {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    background: transparent;
+    z-index: 9999999;
+}
+
+.cargando > .overlay {
+    /* background: transparent; */
+}
+
+
+.box .overlay, .overlay-wrapper .overlay {
+    z-index: 50;
+    background: rgba(255,255,255,0.7);
+    border-radius: 3px;
+}
+
+.box>.overlay, .overlay-wrapper>.overlay, .box>.loading-img, .overlay-wrapper>.loading-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+/*@media (min-width: 768px)*/
+
+.cargando .overlay>.fa {
+    left: calc(50% + 230px / 2);
+    transition: left .5s;
+}
+
+.box .overlay>.fa, .overlay-wrapper .overlay>.fa {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -15px;
+    margin-top: -15px;
+    color: #000;
+    font-size: 30px;
+}
+
+html, body {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+body {
+    /*overflow-y: hidden !important;*/
+}
+
+.content {
+    /*height: 100%;*/
+    /*overflow: auto;*/
+    min-height: 0 !important;
+}
+
+.content-wrapper {
+    min-height: 0 !important;
+    height: calc(100% - 50px - 51px ) !important;
+}
+
+@media (max-width: 767px) {
+    .content-wrapper {
+        height: calc(100% - 100px - 51px ) !important;
+    }
+}
+
+/* *****************************************************************************
+                                TABLA
+***************************************************************************** */
+
+.tabla_general .fa{
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.tabla_general .fa+.fa {
+    margin-left: 6px;
+}
+
+
+/* *****************************************************************************
+                                IMAGENES
+***************************************************************************** */
+
+.fs_img {
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.fs_img_20 {
+    font-size: 20px;
+}
+
+.fs_img_50 {
+    font-size: 50px;
+}
+
+.x200{
+    width: 200px;
+    height: 200px;
+}
+
+.x70{
+    width: 70px;
+    height: 70px;
+}
+
+/*.fs_img + .fs_img{
+
+}*/
+
+.modal_95 {
+    width: 95% !important;
+}
+
+/* *****************************************************************************
+                              PUNTO DE VENTA
+***************************************************************************** */
+
+.punto_venta{
+
+}
+
+.punto_venta .productos {
+
+}
+
+.punto_venta .calculadora {
+
+}
+
+/* *****************************************************************************
+                              Overflow Tabla
+***************************************************************************** */
+.dataTables_wrapper > div > div {
+    overflow-y: auto;
+    text-align: inherit !important;
+}
+
+/* *****************************************************************************
+                              CLASES
+***************************************************************************** */
+
+.text-normal {
+    font-weight: 100;
+}
+
+.bg-error {
+    background-color: #f2dede !important;
+}
