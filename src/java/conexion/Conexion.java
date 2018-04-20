@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modelo.USUARIO;
+import modelo.Usuario;
 
 public class Conexion {
 
@@ -20,7 +20,7 @@ public class Conexion {
     private String passwordBase;
     private Connection con;
     private boolean conectado;
-    private USUARIO usuario;
+    private Usuario usuario;
 
     public Conexion() {
         this.driver = "org.postgresql.Driver";
@@ -34,11 +34,11 @@ public class Conexion {
         open();
     }
 
-    public USUARIO getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(USUARIO usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 
@@ -139,8 +139,8 @@ public class Conexion {
             return null;
         }
     }
-    
-    public ResultSet EjecutarConsulta(String consulta, Object ... campos) throws SQLException {
+
+    public ResultSet EjecutarConsulta(String consulta, Object... campos) throws SQLException {
         PreparedStatement ps;
         try {
             ps = statametObject(consulta);
@@ -228,7 +228,7 @@ public class Conexion {
 
     public void error(Object obj, Exception ex) {
         rollback();
-        Logger.getLogger(obj.getClass().getName()).log(Level.SEVERE, "USUARIO=" + usuario.getNOMBRES() + "\n ERROR:" + ex.getMessage(), ex.getMessage());
+        Logger.getLogger(obj.getClass().getName()).log(Level.SEVERE, "USUARIO=" + usuario.getNombres() + "\n ERROR:" + ex.getMessage(), ex.getMessage());
         ex.printStackTrace();
     }
 

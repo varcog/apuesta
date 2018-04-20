@@ -11,7 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.CARGO;
+import modelo.Perfil;
 import modelo.USUARIO;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -111,7 +111,7 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("CARGOS", new CARGO(con).todos());
+        json.put("CARGOS", new Perfil(con).todos());
         json.put("USUARIOS", new USUARIO(con).todosConCargo());
         return json.toString();
     }

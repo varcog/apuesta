@@ -304,7 +304,7 @@ public class Usuario {
     ////////////////////////////////////////////////////////////////////////////
     public Usuario Buscar(String usr, String pass) throws SQLException {
         pass = StringMD.getStringMessageDigest(pass, StringMD.SHA512);
-        String consulta = "select * from public.\"usuario\" where \"usuario\" = (?) and \"password\" = (?) and \"estado\"=true";
+        String consulta = "select * from public.\"Usuario\" where \"usuario\" = (?) and \"password\" = (?) and \"estado\"=" + ESTADO_APROBADO;
         PreparedStatement ps = con.statamet(consulta);
         ps.setString(1, usr);
         ps.setString(2, pass);
@@ -426,17 +426,17 @@ public class Usuario {
 
     ////////////////////////////////////////////////////////////////////////////
     public static void main(String[] args) throws SQLException {
-//        Conexion con = Conexion.getConeccion();
-//        usuario u = new usuario(con);
-//        if (u.Buscar("delivery", "delivery") == null) {
-//            System.out.println("false");
-//        } else {
-//            System.out.println("true");
-//        }
+        Conexion con = Conexion.getConeccion();
+        Usuario u = new Usuario(con);
+        if (u.Buscar("apuesta", "apuesta") == null) {
+            System.out.println("false");
+        } else {
+            System.out.println("true");
+        }
 
-        Date dia = new Date();
-        java.sql.Date name = null;
-        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
-        System.out.println(f.format(name));
+//        Date dia = new Date();
+//        java.sql.Date name = null;
+//        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+//        System.out.println(f.format(name));
     }
 }

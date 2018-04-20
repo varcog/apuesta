@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.CARGO;
+import modelo.Perfil;
 import modelo.MENU;
 import modelo.USUARIO;
 import org.json.JSONException;
@@ -106,7 +106,7 @@ public class INGRESO_CONTROLLER extends HttpServlet {
         json.put("MENU", menu.bucarMenuYSubMenuXCargoVisible(usuario.getID_CARGO()));
         USUARIO u = con.getUsuario();
         json.put("USUARIO", u.getNombreCompleto());
-        CARGO c = new CARGO(con).buscar(u.getID_CARGO());
+        Perfil c = new Perfil(con).buscar(u.getID_CARGO());
         if (c != null) {
             json.put("CARGO", c.getDESCRIPCION());
         }

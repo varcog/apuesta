@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.CARGO;
+import modelo.Perfil;
 import modelo.MENU;
 import modelo.PERMISO;
 import modelo.USUARIO;
@@ -109,7 +109,7 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("CARGOS", new CARGO(con).todos());
+        json.put("CARGOS", new Perfil(con).todos());
         json.put("MENUS", new MENU(con).bucarMenuYSubMenuTodos());
         return json.toString();
     }
@@ -118,7 +118,7 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         String descripcion = request.getParameter("descripcion");
         if (id > 0) {
-            CARGO c = new CARGO(con).buscar(id);
+            Perfil c = new Perfil(con).buscar(id);
             if (c == null) {
                 return "false";
             }
@@ -126,7 +126,7 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
             c.update();
             return c.toJSONObject().toString();
         } else {
-            CARGO c = new CARGO(id, descripcion, con);
+            Perfil c = new Perfil(id, descripcion, con);
             c.insert();
             return c.toJSONObject().toString();
         }
@@ -134,7 +134,7 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
 
     private String eliminar_cargo(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
-        CARGO c = new CARGO(con);
+        Perfil c = new Perfil(con);
         c.setID(id);
         c.delete();
         return "true";
