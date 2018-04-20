@@ -10,7 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.USUARIO;
+import modelo.Usuario;
 import util.SIS_EVENTOS;
 
 @WebServlet(name = "LOGIN_CONTROLLER", urlPatterns = {"/LOGIN_CONTROLLER"})
@@ -20,7 +20,7 @@ public class LOGIN_CONTROLLER extends HttpServlet {
             throws ServletException, IOException {
         SIS_EVENTOS ev = new SIS_EVENTOS();
         if (request.getSession().getAttribute("usr") != null) {
-            USUARIO u = (USUARIO) request.getSession().getAttribute("usr");
+            Usuario u = (Usuario) request.getSession().getAttribute("usr");
             Conexion con = u.getCon();
             if (con != null && con.isConectado()) {
                 con.Close();
@@ -34,13 +34,13 @@ public class LOGIN_CONTROLLER extends HttpServlet {
 
         try {
             if (con.isConectado()) {
-                USUARIO usrs = new USUARIO(con);
+                Usuario usrs = new Usuario(con);
                 usrs = usrs.Buscar(usr, pass);
                 if (usr == null) {
                     response.sendRedirect("index.html");
                 } else {
                     con.setUsuario(usrs);
-                    usrs.setPASSWORD("");
+                    usrs.setPassword("");
                     request.getSession().setAttribute("usr", usrs);
                     response.sendRedirect("ingreso.html");
                 }
@@ -49,7 +49,7 @@ public class LOGIN_CONTROLLER extends HttpServlet {
             }
         } catch (Exception e) {
             con.Close();
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "USUARIO=" + usr + " INGRESÓ MAL INGRESAR SU CONTRASEÑA EL DÍA " + new Date().toString(), "USUARIO=" + usr + " INGRESÓ MAL INGRESAR SU CONTRASEÑA EL DÍA " + new Date().toString());
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Usuario=" + usr + " INGRESÓ MAL INGRESAR SU CONTRASEÑA EL DÍA " + new Date().toString(), "Usuario=" + usr + " INGRESÓ MAL INGRESAR SU CONTRASEÑA EL DÍA " + new Date().toString());
             response.sendRedirect("index.html");
         }
     }

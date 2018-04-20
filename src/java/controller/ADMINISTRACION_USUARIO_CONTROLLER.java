@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Perfil;
-import modelo.USUARIO;
+import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 import util.StringMD;
@@ -28,7 +28,7 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
-        USUARIO usuario = ((USUARIO) request.getSession().getAttribute("usr"));
+        Usuario usuario = ((Usuario) request.getSession().getAttribute("usr"));
         if (usuario == null) {
             response.getWriter().write("false");
             return;
@@ -112,7 +112,7 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
         json.put("CARGOS", new Perfil(con).todos());
-        json.put("USUARIOS", new USUARIO(con).todosConCargo());
+        json.put("USUARIOS", new Usuario(con).todosConPerfil());
         return json.toString();
     }
 
@@ -134,34 +134,34 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
             fecha_nac = null;
         }
         String sexo = request.getParameter("sexo");
-        USUARIO u;
+        Usuario u;
         String pass;
         switch (accion) {
             case 0: // crear
                 pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
-                u = new USUARIO(0, usuario, pass, nombres, apellidos, fecha_nac, new Date(), ci, sexo, cargo, con.getUsuario().getID(), true);
+                u = new Usuario(0, usuario, pass, nombres, apellidos, fecha_nac, new Date(), ci, sexo, cargo, con.getUsuario().getId(), true);
                 u.setCon(con);
                 u.insert();
                 return u.toJSONObject().toString();
             case 1: // modificar
-                u = new USUARIO(con).buscar(id);
+                u = new Usuario(con).buscar(id);
                 if (u == null) {
                     return "false";
                 }
-                u.setID_CARGO(cargo);
-                u.setNOMBRES(nombres);
-                u.setAPELLIDOS(apellidos);
-                u.setFECHA_NACIMIENTO(fecha_nac);
-                u.setSEXO(sexo);
+                u.setId_perfil(cargo);
+                u.setNombres(nombres);
+                u.setApellidos(apellidos);
+                u.setFecha_nacimiento(fecha_nac);
+                u.setSexo(sexo);
                 u.updateDatos();
                 return u.toJSONObject().toString();
             default: // cambiar contrasena
-                u = new USUARIO(con).buscar(id);
+                u = new Usuario(con).buscar(id);
                 if (u == null) {
                     return "false";
                 }
                 pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
-                u.setPASSWORD(pass);
+                u.setPassword(pass);
                 u.updateContrasena();
                 return u.toJSONObject().toString();
         }
@@ -169,7 +169,7 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
 
     private String datos_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
-        USUARIO u = new USUARIO(con).buscar(id);
+        Usuario u = new Usuario(con).buscar(id);
         if (u == null) {
             return "false";
         }
@@ -178,20 +178,20 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
 
     private String eliminar_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
-        USUARIO u = new USUARIO(con);
-        u.setID(id);
+        Usuario u = new Usuario(con);
+        u.setId(id);
         u.delete();
         return "true";
     }
 
     private String cambiar_estado_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        boolean estado = Boolean.parseBoolean(request.getParameter("estado"));
+        int estado = Integer.parseInt(request.getParameter("estado"));
         int id_usuario = Integer.parseInt(request.getParameter("id_usuario"));
-        USUARIO u = new USUARIO(con).buscar(id_usuario);
+        Usuario u = new Usuario(con).buscar(id_usuario);
         if (u == null) {
             return "false";
         }
-        u.setESTADO(estado);
+        u.setEstado(estado);
         u.updateEstado();
         return "true";
     }

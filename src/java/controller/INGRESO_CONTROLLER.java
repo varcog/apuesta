@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Perfil;
-import modelo.MENU;
-import modelo.USUARIO;
+import modelo.Menu;
+import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +21,7 @@ public class INGRESO_CONTROLLER extends HttpServlet {
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
-        USUARIO usuario = ((USUARIO) request.getSession().getAttribute("usr"));
+        Usuario usuario = ((Usuario) request.getSession().getAttribute("usr"));
         if (usuario == null) {
             response.getWriter().write("false");
             return;
@@ -94,21 +94,21 @@ public class INGRESO_CONTROLLER extends HttpServlet {
     }// </editor-fold>
 
     private String obtener_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        USUARIO usuario = con.getUsuario();
-        MENU menu = new MENU(con);
-        return menu.bucarMenuYSubMenuXCargoVisible(usuario.getID_CARGO()).toString();
+        Usuario usuario = con.getUsuario();
+        Menu menu = new Menu(con);
+        return menu.bucarMenuYSubMenuXCargoVisible(usuario.getId_perfil()).toString();
     }
 
     private String obtener_ingreso(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        USUARIO usuario = con.getUsuario();
-        MENU menu = new MENU(con);
+        Usuario usuario = con.getUsuario();
+        Menu menu = new Menu(con);
         JSONObject json = new JSONObject();
-        json.put("MENU", menu.bucarMenuYSubMenuXCargoVisible(usuario.getID_CARGO()));
-        USUARIO u = con.getUsuario();
-        json.put("USUARIO", u.getNombreCompleto());
-        Perfil c = new Perfil(con).buscar(u.getID_CARGO());
+        json.put("MENU", menu.bucarMenuYSubMenuXCargoVisible(usuario.getId_perfil()));
+        Usuario u = con.getUsuario();
+        json.put("Usuario", u.getNombreCompleto());
+        Perfil c = new Perfil(con).buscar(u.getId_perfil());
         if (c != null) {
-            json.put("CARGO", c.getDESCRIPCION());
+            json.put("CARGO", c.getNombre());
         }
         return json.toString();
     }

@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Perfil;
-import modelo.MENU;
-import modelo.PERMISO;
-import modelo.USUARIO;
+import modelo.Menu;
+import modelo.Permiso;
+import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,13 +20,13 @@ import org.json.JSONObject;
  * @author benja
  */
 @WebServlet(name = "ADMINISTRACION_CARGO_CONTROLLER", urlPatterns = {"/ADMINISTRACION_CARGO_CONTROLLER"})
-public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
+public class ADMINISTRACION_PERFIL_CONTROLLER extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
-        USUARIO usuario = ((USUARIO) request.getSession().getAttribute("usr"));
+        Usuario usuario = ((Usuario) request.getSession().getAttribute("usr"));
         if (usuario == null) {
             response.getWriter().write("false");
             return;
@@ -44,11 +44,11 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
                 case "init":
                     html = init(request, con);
                     break;
-                case "guardar_cargo":
-                    html = guardar_cargo(request, con);
+                case "guardar_perfil":
+                    html = guardar_perfil(request, con);
                     break;
-                case "eliminar_cargo":
-                    html = eliminar_cargo(request, con);
+                case "eliminar_perfil":
+                    html = eliminar_perfil(request, con);
                     break;
                 case "todos_sub_menu_asignados":
                     html = todos_sub_menu_asignados(request, con);
@@ -109,12 +109,12 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("CARGOS", new Perfil(con).todos());
-        json.put("MENUS", new MENU(con).bucarMenuYSubMenuTodos());
+        json.put("PERFILES", new Perfil(con).todos());
+        json.put("MENUS", new Menu(con).bucarMenuYSubMenuTodos());
         return json.toString();
     }
 
-    private String guardar_cargo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+    private String guardar_perfil(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         String descripcion = request.getParameter("descripcion");
         if (id > 0) {
@@ -122,7 +122,7 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
             if (c == null) {
                 return "false";
             }
-            c.setDESCRIPCION(descripcion);
+            c.setNombre(descripcion);
             c.update();
             return c.toJSONObject().toString();
         } else {
@@ -132,31 +132,31 @@ public class ADMINISTRACION_CARGO_CONTROLLER extends HttpServlet {
         }
     }
 
-    private String eliminar_cargo(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String eliminar_perfil(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
         Perfil c = new Perfil(con);
-        c.setID(id);
+        c.setId(id);
         c.delete();
         return "true";
     }
 
     private String todos_sub_menu_asignados(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id_cargo = Integer.parseInt(request.getParameter("id_cargo"));
-        return new PERMISO(con).todosXCargo(id_cargo).toString();
+        return new Permiso(con).todosXCargo(id_cargo).toString();
     }
 
     private String asignar_desasignar_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         boolean asignar = Boolean.parseBoolean(request.getParameter("asignar"));
         int id_cargo = Integer.parseInt(request.getParameter("id_cargo"));
         int id_sub_menu = Integer.parseInt(request.getParameter("id_sub_menu"));
-        PERMISO p = new PERMISO(con);
+        Permiso p = new Permiso(con);
         p.delete(id_cargo, id_sub_menu);
         if (asignar) {
-            p.setID_CARGO(id_cargo);
-            p.setID_SUB_MENU(id_sub_menu);
-            p.setALTA(true);
-            p.setBAJA(true);
-            p.setMODIFICACION(true);
+            p.setId_perfil(id_cargo);
+            p.setId_sub_menu(id_sub_menu);
+            p.setAlta(true);
+            p.setBaja(true);
+            p.setModificacion(true);
             p.insert();
         }
         return "true";

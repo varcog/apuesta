@@ -8,9 +8,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.MENU;
-import modelo.SUB_MENU;
-import modelo.USUARIO;
+import modelo.Menu;
+import modelo.Sub_Menu;
+import modelo.Usuario;
 import org.json.JSONException;
 
 /**
@@ -24,7 +24,7 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
-        USUARIO usuario = ((USUARIO) request.getSession().getAttribute("usr"));
+        Usuario usuario = ((Usuario) request.getSession().getAttribute("usr"));
         if (usuario == null) {
             response.getWriter().write("false");
             return;
@@ -112,22 +112,22 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
     }// </editor-fold>
 
     private String todos(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        return new MENU(con).todos().toString();
+        return new Menu(con).todos().toString();
     }
 
     private String guardar_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         String descripcion = request.getParameter("descripcion");
         if (id > 0) {
-            MENU m = new MENU(con).buscar(id);
+            Menu m = new Menu(con).buscar(id);
             if (m == null) {
                 return "false";
             }
-            m.setDESCRIPCION(descripcion);
+            m.setNombre(descripcion);
             m.update();
             return m.toJSONObject().toString();
         } else {
-            MENU m = new MENU(id, descripcion, con);
+            Menu m = new Menu(id, descripcion, con);
             m.insert();
             return m.toJSONObject().toString();
         }
@@ -135,15 +135,15 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
 
     private String eliminar_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
-        MENU m = new MENU(con);
-        m.setID(id);
+        Menu m = new Menu(con);
+        m.setId(id);
         m.delete();
         return "true";
     }
 
     private String todos_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id_menu = Integer.parseInt(request.getParameter("id_menu"));
-        return new SUB_MENU(con).bucarSubMenuXMenu(id_menu).toString();
+        return new Sub_Menu(con).bucarSubMenuXMenu(id_menu).toString();
     }
 
     private String guardar_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
@@ -152,7 +152,7 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
         String descripcion = request.getParameter("descripcion");
         String url = request.getParameter("url");
         if (id > 0) {
-            SUB_MENU sm = new SUB_MENU(con).buscar(id);
+            Sub_Menu sm = new Sub_Menu(con).buscar(id);
             if (sm == null) {
                 return "false";
             }
@@ -161,7 +161,7 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
             sm.update();
             return sm.toJSONObject().toString();
         } else {
-            SUB_MENU sm = new SUB_MENU(id, descripcion, url, id_menu, con);
+            Sub_Menu sm = new Sub_Menu(id, descripcion, url, id_menu, con);
             sm.insert();
             return sm.toJSONObject().toString();
         }
@@ -169,7 +169,7 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
 
     private String eliminar_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
-        SUB_MENU sm = new SUB_MENU(con);
+        Sub_Menu sm = new Sub_Menu(con);
         sm.setID(id);
         sm.delete();
         return "true";
@@ -178,7 +178,7 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
     private String cambiar_estado_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id_sub_menu = Integer.parseInt(request.getParameter("id_sub_menu"));
         boolean visible = Boolean.parseBoolean(request.getParameter("visible"));
-        SUB_MENU sm = new SUB_MENU(con);
+        Sub_Menu sm = new Sub_Menu(con);
         sm.update_visible(id_sub_menu, visible);
         return "true";
     }
