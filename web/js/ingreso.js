@@ -8,7 +8,7 @@ $(document).ready(function () {
             $(".elmenu").remove();
             var json = $.parseJSON(resp);
             var html = "";
-            $.each(json.MENU, function (menu, submenus) {
+            $.each(json.Menu, function (menu, submenus) {
                 html += "<li class='treeview'>";
                 html += "<a>";
                 // fa-asterisk
@@ -20,14 +20,14 @@ $(document).ready(function () {
                 html += "</a>";
                 html += "<ul class='treeview-menu'>";
                 $.each(submenus, function (i, sub_menu) {
-                    html += "<li><a onclick='cambiar_menu(\"" + sub_menu.URL + "\")'><i class='fa fa-circle-o'></i> " + sub_menu.DESCRIPCION + "</a></li>";
+                    html += "<li><a onclick='cambiar_menu(\"" + sub_menu.url + "\")'><i class='fa fa-circle-o'></i> " + sub_menu.nombre + "</a></li>";
                 });
                 html += "</ul>";
                 html += "</li>";
             });
             $("#menu").append(html);
-            $(".nombre_usuario").text((json.USUARIO || ""));
-            $(".cargo").text((json.CARGO || ""));
+            $(".nombre_usuario").text((json.Usuario || ""));
+            $(".cargo").text((json.Perfil || ""));
         }
     });
 });

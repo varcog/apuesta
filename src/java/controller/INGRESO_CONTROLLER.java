@@ -96,19 +96,19 @@ public class INGRESO_CONTROLLER extends HttpServlet {
     private String obtener_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         Usuario usuario = con.getUsuario();
         Menu menu = new Menu(con);
-        return menu.bucarMenuYSubMenuXCargoVisible(usuario.getId_perfil()).toString();
+        return menu.bucarMenuYSubMenuXPerfilVisible(usuario.getId_perfil()).toString();
     }
 
     private String obtener_ingreso(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         Usuario usuario = con.getUsuario();
         Menu menu = new Menu(con);
         JSONObject json = new JSONObject();
-        json.put("MENU", menu.bucarMenuYSubMenuXCargoVisible(usuario.getId_perfil()));
+        json.put("Menu", menu.bucarMenuYSubMenuXPerfilVisible(usuario.getId_perfil()));
         Usuario u = con.getUsuario();
         json.put("Usuario", u.getNombreCompleto());
         Perfil c = new Perfil(con).buscar(u.getId_perfil());
         if (c != null) {
-            json.put("CARGO", c.getNombre());
+            json.put("Perfil", c.getNombre());
         }
         return json.toString();
     }

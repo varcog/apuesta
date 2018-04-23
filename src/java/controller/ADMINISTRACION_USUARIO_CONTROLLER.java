@@ -138,11 +138,12 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
         String pass;
         switch (accion) {
             case 0: // crear
-                pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
-                u = new Usuario(0, usuario, pass, nombres, apellidos, fecha_nac, new Date(), ci, sexo, cargo, con.getUsuario().getId(), true);
-                u.setCon(con);
-                u.insert();
-                return u.toJSONObject().toString();
+//                pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
+//                u = new Usuario(0, usuario, pass, nombres, apellidos, fecha_nac, new Date(), ci, sexo, cargo, con.getUsuario().getId(), true);
+//                u.setCon(con);
+//                u.insert();
+//                return u.toJSONObject().toString();
+                return "true";
             case 1: // modificar
                 u = new Usuario(con).buscar(id);
                 if (u == null) {

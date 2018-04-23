@@ -156,8 +156,8 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
             if (sm == null) {
                 return "false";
             }
-            sm.setDESCRIPCION(descripcion);
-            sm.setURL(url);
+            sm.setNombre(descripcion);
+            sm.setUrl(url);
             sm.update();
             return sm.toJSONObject().toString();
         } else {
@@ -170,7 +170,7 @@ public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
     private String eliminar_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
         Sub_Menu sm = new Sub_Menu(con);
-        sm.setID(id);
+        sm.setId(id);
         sm.delete();
         return "true";
     }
