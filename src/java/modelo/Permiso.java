@@ -11,8 +11,8 @@ import org.json.JSONObject;
 public class Permiso {
 
     private int id;
-    private int id_perfil;
-    private int id_sub_menu;
+    private int idPerfil;
+    private int idSubMenu;
     private boolean alta;
     private boolean baja;
     private boolean modificacion;
@@ -22,10 +22,10 @@ public class Permiso {
         this.con = con;
     }
 
-    public Permiso(int id, int id_perfil, int id_sub_menu, boolean alta, boolean baja, boolean modificacion) {
+    public Permiso(int id, int idPerfil, int idSubMenu, boolean alta, boolean baja, boolean modificacion) {
         this.id = id;
-        this.id_perfil = id_perfil;
-        this.id_sub_menu = id_sub_menu;
+        this.idPerfil = idPerfil;
+        this.idSubMenu = idSubMenu;
         this.alta = alta;
         this.baja = baja;
         this.modificacion = modificacion;
@@ -39,20 +39,20 @@ public class Permiso {
         this.id = id;
     }
 
-    public int getId_perfil() {
-        return id_perfil;
+    public int getIdPerfil() {
+        return idPerfil;
     }
 
-    public void setId_perfil(int id_perfil) {
-        this.id_perfil = id_perfil;
+    public void setIdPerfil(int idPerfil) {
+        this.idPerfil = idPerfil;
     }
 
-    public int getId_sub_menu() {
-        return id_sub_menu;
+    public int getIdSubMenu() {
+        return idSubMenu;
     }
 
-    public void setId_sub_menu(int id_sub_menu) {
-        this.id_sub_menu = id_sub_menu;
+    public void setIdSubMenu(int idSubMenu) {
+        this.idSubMenu = idSubMenu;
     }
 
     public boolean isAlta() {
@@ -90,18 +90,18 @@ public class Permiso {
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
         String consulta = "INSERT INTO public.\"Permiso\"(\n"
-                + "	\"id_perfil\", \"id_sub_menu\", \"alta\", \"baja\", \"modificacion\")\n"
+                + "	\"idPerfil\", \"idSubMenu\", \"alta\", \"baja\", \"modificacion\")\n"
                 + "	VALUES (?,?,?,?,?)";
-        int id = con.EjecutarInsert(consulta, "id", id_perfil, id_sub_menu, alta, baja, modificacion);
+        int id = con.EjecutarInsert(consulta, "id", idPerfil, idSubMenu, alta, baja, modificacion);
         this.id = id;
         return id;
     }
 
     public void update() throws SQLException {
         String consulta = "UPDATE public.\"Permiso\"\n"
-                + "	SET \"id_perfil\"=?, \"id_sub_menu\"=?, \"alta\"=?, \"baja\"=?, \"modificacion\"=?\n"
+                + "	SET \"idPerfil\"=?, \"idSubMenu\"=?, \"alta\"=?, \"baja\"=?, \"modificacion\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, id_perfil, id_sub_menu, alta, baja, modificacion, id);
+        con.EjecutarSentencia(consulta, idPerfil, idSubMenu, alta, baja, modificacion, id);
     }
 
     public void delete() throws SQLException {
@@ -120,8 +120,8 @@ public class Permiso {
         while (rs.next()) {
             obj = new JSONObject();
             obj.put("id", rs.getInt("id"));
-            obj.put("id_perfil", rs.getInt("id_perfil"));
-            obj.put("id_sub_menu", rs.getInt("id_sub_menu"));
+            obj.put("idPerfil", rs.getInt("idPerfil"));
+            obj.put("idSubMenu", rs.getInt("idSubMenu"));
             obj.put("alta", rs.getBoolean("alta"));
             obj.put("baja", rs.getBoolean("baja"));
             obj.put("modificacion", rs.getBoolean("modificacion"));
@@ -140,8 +140,8 @@ public class Permiso {
         Permiso p = new Permiso(con);
         if (rs.next()) {
             p.setId(rs.getInt("id"));
-            p.setId_perfil(rs.getInt("id_perfil"));
-            p.setId_sub_menu(rs.getInt("id_sub_menu"));
+            p.setIdPerfil(rs.getInt("idPerfil"));
+            p.setIdSubMenu(rs.getInt("idSubMenu"));
             p.setAlta(rs.getBoolean("alta"));
             p.setBaja(rs.getBoolean("baja"));
             p.setModificacion(rs.getBoolean("modificacion"));
@@ -153,8 +153,8 @@ public class Permiso {
     public JSONObject toJSONObject() throws SQLException, JSONException {
         JSONObject obj = new JSONObject();
         obj.put("id", id);
-        obj.put("id_perfil", id_perfil);
-        obj.put("id_sub_menu", id_sub_menu);
+        obj.put("idPerfil", idPerfil);
+        obj.put("idSubMenu", idSubMenu);
         obj.put("alta", alta);
         obj.put("baja", baja);
         obj.put("modificacion", modificacion);
@@ -162,7 +162,7 @@ public class Permiso {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    public JSONArray todosXCargo(int id_perfil) throws SQLException, JSONException {
+    public JSONArray todosXPerfil(int id_perfil) throws SQLException, JSONException {
         String consulta = "SELECT \"Permiso\".*\n"
                 + "	FROM public.\"Permiso\"\n"
                 + "     WHERE \"Permiso\".\"id_perfil\" = ?";
@@ -173,8 +173,8 @@ public class Permiso {
         while (rs.next()) {
             obj = new JSONObject();
             obj.put("id", rs.getInt("id"));
-            obj.put("id_perfil", rs.getInt("id_perfil"));
-            obj.put("id_sub_menu", rs.getInt("id_sub_menu"));
+            obj.put("idPerfil", rs.getInt("idPerfil"));
+            obj.put("idSubMenu", rs.getInt("idSubMenu"));
             obj.put("alta", rs.getBoolean("alta"));
             obj.put("baja", rs.getBoolean("baja"));
             obj.put("modificacion", rs.getBoolean("modificacion"));
@@ -185,10 +185,10 @@ public class Permiso {
         return json;
     }
 
-    public void delete(int id_perfil, int id_sub_menu) throws SQLException {
+    public void delete(int idPerfil, int idSubMenu) throws SQLException {
         String consulta = "DELETE FROM public.\"Permiso\"\n"
-                + "	WHERE \"Permiso\".\"id_perfil\"=?\n"
-                + "           AND \"Permiso\".\"id_sub_menu\"=?;";
-        con.EjecutarSentencia(consulta, id_perfil, id_sub_menu);
+                + "	WHERE \"Permiso\".\"idPerfil\"=?\n"
+                + "           AND \"Permiso\".\"idSubMenu\"=?;";
+        con.EjecutarSentencia(consulta, idPerfil, idSubMenu);
     }
 }

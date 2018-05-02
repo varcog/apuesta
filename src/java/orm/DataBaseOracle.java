@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataBase {
+public class DataBaseOracle {
 
     public static List<String> tablas(Conexion con, String tablespace) throws SQLException {
         List<String> lista = new ArrayList<>();

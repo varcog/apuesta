@@ -142,7 +142,7 @@ public class ADMINISTRACION_PERFIL_CONTROLLER extends HttpServlet {
 
     private String todos_sub_menu_asignados(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id_cargo = Integer.parseInt(request.getParameter("id_cargo"));
-        return new Permiso(con).todosXCargo(id_cargo).toString();
+        return new Permiso(con).todosXPerfil(id_cargo).toString();
     }
 
     private String asignar_desasignar_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
@@ -152,8 +152,8 @@ public class ADMINISTRACION_PERFIL_CONTROLLER extends HttpServlet {
         Permiso p = new Permiso(con);
         p.delete(id_cargo, id_sub_menu);
         if (asignar) {
-            p.setId_perfil(id_cargo);
-            p.setId_sub_menu(id_sub_menu);
+            p.setIdPerfil(id_cargo);
+            p.setIdSubMenu(id_sub_menu);
             p.setAlta(true);
             p.setBaja(true);
             p.setModificacion(true);

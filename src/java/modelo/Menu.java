@@ -123,7 +123,7 @@ public class Menu {
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONObject json = new JSONObject();
-        Sub_Menu sub_menu = new Sub_Menu(con);
+        SubMenu sub_menu = new SubMenu(con);
         while (rs.next()) {
             json.put(rs.getString("nombre"), sub_menu.bucarSubMenuXMenu(rs.getInt("id")));
         }
@@ -136,19 +136,19 @@ public class Menu {
         String consulta = "SELECT DISTINCT \"Menu\".\"id\",\n"
                 + "	     \"Menu\".\"nombre\"\n"
                 + "	FROM public.\"Menu\", \n"
-                + "    	     public.\"Sub_Menu\",\n"
+                + "    	     public.\"SubMenu\",\n"
                 + "          public.\"Permiso\"\n"
-                + "    WHERE \"Permiso\".\"id_perfil\" = " + idPerfil + "\n"
-                + "    	     AND \"Permiso\".\"id_sub_menu\" = \"Sub_Menu\".\"id\"\n"
-                + "          AND \"Sub_Menu\".\"id_menu\" = \"Menu\".\"id\""
-                + "    	     AND \"Sub_Menu\".\"visible\" = true\n"
+                + "    WHERE \"Permiso\".\"idPerfil\" = " + idPerfil + "\n"
+                + "    	     AND \"Permiso\".\"idSubMenu\" = \"SubMenu\".\"id\"\n"
+                + "          AND \"SubMenu\".\"idMenu\" = \"Menu\".\"id\""
+                + "    	     AND \"SubMenu\".\"visible\" = true\n"
                 + "    ORDER BY \"Menu\".\"nombre\"";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONObject json = new JSONObject();
-        Sub_Menu sub_menu = new Sub_Menu(con);
+        SubMenu sub_menu = new SubMenu(con);
         while (rs.next()) {
-            json.put(rs.getString("nombre"), sub_menu.bucarSubMenuXMenuXCargoVisible(rs.getInt("id"), idPerfil));
+            json.put(rs.getString("nombre"), sub_menu.bucarSubMenuXMenuXPerfilVisible(rs.getInt("id"), idPerfil));
         }
         rs.close();
         ps.close();

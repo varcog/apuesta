@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Escribir {
+public class EscribirOracle {
 
     public static void escribirClases(String nombreTabla, String tablespace, Conexion con) {
         FileWriter fichero = null;
@@ -18,7 +18,7 @@ public class Escribir {
             fichero = new FileWriter("c:/Modelo/" + nombreTabla + ".java");
             pw = new PrintWriter(fichero);
 
-            ResultSet campos = DataBase.Campostabla(nombreTabla, con, tablespace);
+            ResultSet campos = DataBaseOracle.Campostabla(nombreTabla, con, tablespace);
             List<CamposTabla> lista = new ArrayList<>();
 
             while (campos.next()) {
@@ -341,10 +341,10 @@ public class Escribir {
     /*public static void main(String args[]) throws SQLException {
      String tablespace="MOVIL";        
      Conexion con = new Conexion(tablespace, "oracle123");
-     List<String> tablas = DataBase.tablas(con,tablespace);
+     List<String> tablas = DataBaseOracle.tablas(con,tablespace);
 
      for (int i = 0; i < tablas.size(); i++) {
-     Escribir.escribirClases(tablas.get(i),tablespace,con);
+     EscribirOracle.escribirClases(tablas.get(i),tablespace,con);
      }
      con.Close();
      }*/

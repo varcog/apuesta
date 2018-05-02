@@ -42,7 +42,7 @@ public class CREAR_TABLAS_CONTROLLER extends HttpServlet {
     }
 
     private String cargar(HttpServletRequest request, Conexion con) throws SQLException {
-        List<String> tablas = DataBase.tablas(con, "BROKER");
+        List<String> tablas = DataBaseOracle.tablas(con, "BROKER");
         JSONArray json = new JSONArray();
         for (String tabla : tablas) {
             json.put(tabla);
@@ -53,7 +53,7 @@ public class CREAR_TABLAS_CONTROLLER extends HttpServlet {
     private String crear_tablas_seleccionadas(HttpServletRequest request, Conexion con) {
         String nombre[] = request.getParameterValues("nombre[]");
         for (String nom : nombre) {
-            Escribir.escribirClases(nom, "BROKER", con);
+            EscribirOracle.escribirClases(nom, "BROKER", con);
         }
         return true + "";
     }

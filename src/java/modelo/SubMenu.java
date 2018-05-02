@@ -8,34 +8,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Sub_Menu {
+public class SubMenu {
 
     private int id;
     private String nombre;
     private String imagen;
     private String url;
-    private int id_menu;
+    private int idMenu;
     private boolean visible;
     private Conexion con;
 
-    public Sub_Menu(Conexion con) {
+    public SubMenu(Conexion con) {
         this.con = con;
     }
 
-    public Sub_Menu(int id, String nombre, String imagen, String url, int id_menu, boolean visible) {
+    public SubMenu(int id, String nombre, String imagen, String url, int idMenu, boolean visible) {
         this.id = id;
         this.nombre = nombre;
         this.imagen = imagen;
         this.url = url;
-        this.id_menu = id_menu;
+        this.idMenu = idMenu;
         this.visible = visible;
     }
 
-    public Sub_Menu(int id, String nombre, String url, int id_menu, Conexion con) {
+    public SubMenu(int id, String nombre, String url, int idMenu, Conexion con) {
         this.id = id;
         this.nombre = nombre;
         this.url = url;
-        this.id_menu = id_menu;
+        this.idMenu = idMenu;
         this.visible = true;
         this.con = con;
     }
@@ -72,12 +72,12 @@ public class Sub_Menu {
         this.url = url;
     }
 
-    public int getId_menu() {
-        return id_menu;
+    public int getIdMenu() {
+        return idMenu;
     }
 
-    public void setId_menu(int id_menu) {
-        this.id_menu = id_menu;
+    public void setIdMenu(int idMenu) {
+        this.idMenu = idMenu;
     }
 
     public boolean isVisible() {
@@ -98,29 +98,29 @@ public class Sub_Menu {
 
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
-        String consulta = "INSERT INTO public.\"Sub_Menu\"(\n"
-                + "	\"nombre\", \"imagen\", \"url\", \"id_menu\")\n"
+        String consulta = "INSERT INTO public.\"SubMenu\"(\n"
+                + "	\"nombre\", \"imagen\", \"url\", \"idMenu\")\n"
                 + "	VALUES (?,?,?,?)";
-        int id = con.EjecutarInsert(consulta, "id", nombre, imagen, url, id_menu);
+        int id = con.EjecutarInsert(consulta, "id", nombre, imagen, url, idMenu);
         this.id = id;
         return id;
     }
 
     public void update() throws SQLException {
-        String consulta = "UPDATE public.\"Sub_Menu\"\n"
-                + "	SET \"nombre\"=?, \"imagen\"=?, \"url\"=?, \"id_menu\"=?, \"visible\"=?\n"
+        String consulta = "UPDATE public.\"SubMenu\"\n"
+                + "	SET \"nombre\"=?, \"imagen\"=?, \"url\"=?, \"idMenu\"=?, \"visible\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, nombre, imagen, url, id_menu, visible, id);
+        con.EjecutarSentencia(consulta, nombre, imagen, url, idMenu, visible, id);
     }
 
     public void delete() throws SQLException {
-        String consulta = "DELETE FROM public.\"Sub_Menu\"\n"
+        String consulta = "DELETE FROM public.\"SubMenu\"\n"
                 + "	WHERE \"id\"=?;";
         con.EjecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {
-        String consulta = "SELECT * FROM public.\"Sub_Menu\"\n"
+        String consulta = "SELECT * FROM public.\"SubMenu\"\n"
                 + "ORDER BY \"nombre\" ASC ";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
@@ -132,7 +132,7 @@ public class Sub_Menu {
             obj.put("nombre", rs.getString("nombre"));
             obj.put("imagen", rs.getString("imagen"));
             obj.put("url", rs.getString("url"));
-            obj.put("id_menu", rs.getInt("id_menu"));
+            obj.put("idMenu", rs.getInt("idMenu"));
             obj.put("visible", rs.getBoolean("visible"));
             json.put(obj);
         }
@@ -141,18 +141,18 @@ public class Sub_Menu {
         return json;
     }
 
-    public Sub_Menu buscar(int id) throws SQLException {
-        String consulta = "SELECT * FROM public.\"Sub_Menu\"\n"
+    public SubMenu buscar(int id) throws SQLException {
+        String consulta = "SELECT * FROM public.\"SubMenu\"\n"
                 + "	WHERE \"id\"=?;";
         PreparedStatement ps = con.statametObject(consulta, id);
         ResultSet rs = ps.executeQuery();
-        Sub_Menu m = new Sub_Menu(con);
+        SubMenu m = new SubMenu(con);
         if (rs.next()) {
             m.setId(rs.getInt("id"));
             m.setNombre(rs.getString("nombre"));
             m.setImagen(rs.getString("imagen"));
             m.setUrl(rs.getString("url"));
-            m.setId_menu(rs.getInt("id_menu"));
+            m.setIdMenu(rs.getInt("idMenu"));
             m.setVisible(rs.getBoolean("visible"));
             return m;
         }
@@ -165,21 +165,21 @@ public class Sub_Menu {
         obj.put("nombre", nombre);
         obj.put("imagen", imagen);
         obj.put("url", url);
-        obj.put("id_menu", id_menu);
+        obj.put("idMenu", idMenu);
         obj.put("visible", visible);
         return obj;
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    public JSONArray bucarSubMenuXCargoVisible(int idCargo) throws SQLException, JSONException {
-        String consulta = "SELECT \"Sub_Menu\".\"nombre\",\n"
-                + "               \"Sub_Menu\".\"url\",\n"
-                + "               \"Sub_Menu\".\"imagen\"\n"
-                + "	FROM public.\"Sub_Menu\",\n"
+    public JSONArray bucarSubMenuXPerfilVisible(int idPerfil) throws SQLException, JSONException {
+        String consulta = "SELECT \"SubMenu\".\"nombre\",\n"
+                + "               \"SubMenu\".\"url\",\n"
+                + "               \"SubMenu\".\"imagen\"\n"
+                + "	FROM public.\"SubMenu\",\n"
                 + "         public.\"Permiso\"\n"
-                + "    WHERE \"Permiso\".\"id_perfil\" = " + idCargo + "\n"
-                + "    	  AND \"Permiso\".\"id_sub_menu\" = \"Sub_Menu\".\"id\"\n"
-                + "    	  AND \"Sub_Menu\".\"visible\" = true\n";
+                + "    WHERE \"Permiso\".\"idPerfil\" = " + idPerfil + "\n"
+                + "    	  AND \"Permiso\".\"idSubMenu\" = \"SubMenu\".\"id\"\n"
+                + "    	  AND \"SubMenu\".\"visible\" = true\n";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
@@ -198,13 +198,13 @@ public class Sub_Menu {
     }
 
     public JSONArray bucarSubMenuXMenu(int idMenu) throws SQLException, JSONException {
-        String consulta = "SELECT \"Sub_Menu\".\"nombre\",\n"
-                + "               \"Sub_Menu\".\"url\",\n"
-                + "               \"Sub_Menu\".\"imagen\",\n"
-                + "               \"Sub_Menu\".\"visible\",\n"
-                + "               \"Sub_Menu\".\"id\"\n"
-                + "	FROM public.\"Sub_Menu\"\n"
-                + "    WHERE \"Sub_Menu\".\"id_menu\" = " + idMenu + "\n";
+        String consulta = "SELECT \"SubMenu\".\"nombre\",\n"
+                + "               \"SubMenu\".\"url\",\n"
+                + "               \"SubMenu\".\"imagen\",\n"
+                + "               \"SubMenu\".\"visible\",\n"
+                + "               \"SubMenu\".\"id\"\n"
+                + "	FROM public.\"SubMenu\"\n"
+                + "    WHERE \"SubMenu\".\"idMenu\" = " + idMenu + "\n";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
@@ -224,16 +224,16 @@ public class Sub_Menu {
 
     }
 
-    public JSONArray bucarSubMenuXMenuXCargoVisible(int idMenu, int id_perfil) throws SQLException, JSONException {
-        String consulta = "SELECT DISTINCT \"Sub_Menu\".\"nombre\",\n"
-                + "               \"Sub_Menu\".\"url\",\n"
-                + "               \"Sub_Menu\".\"imagen\"\n"
-                + "	FROM public.\"Sub_Menu\", public.\"Permiso\"\n"
-                + "    WHERE \"Sub_Menu\".\"id_menu\" = " + idMenu + "\n"
-                + "          AND \"Permiso\".\"id_perfil\" = " + id_perfil + "\n"
-                + "          AND \"Permiso\".\"id_sub_menu\" = \"Sub_Menu\".\"id\"\n"
-                + "          AND \"Sub_Menu\".\"visible\" = true\n"
-                + "    ORDER BY \"Sub_Menu\".\"nombre\"";
+    public JSONArray bucarSubMenuXMenuXPerfilVisible(int idMenu, int idPerfil) throws SQLException, JSONException {
+        String consulta = "SELECT DISTINCT \"SubMenu\".\"nombre\",\n"
+                + "               \"SubMenu\".\"url\",\n"
+                + "               \"SubMenu\".\"imagen\"\n"
+                + "	FROM public.\"SubMenu\", public.\"Permiso\"\n"
+                + "    WHERE \"SubMenu\".\"idMenu\" = " + idMenu + "\n"
+                + "          AND \"Permiso\".\"idPerfil\" = " + idPerfil + "\n"
+                + "          AND \"Permiso\".\"idSubMenu\" = \"SubMenu\".\"id\"\n"
+                + "          AND \"SubMenu\".\"visible\" = true\n"
+                + "    ORDER BY \"SubMenu\".\"nombre\"";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
@@ -251,8 +251,8 @@ public class Sub_Menu {
 
     }
 
-    public void update_visible(int id, boolean visible) throws SQLException {
-        String consulta = "UPDATE public.\"Sub_Menu\"\n"
+    public void updateVisible(int id, boolean visible) throws SQLException {
+        String consulta = "UPDATE public.\"SuMenu\"\n"
                 + "	SET \"visible\"=?\n"
                 + "	WHERE \"id\"=?;";
         con.EjecutarSentencia(consulta, visible, id);

@@ -21,17 +21,17 @@ public class Usuario {
     private String nombres;
     private String apellidos;
     private String foto;
-    private Date fecha_nacimiento;
-    private Date fecha_creacion;
-    private Date fecha_anulacion;
+    private Date fechaNacimiento;
+    private Date fechaCreacion;
+    private Date fechaAnulacion;
     private String ci;
     private String telefono;
     private String direccion;
     private String sexo;
-    private int id_perfil;
-    private int id_usuario_creador;
-    private int id_usuario_recomienda;
-    private int id_usuario_aprueba;
+    private int idPerfil;
+    private int idUsuarioCreador;
+    private int idUsuarioRecomienda;
+    private int idUsuarioAprueba;
     private int estado;
     private Conexion con;
 
@@ -91,28 +91,28 @@ public class Usuario {
         this.foto = foto;
     }
 
-    public Date getFecha_nacimiento() {
-        return fecha_nacimiento;
+    public Date getFechaNacimiento() {
+        return fechaNacimiento;
     }
 
-    public void setFecha_nacimiento(Date fecha_nacimiento) {
-        this.fecha_nacimiento = fecha_nacimiento;
+    public void setFechaNacimiento(Date fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
 
-    public Date getFecha_creacion() {
-        return fecha_creacion;
+    public Date getFechaCreacion() {
+        return fechaCreacion;
     }
 
-    public void setFecha_creacion(Date fecha_creacion) {
-        this.fecha_creacion = fecha_creacion;
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
     }
 
-    public Date getFecha_anulacion() {
-        return fecha_anulacion;
+    public Date getFechaAnulacion() {
+        return fechaAnulacion;
     }
 
-    public void setFecha_anulacion(Date fecha_anulacion) {
-        this.fecha_anulacion = fecha_anulacion;
+    public void setFechaAnulacion(Date fechaAnulacion) {
+        this.fechaAnulacion = fechaAnulacion;
     }
 
     public String getCi() {
@@ -147,36 +147,36 @@ public class Usuario {
         this.sexo = sexo;
     }
 
-    public int getId_perfil() {
-        return id_perfil;
+    public int getIdPerfil() {
+        return idPerfil;
     }
 
-    public void setId_perfil(int id_perfil) {
-        this.id_perfil = id_perfil;
+    public void setIdPerfil(int idPerfil) {
+        this.idPerfil = idPerfil;
     }
 
-    public int getId_usuario_creador() {
-        return id_usuario_creador;
+    public int getIdUsuarioCreador() {
+        return idUsuarioCreador;
     }
 
-    public void setId_usuario_creador(int id_usuario_creador) {
-        this.id_usuario_creador = id_usuario_creador;
+    public void setIdUsuarioCreador(int idUsuarioCreador) {
+        this.idUsuarioCreador = idUsuarioCreador;
     }
 
-    public int getId_usuario_recomienda() {
-        return id_usuario_recomienda;
+    public int getIdUsuarioRecomienda() {
+        return idUsuarioRecomienda;
     }
 
-    public void setId_usuario_recomienda(int id_usuario_recomienda) {
-        this.id_usuario_recomienda = id_usuario_recomienda;
+    public void setIdUsuarioRecomienda(int idUsuarioRecomienda) {
+        this.idUsuarioRecomienda = idUsuarioRecomienda;
     }
 
-    public int getId_usuario_aprueba() {
-        return id_usuario_aprueba;
+    public int getIdUsuarioAprueba() {
+        return idUsuarioAprueba;
     }
 
-    public void setId_usuario_aprueba(int id_usuario_aprueba) {
-        this.id_usuario_aprueba = id_usuario_aprueba;
+    public void setIdUsuarioAprueba(int idUsuarioAprueba) {
+        this.idUsuarioAprueba = idUsuarioAprueba;
     }
 
     public int isEstado() {
@@ -197,11 +197,11 @@ public class Usuario {
 
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
-        fecha_creacion = new Date();
+        fechaCreacion = new Date();
         String consulta = "INSERT INTO public.\"Usuario\"(\n"
-                + "	\"nombres\", \"apellidos\", \"foto\", \"fecha_nacimiento\", \"telefono\", \"sexo\", \"direccion\", \"fecha_creacion\", \"id_usuario_aprueba\", \"id_usuario_recomienda\", \"estado\", \"fecha_anulacion\", \"usuario\", \"password\", \"id_perfil\", \"ci\", \"id_usuario_creador\")\n"
+                + "	\"nombres\", \"apellidos\", \"foto\", \"fechaNacimiento\", \"telefono\", \"sexo\", \"direccion\", \"fechaCreacion\", \"idUsuarioAprueba\", \"idUsuarioRecomienda\", \"estado\", \"fechaAnulacion\", \"usuario\", \"password\", \"idPerfil\", \"ci\", \"idUsuarioCreador\")\n"
                 + "	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        this.id = con.EjecutarInsert(consulta, "id", nombres, apellidos, foto, fecha_nacimiento == null ? null : new java.sql.Date(fecha_nacimiento.getTime()), telefono, sexo, direccion, fecha_creacion == null ? null : new java.sql.Date(fecha_creacion.getTime()), id_usuario_aprueba > 0 ? id_usuario_aprueba : null, id_usuario_recomienda > 0 ? id_usuario_recomienda : null, ESTADO_CREADO, fecha_anulacion == null ? null : new java.sql.Date(fecha_anulacion.getTime()), usuario, password, id_perfil > 0 ? id_perfil : null, ci, id_usuario_creador > 0 ? id_usuario_creador : null);
+        this.id = con.EjecutarInsert(consulta, "id", nombres, apellidos, foto, fechaNacimiento == null ? null : new java.sql.Date(fechaNacimiento.getTime()), telefono, sexo, direccion, fechaCreacion == null ? null : new java.sql.Date(fechaCreacion.getTime()), idUsuarioAprueba > 0 ? idUsuarioAprueba : null, idUsuarioRecomienda > 0 ? idUsuarioRecomienda : null, ESTADO_CREADO, fechaAnulacion == null ? null : new java.sql.Date(fechaAnulacion.getTime()), usuario, password, idPerfil > 0 ? idPerfil : null, ci, idUsuarioCreador > 0 ? idUsuarioCreador : null);
         return this.id;
     }
 
@@ -227,20 +227,20 @@ public class Usuario {
             obj.put("nombres", rs.getString("nombres"));
             obj.put("apellidos", rs.getString("apellidos"));
             obj.put("foto", rs.getString("foto"));
-            aux = rs.getDate("fecha_nacimiento");
-            obj.put("fecha_nacimiento", aux == null ? "" : f.format(aux));
-            aux = rs.getDate("fecha_creacion");
-            obj.put("fecha_creacion", aux == null ? "" : f.format(aux));
-            aux = rs.getDate("fecha_anulacion");
-            obj.put("fecha_anulacion", aux == null ? "" : f.format(aux));
+            aux = rs.getDate("fechaNacimiento");
+            obj.put("fechaNacimiento", aux == null ? "" : f.format(aux));
+            aux = rs.getDate("fechaCreacion");
+            obj.put("fechaCreacion", aux == null ? "" : f.format(aux));
+            aux = rs.getDate("fechaAnulacion");
+            obj.put("fechaAnulacion", aux == null ? "" : f.format(aux));
             obj.put("ci", rs.getString("ci"));
             obj.put("telefono", rs.getString("telefono"));
             obj.put("direccion", rs.getString("direccion"));
             obj.put("sexo", rs.getString("sexo"));
-            obj.put("id_perfil", rs.getInt("id_perfil"));
-            obj.put("id_usuario_creador", rs.getInt("id_usuario_creador"));
-            obj.put("id_usuario_recomienda", rs.getInt("id_usuario_recomienda"));
-            obj.put("id_usuario_aprueba", rs.getInt("id_usuario_aprueba"));
+            obj.put("idPerfil", rs.getInt("idPerfil"));
+            obj.put("idUsuarioCreador", rs.getInt("idUsuarioCreador"));
+            obj.put("idUsuarioRecomienda", rs.getInt("idUsuarioRecomienda"));
+            obj.put("idUsuarioAprueba", rs.getInt("idUsuarioAprueba"));
             obj.put("estado", rs.getInt("estado"));
             json.put(obj);
         }
@@ -261,17 +261,17 @@ public class Usuario {
             u.setNombres(rs.getString("nombres"));
             u.setApellidos(rs.getString("apellidos"));
             u.setFoto(rs.getString("foto"));
-            u.setFecha_nacimiento(rs.getDate("fecha_nacimiento"));
-            u.setFecha_creacion(rs.getDate("fecha_creacion"));
-            u.setFecha_anulacion(rs.getDate("fecha_anulacion"));
+            u.setFechaNacimiento(rs.getDate("fechaNacimiento"));
+            u.setFechaCreacion(rs.getDate("fechaCreacion"));
+            u.setFechaAnulacion(rs.getDate("fechaAnulacion"));
             u.setCi(rs.getString("ci"));
             u.setTelefono(rs.getString("telefono"));
             u.setDireccion(rs.getString("direccion"));
             u.setSexo(rs.getString("sexo"));
-            u.setId_perfil(rs.getInt("id_perfil"));
-            u.setId_usuario_creador(rs.getInt("id_usuario_creador"));
-            u.setId_usuario_recomienda(rs.getInt("id_usuario_recomienda"));
-            u.setId_usuario_aprueba(rs.getInt("id_usuario_aprueba"));
+            u.setIdPerfil(rs.getInt("idPerfil"));
+            u.setIdUsuarioCreador(rs.getInt("idUsuarioCreador"));
+            u.setIdUsuarioRecomienda(rs.getInt("idUsuarioRecomienda"));
+            u.setIdUsuarioAprueba(rs.getInt("idUsuarioAprueba"));
             u.setEstado(rs.getInt("estado"));
             return u;
         }
@@ -286,17 +286,17 @@ public class Usuario {
         obj.put("nombres", nombres);
         obj.put("apellidos", apellidos);
         obj.put("foto", foto);
-        obj.put("fecha_nacimiento", fecha_nacimiento == null ? "" : f.format(fecha_nacimiento));
-        obj.put("fecha_creacion", fecha_creacion == null ? "" : f.format(fecha_creacion));
-        obj.put("fecha_anulacion", fecha_anulacion == null ? "" : f.format(fecha_anulacion));
+        obj.put("fechaNacimiento", fechaNacimiento == null ? "" : f.format(fechaNacimiento));
+        obj.put("fechaCreacion", fechaCreacion == null ? "" : f.format(fechaCreacion));
+        obj.put("fechaAnulacion", fechaAnulacion == null ? "" : f.format(fechaAnulacion));
         obj.put("ci", ci);
         obj.put("telefono", telefono);
         obj.put("direccion", direccion);
         obj.put("sexo", sexo);
-        obj.put("id_perfil", id_perfil);
-        obj.put("id_usuario_creador", id_usuario_creador);
-        obj.put("id_usuario_recomienda", id_usuario_recomienda);
-        obj.put("id_usuario_aprueba", id_usuario_aprueba);
+        obj.put("id_perfil", idPerfil);
+        obj.put("idUsuarioCreador", idUsuarioCreador);
+        obj.put("idUsuarioRecomienda", idUsuarioRecomienda);
+        obj.put("idUsuarioAprueba", idUsuarioAprueba);
         obj.put("estado", estado);
         return obj;
     }
@@ -326,17 +326,17 @@ public class Usuario {
             u.setNombres(rs.getString("nombres"));
             u.setApellidos(rs.getString("apellidos"));
             u.setFoto(rs.getString("foto"));
-            u.setFecha_nacimiento(rs.getDate("fecha_nacimiento"));
-            u.setFecha_creacion(rs.getDate("fecha_creacion"));
-            u.setFecha_anulacion(rs.getDate("fecha_anulacion"));
+            u.setFechaNacimiento(rs.getDate("fechaNacimiento"));
+            u.setFechaCreacion(rs.getDate("fechaCreacion"));
+            u.setFechaAnulacion(rs.getDate("fechaAnulacion"));
             u.setCi(rs.getString("ci"));
             u.setTelefono(rs.getString("telefono"));
             u.setDireccion(rs.getString("direccion"));
             u.setSexo(rs.getString("sexo"));
-            u.setId_perfil(rs.getInt("id_perfil"));
-            u.setId_usuario_creador(rs.getInt("id_usuario_creador"));
-            u.setId_usuario_recomienda(rs.getInt("id_usuario_recomienda"));
-            u.setId_usuario_aprueba(rs.getInt("id_usuario_aprueba"));
+            u.setIdPerfil(rs.getInt("idPerfil"));
+            u.setIdUsuarioCreador(rs.getInt("idUsuarioCreador"));
+            u.setIdUsuarioRecomienda(rs.getInt("idUsuarioRecomienda"));
+            u.setIdUsuarioAprueba(rs.getInt("idUsuarioAprueba"));
             u.setEstado(rs.getInt("estado"));
             lista.add(u);
         }
@@ -346,7 +346,7 @@ public class Usuario {
     public JSONArray todosConPerfil() throws SQLException, JSONException {
         String consulta = "SELECT \"Usuario\".*, \"Perfil\".\"nombre\" AS perfil\n"
                 + "     FROM public.\"Usuario\"\n"
-                + "          LEFT JOIN public.\"Perfil\" ON \"Usuario\".\"id_perfil\" = \"Perfil\".\"id\"\n"
+                + "          LEFT JOIN public.\"Perfil\" ON \"Usuario\".\"idPerfil\" = \"Perfil\".\"id\"\n"
                 + "ORDER BY \"Usuario\".\"usuario\" ASC ";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
@@ -361,21 +361,21 @@ public class Usuario {
             obj.put("nombres", rs.getString("nombres"));
             obj.put("apellidos", rs.getString("apellidos"));
             obj.put("foto", rs.getString("foto"));
-            aux = rs.getDate("fecha_nacimiento");
-            obj.put("fecha_nacimiento", aux == null ? "" : f.format(aux));
-            aux = rs.getDate("fecha_creacion");
-            obj.put("fecha_creacion", aux == null ? "" : f.format(aux));
-            aux = rs.getDate("fecha_anulacion");
-            obj.put("fecha_anulacion", aux == null ? "" : f.format(aux));
+            aux = rs.getDate("fechaNacimiento");
+            obj.put("fechaNacimiento", aux == null ? "" : f.format(aux));
+            aux = rs.getDate("fechaCreacion");
+            obj.put("fechaCreacion", aux == null ? "" : f.format(aux));
+            aux = rs.getDate("fechaAnulacion");
+            obj.put("fechaAnulacion", aux == null ? "" : f.format(aux));
             obj.put("ci", rs.getString("ci"));
             obj.put("telefono", rs.getString("telefono"));
             obj.put("direccion", rs.getString("direccion"));
             obj.put("sexo", rs.getString("sexo"));
-            obj.put("id_perfil", rs.getInt("id_perfil"));
+            obj.put("idPerfil", rs.getInt("idPerfil"));
             obj.put("perfil", rs.getInt("perfil"));
-            obj.put("id_usuario_creador", rs.getInt("id_usuario_creador"));
-            obj.put("id_usuario_recomienda", rs.getInt("id_usuario_recomienda"));
-            obj.put("id_usuario_aprueba", rs.getInt("id_usuario_aprueba"));
+            obj.put("idUsuarioCreador", rs.getInt("idUsuarioCreador"));
+            obj.put("idUsuarioRecomienda", rs.getInt("idUsuarioRecomienda"));
+            obj.put("idUsuarioAprueba", rs.getInt("idUsuarioAprueba"));
             obj.put("estado", rs.getInt("estado"));
             json.put(obj);
         }
@@ -385,11 +385,11 @@ public class Usuario {
     }
 
     public void updateDatos() throws SQLException {
-        java.sql.Date fn = fecha_nacimiento == null ? null : new java.sql.Date(fecha_nacimiento.getTime());
+        java.sql.Date fn = fechaNacimiento == null ? null : new java.sql.Date(fechaNacimiento.getTime());
         String consulta = "UPDATE public.\"Usuario\"\n"
-                + "	SET \"nombres\"=?,\"apellidos\"=?,\"fecha_nacimiento\"=?,\"sexo\"=?,\"id_perfil\"=?,\"telefono\"=?,\"direccion\"=?\n"
+                + "	SET \"nombres\"=?,\"apellidos\"=?,\"fechaNacimiento\"=?,\"sexo\"=?,\"idPerfil\"=?,\"telefono\"=?,\"direccion\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, nombres, apellidos, fn, sexo, id_perfil, telefono, direccion, id);
+        con.EjecutarSentencia(consulta, nombres, apellidos, fn, sexo, idPerfil, telefono, direccion, id);
     }
 
     public void updateContrasena() throws SQLException {

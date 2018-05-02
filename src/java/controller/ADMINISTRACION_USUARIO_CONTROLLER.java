@@ -149,10 +149,10 @@ public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
                 if (u == null) {
                     return "false";
                 }
-                u.setId_perfil(cargo);
+                u.setIdPerfil(cargo);
                 u.setNombres(nombres);
                 u.setApellidos(apellidos);
-                u.setFecha_nacimiento(fecha_nac);
+                u.setFechaNacimiento(fecha_nac);
                 u.setSexo(sexo);
                 u.updateDatos();
                 return u.toJSONObject().toString();
