@@ -1,4 +1,4 @@
-var url = "INGRESO_CONTROLLER";
+var url = "IngresoController";
 
 $(document).ready(function () {
     $.post(url, {evento: "obtener_ingreso"}, function (resp) {

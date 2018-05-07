@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 
-@WebServlet(name = "CREAR_TABLAS_CONTROLLER", urlPatterns = {"/CREAR_TABLAS_CONTROLLER"})
-public class CREAR_TABLAS_CONTROLLER extends HttpServlet {
+@WebServlet(name = "CrearTablasController", urlPatterns = {"/CrearTablasController"})
+public class CrearTablasController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

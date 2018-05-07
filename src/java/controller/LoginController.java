@@ -11,14 +11,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Usuario;
-import util.SIS_EVENTOS;
+import util.SisEventos;
 
-@WebServlet(name = "LOGIN_CONTROLLER", urlPatterns = {"/LOGIN_CONTROLLER"})
-public class LOGIN_CONTROLLER extends HttpServlet {
+@WebServlet(name = "LoginController", urlPatterns = {"/LoginController"})
+public class LoginController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        SIS_EVENTOS ev = new SIS_EVENTOS();
+        SisEventos ev = new SisEventos();
         if (request.getSession().getAttribute("usr") != null) {
             Usuario u = (Usuario) request.getSession().getAttribute("usr");
             Conexion con = u.getCon();

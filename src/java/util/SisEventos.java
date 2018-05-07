@@ -11,9 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 
-public class SIS_EVENTOS {
+public class SisEventos {
 
-    public SIS_EVENTOS() {
+    public SisEventos() {
     }
 
     public String decodeUTF8(String text) throws UnsupportedEncodingException {
@@ -32,9 +32,9 @@ public class SIS_EVENTOS {
                 leido = input.read();
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(SIS_EVENTOS.class.getName()).log(Level.SEVERE, ex.getMessage());
+            Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(SIS_EVENTOS.class.getName()).log(Level.SEVERE, ex.getMessage());
+            Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, ex.getMessage());
         } finally {
             try {
                 output.flush();
@@ -42,7 +42,7 @@ public class SIS_EVENTOS {
                 input.close();
                 ok = true;
             } catch (IOException ex) {
-                Logger.getLogger(SIS_EVENTOS.class.getName()).log(Level.SEVERE, "Error cerrando flujo de salida", ex);
+                Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, "Error cerrando flujo de salida", ex);
             }
         }
         return ok;
@@ -57,7 +57,7 @@ public class SIS_EVENTOS {
                 url = servletContext.getResource(resourcePath);
                 result = url.getPath();
             } catch (MalformedURLException ex) {
-                Logger.getLogger(SIS_EVENTOS.class.getName()).log(Level.SEVERE, "No se ha podido recuperar el path real de: " + resourcePath, ex);
+                Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, "No se ha podido recuperar el path real de: " + resourcePath, ex);
             }
         }
         return result;
@@ -69,12 +69,12 @@ public class SIS_EVENTOS {
             boolean estatus = file.delete();
             if (!estatus) {
                 String msj = "Error no se ha podido eliminar el  archivo " + archivo;
-                Logger.getLogger(SIS_EVENTOS.class.getName()).log(Level.SEVERE, msj);
+                Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, msj);
                 return false;
             }
             return true;
         } catch (Exception ex) {
-            Logger.getLogger(SIS_EVENTOS.class.getName()).log(Level.SEVERE, "Error no se ha podido eliminar el  archivo " + archivo, ex);
+            Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, "Error no se ha podido eliminar el  archivo " + archivo, ex);
             return false;
         }
     }

@@ -14,8 +14,8 @@ import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@WebServlet(name = "INGRESO_CONTROLLER", urlPatterns = {"/INGRESO_CONTROLLER"})
-public class INGRESO_CONTROLLER extends HttpServlet {
+@WebServlet(name = "IngresoController", urlPatterns = {"/IngresoController"})
+public class IngresoController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
