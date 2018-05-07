@@ -1,4 +1,4 @@
-var url = "../ADMINISTRACION_USUARIO_CONTROLLER";
+var url = "../AdministracionUsuarioController";
 var tabla, tablaSubMenu;
 $(document).ready(function () {
     init();

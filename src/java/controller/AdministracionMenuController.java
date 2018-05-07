@@ -13,12 +13,8 @@ import modelo.SubMenu;
 import modelo.Usuario;
 import org.json.JSONException;
 
-/**
- *
- * @author benja
- */
-@WebServlet(name = "ADMINISTRACION_MENU_CONTROLLER", urlPatterns = {"/ADMINISTRACION_MENU_CONTROLLER"})
-public class ADMINISTRACION_MENU_CONTROLLER extends HttpServlet {
+@WebServlet(name = "AdministracionMenuController", urlPatterns = {"/AdministracionMenuController"})
+public class AdministracionMenuController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

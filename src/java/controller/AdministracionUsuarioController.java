@@ -17,12 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import util.StringMD;
 
-/**
- *
- * @author benja
- */
-@WebServlet(name = "ADMINISTRACION_USUARIO_CONTROLLER", urlPatterns = {"/ADMINISTRACION_USUARIO_CONTROLLER"})
-public class ADMINISTRACION_USUARIO_CONTROLLER extends HttpServlet {
+@WebServlet(name = "AdministracionUsuarioController", urlPatterns = {"/AdministracionUsuarioController"})
+public class AdministracionUsuarioController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

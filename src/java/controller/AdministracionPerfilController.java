@@ -15,12 +15,8 @@ import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- *
- * @author benja
- */
-@WebServlet(name = "ADMINISTRACION_CARGO_CONTROLLER", urlPatterns = {"/ADMINISTRACION_CARGO_CONTROLLER"})
-public class ADMINISTRACION_PERFIL_CONTROLLER extends HttpServlet {
+@WebServlet(name = "AdministracionPerfilController", urlPatterns = {"/AdministracionPerfilController"})
+public class AdministracionPerfilController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

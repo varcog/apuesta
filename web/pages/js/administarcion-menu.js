@@ -1,4 +1,4 @@
-var url = "../ADMINISTRACION_MENU_CONTROLLER";
+var url = "../AdministracionMenuController";
 var tabla, tablaSubMenu;
 $(document).ready(function () {
     $('#asignarSubMenuModal').on('shown.bs.modal', opened_pop_ver_sub_menu);

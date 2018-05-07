@@ -1,4 +1,4 @@
-var url = "../ADMINISTRACION_CARGO_CONTROLLER";
+var url = "../AdministracionPerfilController";
 var tabla, tablaSubMenu;
 $(document).ready(function () {
     init();
