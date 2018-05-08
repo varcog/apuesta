@@ -250,7 +250,7 @@ public class Usuario {
     }
 
     public Usuario buscar(int id) throws SQLException {
-        String consulta = "SELECT * FROM public.\"usuario\"\n"
+        String consulta = "SELECT * FROM public.\"Usuario\"\n"
                 + "	WHERE \"id\"=?;";
         PreparedStatement ps = con.statametObject(consulta, id);
         ResultSet rs = ps.executeQuery();
@@ -293,7 +293,7 @@ public class Usuario {
         obj.put("telefono", telefono);
         obj.put("direccion", direccion);
         obj.put("sexo", sexo);
-        obj.put("id_perfil", idPerfil);
+        obj.put("idPerfil", idPerfil);
         obj.put("idUsuarioCreador", idUsuarioCreador);
         obj.put("idUsuarioRecomienda", idUsuarioRecomienda);
         obj.put("idUsuarioAprueba", idUsuarioAprueba);
@@ -372,7 +372,7 @@ public class Usuario {
             obj.put("direccion", rs.getString("direccion"));
             obj.put("sexo", rs.getString("sexo"));
             obj.put("idPerfil", rs.getInt("idPerfil"));
-            obj.put("perfil", rs.getInt("perfil"));
+            obj.put("perfil", rs.getString("perfil"));
             obj.put("idUsuarioCreador", rs.getInt("idUsuarioCreador"));
             obj.put("idUsuarioRecomienda", rs.getInt("idUsuarioRecomienda"));
             obj.put("idUsuarioAprueba", rs.getInt("idUsuarioAprueba"));

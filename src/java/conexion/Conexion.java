@@ -202,7 +202,7 @@ public class Conexion {
         }
     }
 
-    public void Transacction_end() {
+    public void TransacctionEnd() {
         try {
             if (!con.getAutoCommit()) {
                 con.setAutoCommit(true);

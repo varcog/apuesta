@@ -42,17 +42,17 @@ public class AdministracionUsuarioController extends HttpServlet {
                 case "init":
                     html = init(request, con);
                     break;
-                case "guardar_usuario":
-                    html = guardar_usuario(request, con);
+                case "guardarUsuario":
+                    html = guardarUsuario(request, con);
                     break;
-                case "eliminar_usuario":
-                    html = eliminar_usuario(request, con);
+                case "eliminarUsuario":
+                    html = eliminarUsuario(request, con);
                     break;
-                case "cambiar_estado_usuario":
-                    html = cambiar_estado_usuario(request, con);
+                case "cambiarEstadoUsuario":
+                    html = cambiarEstadoUsuario(request, con);
                     break;
-                case "datos_usuario":
-                    html = datos_usuario(request, con);
+                case "datosUsuario":
+                    html = datosUsuario(request, con);
                     break;
             }
             con.commit();
@@ -107,27 +107,27 @@ public class AdministracionUsuarioController extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("CARGOS", new Perfil(con).todos());
-        json.put("USUARIOS", new Usuario(con).todosConPerfil());
+        json.put("perfiles", new Perfil(con).todos());
+        json.put("usuarios", new Usuario(con).todosConPerfil());
         return json.toString();
     }
 
-    private String guardar_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+    private String guardarUsuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         int accion = Integer.parseInt(request.getParameter("accion"));
         String usuario = request.getParameter("usuario");
         String contrasena = request.getParameter("contrasena");
-        int cargo = Integer.parseInt(request.getParameter("cargo"));
+        int perfil = Integer.parseInt(request.getParameter("perfil"));
         String ci = request.getParameter("ci");
         String nombres = request.getParameter("nombres");
         String apellidos = request.getParameter("apellidos");
-        String fecha_nacimiento = request.getParameter("fecha_nacimiento");
-        Date fecha_nac;
+        String fechaNacimiento = request.getParameter("fechaNacimiento");
+        Date fechaNac;
         SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
         try {
-            fecha_nac = f.parse(fecha_nacimiento);
+            fechaNac = f.parse(fechaNacimiento);
         } catch (ParseException e) {
-            fecha_nac = null;
+            fechaNac = null;
         }
         String sexo = request.getParameter("sexo");
         Usuario u;
@@ -145,10 +145,10 @@ public class AdministracionUsuarioController extends HttpServlet {
                 if (u == null) {
                     return "false";
                 }
-                u.setIdPerfil(cargo);
+                u.setIdPerfil(perfil);
                 u.setNombres(nombres);
                 u.setApellidos(apellidos);
-                u.setFechaNacimiento(fecha_nac);
+                u.setFechaNacimiento(fechaNac);
                 u.setSexo(sexo);
                 u.updateDatos();
                 return u.toJSONObject().toString();
@@ -164,7 +164,7 @@ public class AdministracionUsuarioController extends HttpServlet {
         }
     }
 
-    private String datos_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+    private String datosUsuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         Usuario u = new Usuario(con).buscar(id);
         if (u == null) {
@@ -173,7 +173,7 @@ public class AdministracionUsuarioController extends HttpServlet {
         return u.toJSONObject().toString();
     }
 
-    private String eliminar_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String eliminarUsuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
         Usuario u = new Usuario(con);
         u.setId(id);
@@ -181,10 +181,10 @@ public class AdministracionUsuarioController extends HttpServlet {
         return "true";
     }
 
-    private String cambiar_estado_usuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String cambiarEstadoUsuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int estado = Integer.parseInt(request.getParameter("estado"));
-        int id_usuario = Integer.parseInt(request.getParameter("id_usuario"));
-        Usuario u = new Usuario(con).buscar(id_usuario);
+        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+        Usuario u = new Usuario(con).buscar(idUsuario);
         if (u == null) {
             return "false";
         }

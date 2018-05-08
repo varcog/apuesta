@@ -1,4 +1,4 @@
-var dataTable_conf2 = {
+var dataTableConf2 = {
     "language": {
 //        "decimal":        "",
         "emptyTable": "No hay datos disponibles en la tabla",
@@ -24,25 +24,25 @@ var dataTable_conf2 = {
         }
     }
 };
-var dataTable_conf = {
+var dataTableConf = {
     "language": {"url": "../plugins/datatables/i18n/spanish.json"},
     responsive: true
 };
 
 
 function mostrarCargando() {
-    if ($("#div_cargando_background").length === 0) {
-        $("body").append("<div class='overlay-wrapper cargando d-none' id='div_cargando_background'>"
+    if ($("#divCargandoBackground").length === 0) {
+        $("body").append("<div class='overlay-wrapper cargando d-none' id='divCargandoBackground'>"
                 + " <div class='overlay'>"
                 + "     <i class='fa fa-refresh fa-spin'></i>"
                 + " </div>"
                 + "</div>");
     }
-    $("#div_cargando_background").removeClass("hidden");
+    $("#divCargandoBackground").removeClass("hidden");
 }
 
 function ocultarCargando() {
-    $("#div_cargando_background").addClass("hidden");
+    $("#divCargandoBackground").addClass("hidden");
 }
 
 //------------------------------------------------------------------------------
@@ -69,9 +69,9 @@ function ocultarCargando() {
         });
     };
 
-    $.fn.calendario_hora = function () {
+    $.fn.calendarioHora = function () {
         return $(this).each(function () {
-            if (!$(this).data("calendario_hora")) {
+            if (!$(this).data("calendarioHora")) {
                 $(this).daterangepicker({
                     singleDatePicker: true,
                     showDropdowns: true,
@@ -112,7 +112,7 @@ function ocultarCargando() {
                         "firstDay": 1
                     }
                 });
-                $(this).data("calendario_hora", true);
+                $(this).data("calendarioHora", true);
             }
         });
     };
@@ -157,7 +157,7 @@ function isValidDate(day, month, year) {
  *  true-Fecha correcta
  *  false-Fecha Incorrecta
  */
-function validate_fecha(fecha) {
+function validateFecha(fecha) {
 //    var RegExPattern = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
 //      if ((campo.match(RegExPattern)) && (campo!='')) {
     var patron = new RegExp("^([0-9]{1,2})([/])([0-9]{1,2})([/])([1-9])([0-9]{3})$");
@@ -168,7 +168,7 @@ function validate_fecha(fecha) {
     }
     return false;
 }
-function validate_fecha_mes_ano(fecha) {
+function validateFechaMesAno(fecha) {
 //    var RegExPattern = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
 //      if ((campo.match(RegExPattern)) && (campo!='')) {
     var patron = new RegExp("^([0-9]{1,2})([/])([1-9])([0-9]{3})$");
@@ -180,7 +180,7 @@ function validate_fecha_mes_ano(fecha) {
     return false;
 }
 
-function validate_fechaMayorQue(fechaInicial, fechaFinal) {
+function validateFechaMayorQue(fechaInicial, fechaFinal) {
     var valuesStart = fechaInicial.split("/");
     var valuesEnd = fechaFinal.split("/");
     // Verificamos que la fecha no sea posterior a la actual
@@ -204,7 +204,7 @@ function calculaNumeroDiaSemana(dia, mes, ano) {
         numDia--;
     return numDia;
 }
-function dias_entre_Fechas(f1, f2) {
+function diasEntreFechas(f1, f2) {
     try {
         var aFecha1 = f1.split('/');
         var aFecha2 = f2.split('/');
@@ -217,7 +217,7 @@ function dias_entre_Fechas(f1, f2) {
         return 0;
     }
 }
-function dias_entre_Fechas_Date(f1, f2) {
+function diasEntreFechasDate(f1, f2) {
     var dif = f2.getTime() - f1.getTime();
     var dias = Math.floor(dif / (1000 * 60 * 60 * 24));
     return dias;
@@ -241,6 +241,8 @@ function comprarFechas(f1, f2) {
     var b = f2.split("/");
     var d1 = new Date(a[2], a[1] - 1, a[0]);
     var d2 = new Date(b[2], b[1] - 1, b[0]);
+    a = d1.getTime();
+    b = d2.getTime();
     if (d1 === d2)
         return 0;
     if (d1 > d2)
@@ -320,37 +322,72 @@ function removeError(selector) {
 })(jQuery);
 
 /* *****************************************************************************
- *                              MODAL
+ *                              Modal
  * *****************************************************************************
  */
-var modales_cola = [];
+var modalesCola = [];
 function openModal(modal) {
-    if (modales_cola.length > 0) {
-        var mm = modales_cola[modales_cola.length - 1];
+    if (modalesCola.length > 0) {
+        var mm = modalesCola[modalesCola.length - 1];
         $(mm).off("hidden.bs.modal");
         $(mm).modal('hide');
     }
-    modales_cola.push(modal);
+    modalesCola.push(modal);
     $(modal).off("hidden.bs.modal");
     $(modal).on('hidden.bs.modal', function (e) {
-        cerrar_modal();
+        cerrarModal();
     });
     $(modal).modal('show');
 }
 
-function cerrar_modal() {
-    var modal = modales_cola.pop();
+function cerrarModal() {
+    var modal = modalesCola.pop();
     if (modal) {
         $(modal).off("hidden.bs.modal");
         $(modal).modal('hide');
     }
-    if (modales_cola.length > 0) {
-        var modal = modales_cola[modales_cola.length - 1];
+    if (modalesCola.length > 0) {
+        var modal = modalesCola[modalesCola.length - 1];
         $(modal).off("hidden.bs.modal");
         $(modal).on('hidden.bs.modal', function (e) {
-            cerrar_modal();
+            cerrarModal();
         });
         $(modal).modal('show');
     }
 }
 
+/* *****************************************************************************
+ *                              Alert
+ * *****************************************************************************
+ */
+var ID_ALERT_MODAL = "#alertModal";
+function openAlert(mensaje, titulo) {
+    if (titulo === undefined || titulo === null) {
+        titulo = "Alerta";
+    }
+    if ($(ID_ALERT_MODAL).length === 0) {
+        var html = '<!--Alert Modal-->';
+        html += '<div class="modal fade" id="' + ID_ALERT_MODAL + '" tabindex="-3" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">';
+        html += '    <div class="modal-dialog" role="document">';
+        html += '        <div class="modal-content">';
+        html += '            <div class="modal-header">';
+        html += '                <h5 class="modal-title text-center text-bold" id="alertModalLabel"></h5>';
+        html += '                <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">';
+        html += '                    <span aria-hidden="true">×</span>';
+        html += '                </button>';
+        html += '            </div>';
+        html += '            <div class="modal-body">';
+        html += '                <p id="alertModalText"></p>';
+        html += '            </div>';
+        html += '            <div class="modal-footer">';
+        html += '                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cerrar</button>';
+        html += '            </div>';
+        html += '        </div>';
+        html += '    </div>';
+        html += '</div>';
+        $("body").append(html);
+    }
+    $("#alertModalText").text(mensaje);
+    $("#alertModalLabel").text(titulo);
+    openModal(ID_ALERT_MODAL);
+}

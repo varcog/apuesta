@@ -99,9 +99,9 @@ public class SubMenu {
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
         String consulta = "INSERT INTO public.\"SubMenu\"(\n"
-                + "	\"nombre\", \"imagen\", \"url\", \"idMenu\")\n"
-                + "	VALUES (?,?,?,?)";
-        int id = con.EjecutarInsert(consulta, "id", nombre, imagen, url, idMenu);
+                + "	\"nombre\", \"imagen\", \"url\", \"idMenu\", \"visible\")\n"
+                + "	VALUES (?,?,?,?,?)";
+        int id = con.EjecutarInsert(consulta, "id", nombre, imagen, url, idMenu, visible);
         this.id = id;
         return id;
     }
@@ -252,7 +252,7 @@ public class SubMenu {
     }
 
     public void updateVisible(int id, boolean visible) throws SQLException {
-        String consulta = "UPDATE public.\"SuMenu\"\n"
+        String consulta = "UPDATE public.\"SubMenu\"\n"
                 + "	SET \"visible\"=?\n"
                 + "	WHERE \"id\"=?;";
         con.EjecutarSentencia(consulta, visible, id);

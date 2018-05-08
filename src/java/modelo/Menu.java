@@ -123,9 +123,9 @@ public class Menu {
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONObject json = new JSONObject();
-        SubMenu sub_menu = new SubMenu(con);
+        SubMenu subMenu = new SubMenu(con);
         while (rs.next()) {
-            json.put(rs.getString("nombre"), sub_menu.bucarSubMenuXMenu(rs.getInt("id")));
+            json.put(rs.getString("nombre"), subMenu.bucarSubMenuXMenu(rs.getInt("id")));
         }
         rs.close();
         ps.close();
@@ -146,9 +146,9 @@ public class Menu {
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONObject json = new JSONObject();
-        SubMenu sub_menu = new SubMenu(con);
+        SubMenu subMenu = new SubMenu(con);
         while (rs.next()) {
-            json.put(rs.getString("nombre"), sub_menu.bucarSubMenuXMenuXPerfilVisible(rs.getInt("id"), idPerfil));
+            json.put(rs.getString("nombre"), subMenu.bucarSubMenuXMenuXPerfilVisible(rs.getInt("id"), idPerfil));
         }
         rs.close();
         ps.close();

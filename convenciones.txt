@@ -1,0 +1,18 @@
+// JAVASCRIPT
+http://www.etnassoft.com/2012/10/23/guia-de-estilo-nomenclatura-en-archivos-javascript/
+http://snowdream.github.io/javascript-style-guide/javascript-style-guide/es/naming-conventions.html
+https://github.com/ogranada-xk/js-coding-standards
+
+// HTML
+https://www.lawebera.es/diseno-web/estructura-de-una-pagina-web-estructura-del-diseno.php#como-estructurar-los-archivos-de-una-pagina-web
+
+// CSS
+
+
+// JAVA
+http://www.um.es/docencia/vjimenez/ficheros/practicas/ConvencionesCodigoJava.pdf
+https://amap.cantabria.es/amap/bin/view/AMAP/CodificacionJava
+
+// SERVLET
+https://docs.google.com/document/d/1rbxDFM0zsbFDNRZeM2FoXfRDbYSiSt6tCdbYPA0qdzs/edit?hl=en_US
+

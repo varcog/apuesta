@@ -1,14 +1,14 @@
 var url = "IngresoController";
 
 $(document).ready(function () {
-    $.post(url, {evento: "obtener_ingreso"}, function (resp) {
+    $.post(url, {evento: "obtenerIngreso"}, function (resp) {
         if (resp === "false")
             location.href = "index.html";
         else {
             $(".elmenu").remove();
             var json = $.parseJSON(resp);
             var html = "";
-            $.each(json.Menu, function (menu, submenus) {
+            $.each(json.menu, function (menu, subMenus) {
                 html += "<li class='treeview'>";
                 html += "<a>";
                 // fa-asterisk
@@ -19,20 +19,20 @@ $(document).ready(function () {
                 html += "<span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span>";
                 html += "</a>";
                 html += "<ul class='treeview-menu'>";
-                $.each(submenus, function (i, sub_menu) {
-                    html += "<li><a onclick='cambiar_menu(\"" + sub_menu.url + "\")'><i class='fa fa-circle-o'></i> " + sub_menu.nombre + "</a></li>";
+                $.each(subMenus, function (i, subMenu) {
+                    html += "<li><a onclick='cambiarMenu(\"" + subMenu.url + "\")'><i class='fa fa-circle-o'></i> " + subMenu.nombre + "</a></li>";
                 });
                 html += "</ul>";
                 html += "</li>";
             });
             $("#menu").append(html);
-            $(".nombre_usuario").text((json.Usuario || ""));
-            $(".cargo").text((json.Perfil || ""));
+            $(".nombre_usuario").text((json.usuario || ""));
+            $(".cargo").text((json.perfil || ""));
         }
     });
 });
 
-function cambiar_menu(url) {
-    $("#content_frame").attr("src", url);
+function cambiarMenu(url) {
+    $("#contentFrame").attr("src", url);
 }
 

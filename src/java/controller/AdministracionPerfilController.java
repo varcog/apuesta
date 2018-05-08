@@ -40,17 +40,17 @@ public class AdministracionPerfilController extends HttpServlet {
                 case "init":
                     html = init(request, con);
                     break;
-                case "guardar_perfil":
-                    html = guardar_perfil(request, con);
+                case "guardarPerfil":
+                    html = guardarPerfil(request, con);
                     break;
-                case "eliminar_perfil":
-                    html = eliminar_perfil(request, con);
+                case "eliminarPerfil":
+                    html = eliminarPerfil(request, con);
                     break;
-                case "todos_sub_menu_asignados":
-                    html = todos_sub_menu_asignados(request, con);
+                case "todosSubMenuAsignados":
+                    html = todosSubMenuAsignados(request, con);
                     break;
-                case "asignar_desasignar_sub_menu":
-                    html = asignar_desasignar_sub_menu(request, con);
+                case "asignarDesasignarSubMenu":
+                    html = asignarDesasignarSubMenu(request, con);
                     break;
             }
             con.commit();
@@ -105,30 +105,30 @@ public class AdministracionPerfilController extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("PERFILES", new Perfil(con).todos());
-        json.put("MENUS", new Menu(con).bucarMenuYSubMenuTodos());
+        json.put("perfiles", new Perfil(con).todos());
+        json.put("menus", new Menu(con).bucarMenuYSubMenuTodos());
         return json.toString();
     }
 
-    private String guardar_perfil(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+    private String guardarPerfil(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
-        String descripcion = request.getParameter("descripcion");
+        String nombre = request.getParameter("nombre");
         if (id > 0) {
             Perfil c = new Perfil(con).buscar(id);
             if (c == null) {
                 return "false";
             }
-            c.setNombre(descripcion);
+            c.setNombre(nombre);
             c.update();
             return c.toJSONObject().toString();
         } else {
-            Perfil c = new Perfil(id, descripcion, con);
+            Perfil c = new Perfil(id, nombre, con);
             c.insert();
             return c.toJSONObject().toString();
         }
     }
 
-    private String eliminar_perfil(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String eliminarPerfil(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         int id = Integer.parseInt(request.getParameter("id"));
         Perfil c = new Perfil(con);
         c.setId(id);
@@ -136,20 +136,20 @@ public class AdministracionPerfilController extends HttpServlet {
         return "true";
     }
 
-    private String todos_sub_menu_asignados(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        int id_cargo = Integer.parseInt(request.getParameter("id_cargo"));
-        return new Permiso(con).todosXPerfil(id_cargo).toString();
+    private String todosSubMenuAsignados(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int idPerfil = Integer.parseInt(request.getParameter("idPerfil"));
+        return new Permiso(con).todosXPerfil(idPerfil).toString();
     }
 
-    private String asignar_desasignar_sub_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String asignarDesasignarSubMenu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         boolean asignar = Boolean.parseBoolean(request.getParameter("asignar"));
-        int id_cargo = Integer.parseInt(request.getParameter("id_cargo"));
-        int id_sub_menu = Integer.parseInt(request.getParameter("id_sub_menu"));
+        int idPerfil = Integer.parseInt(request.getParameter("idPerfil"));
+        int idSubMenu = Integer.parseInt(request.getParameter("idSubMenu"));
         Permiso p = new Permiso(con);
-        p.delete(id_cargo, id_sub_menu);
+        p.delete(idPerfil, idSubMenu);
         if (asignar) {
-            p.setIdPerfil(id_cargo);
-            p.setIdSubMenu(id_sub_menu);
+            p.setIdPerfil(idPerfil);
+            p.setIdSubMenu(idSubMenu);
             p.setAlta(true);
             p.setBaja(true);
             p.setModificacion(true);

@@ -9,8 +9,8 @@ function init() {
     $.post(url, {evento: "init"}, function (resp) {
         var json = $.parseJSON(resp);
         var html = "";
-        $.each(json.CARGOS, function (i, obj) {
-            html += cargoFilaHtml(obj);
+        $.each(json.perfiles, function (i, obj) {
+            html += perfilFilaHtml(obj);
         });
         $("#cuerpo").html(html);
 
@@ -22,14 +22,14 @@ function init() {
 
         //////////////// MENU 
         html = "";
-        $.each(json.MENUS, function (menu, sub_menus) {
-            if (sub_menus.length > 0) {
+        $.each(json.menus, function (menu, subMenus) {
+            if (subMenus.length > 0) {
                 html += "<li><span class='text-bold'>" + menu + "</span>";
                 html += "<ul>";
-                $.each(sub_menus, function (i, sm) {
+                $.each(subMenus, function (i, sm) {
                     html += "<li>";
-                    html += "<input type='checkbox' id='sm_" + sm.ID + "' class='sm_as' onclick='asignar_desasignar_sub_menu(" + sm.ID + ", this)'/>";
-                    html += "<label for='sm_" + sm.ID + "' class='text-normal'>" + sm.DESCRIPCION + "</label>";
+                    html += "<input type='checkbox' id='sm_" + sm.id + "' class='sm_as' onclick='asignarDesasignarSubMenu(" + sm.id + ", this)'/>";
+                    html += "<label for='sm_" + sm.id + "' class='text-normal'>" + sm.nombre + "</label>";
                     html += "</li>";
                 });
             }
@@ -41,107 +41,98 @@ function init() {
     });
 }
 
-function cargoFilaHtml(obj) {
-    var tr = "<tr data-id='" + obj.ID + "' class='cargo_" + obj.ID + "'>";
-    tr += "<td>" + (obj.DESCRIPCION || "") + "</td>";
+function perfilFilaHtml(obj) {
+    var tr = "<tr data-id='" + obj.id + "' class='perfil_" + obj.id + "'>";
+    tr += "<td>" + (obj.nombre || "") + "</td>";
     tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-edit text-warning' title='Editar' onclick='pop_modificar_cargo(" + obj.ID + ",this);'></i>";
+    tr += "<i class='fa fa-edit text-warning' title='Editar' onclick='popModificarPerfil(" + obj.id + ",this);'></i>";
     tr += "</td>";
     tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-gear text-muted' title='Ver Sub Menu' onclick='pop_permiso_cargo(" + obj.ID + ",this);'></i>";
+    tr += "<i class='fa fa-gear text-muted' title='Ver Sub Menu' onclick='popPermisoPerfil(" + obj.id + ",this);'></i>";
     tr += "</td>";
     tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-remove text-danger' title='Eliminar' onclick='pop_eliminar_cargo(" + obj.ID + ",this);'></i>";
+    tr += "<i class='fa fa-remove text-danger' title='Eliminar' onclick='popEliminarPerfil(" + obj.id + ",this);'></i>";
     tr += "</td>";
     tr += "</tr>";
     return tr;
 }
 
-function pop_registrar_cargo() {
+function popRegistrarPerfil() {
     $("#c_id").val(0);
-    $("#c_descripcion").val("");
-    $('#boton_cargo').text("Crear Cargo");
-    openModal('#cargoModal');
+    $("#c_nombre").val("");
+    $('#boton_perfil').text("Crear Perfil");
+    openModal('#perfilModal');
 }
 
-function guardar_cargo() {
-    if ($("#c_descripcion").val().trim().length === 0) {
-        $("#alertModalText").text("Es necesario la descripcion del Cargo");
-        $("#alertModalLabel").text("Alerta");
-        openModal('#alertModal');
+function guardarPerfil() {
+    if ($("#c_nombre").val().trim().length === 0) {
+        openAlert("Es necesario el Nombre del Perfil");
         return;
     }
     var id = $("#c_id").val();
-    var descripcion = $("#c_descripcion").val();
+    var nombre = $("#c_nombre").val();
     mostrarCargando();
-    $.post(url, {evento: "guardar_cargo", id: id, descripcion: descripcion}, function (resp) {
+    $.post(url, {evento: "guardarPerfil", id: id, nombre: nombre}, function (resp) {
         if (resp === "false") {
-            $("#alertModalLabel").text("Alerta");
-            $("#alertModalText").text("No se Guardo, Intentelo de nuevo.");
+            openAlert("No se Guardo, Intentelo de nuevo.");
         } else {
             var id_aux = id;
             var json = $.parseJSON(resp);
             if (id_aux > 0) {
-                tabla.cell(".cargo_" + id_aux + " > td:eq(0)").data((json.DESCRIPCION || ""));
+                tabla.cell(".perfil_" + id_aux + " > td:eq(0)").data((json.nombre || ""));
                 tabla.rows().invalidate();
             } else {
-                tabla.row.add($(cargoFilaHtml(json))).draw(false);
+                tabla.row.add($(perfilFilaHtml(json))).draw(false);
             }
-            $("#alertModalLabel").text("Información");
-            $("#alertModalText").text("Guardado Correctamente.");
-            cerrar_modal();
+            cerrarModal();
+            openAlert("Guardado Correctamente.", "Información");
         }
         ocultarCargando();
-        openModal('#alertModal');
     });
 }
 
-function pop_modificar_cargo(id, ele) {
+function popModificarPerfil(id, ele) {
     var _tr = $(ele).closest("tr");
     $("#c_id").val(id);
-    $("#c_descripcion").val(_tr.find("td:eq(0)").text());
-    $('#boton_cargo').text("Modificar Cargo");
-    openModal('#cargoModal');
+    $("#c_nombre").val(_tr.find("td:eq(0)").text());
+    $('#boton_perfil').text("Modificar Perfil");
+    openModal('#perfilModal');
 }
 
-function pop_eliminar_cargo(id, ele) {
+function popEliminarPerfil(id, ele) {
     var _tr = $(ele).closest("tr");
-    $("#eliminarModalText").html("¿Esta seguro de eliminar el Cargo <strong>" + _tr.find("td:eq(0)").text() + "</strong>?")
+    $("#eliminarModalText").html("¿Esta seguro de eliminar el Perfil <strong>" + _tr.find("td:eq(0)").text() + "</strong>?")
             .data("id", id);
     $("#elminarBotonModal").off("click");
-    $("#elminarBotonModal").click(eliminar_cargo);
+    $("#elminarBotonModal").click(eliminarPerfil);
     openModal('#eliminarModal');
 }
 
-function eliminar_cargo() {
+function eliminarPerfil() {
     mostrarCargando();
     var id = $("#eliminarModalText").data("id");
-    $.post(url, {evento: "eliminar_cargo", id: id}, function (resp) {
+    $.post(url, {evento: "eliminarPerfil", id: id}, function (resp) {
+        cerrarModal();
         if (resp === "false") {
-            $("#alertModalLabel").text("Alerta");
-            $("#alertModalText").text("Revise Dependencias.");
+            openAlert("Revise Dependencias.");
         } else {
-            tabla.row(".cargo_" + id).remove().draw(false);
+            tabla.row(".perfil_" + id).remove().draw(false);
             tabla.rows().invalidate();
-//            tabla.row(".producto_" + id).remove().draw(false);
-            $("#alertModalLabel").text("Información");
-            $("#alertModalText").text("Eliminado Correctamente.");
+            openAlert("Eliminado Correctamente.", "Información");
         }
         ocultarCargando();
-        cerrar_modal();
-        openModal('#alertModal');
     });
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function pop_permiso_cargo(id, ele) {
+function popPermisoPerfil(id, ele) {
     mostrarCargando();
-    $.post(url, {evento: "todos_sub_menu_asignados", id_cargo: id}, function (resp) {
-        $("#as_id_cargo").val(id);
+    $.post(url, {evento: "todosSubMenuAsignados", idPerfil: id}, function (resp) {
+        $("#as_id_perfil").val(id);
         $(".sm_as").prop("checked", false);
         var json = $.parseJSON(resp);
         $.each(json, function (i, obj) {
-            $("#sm_" + obj.ID_SUB_MENU).prop("checked", true);
+            $("#sm_" + obj.idSubMenu).prop("checked", true);
         });
         $("#asignarPermisoModalLabel").text($(ele).closest("tr").find("td:eq(0)").text());
         openModal('#asignarPermisoModal');
@@ -149,11 +140,11 @@ function pop_permiso_cargo(id, ele) {
     });
 }
 
-function asignar_desasignar_sub_menu(id_sub_menu, ele) {
+function asignarDesasignarSubMenu(idSubMenu, ele) {
     mostrarCargando();
-    var id_cargo = $("#as_id_cargo").val();
+    var idPerfil = $("#as_id_perfil").val();
     var asignar = $(ele).prop("checked");
-    $.post(url, {evento: "asignar_desasignar_sub_menu", id_sub_menu: id_sub_menu, id_cargo: id_cargo, asignar: asignar}, function (resp) {
+    $.post(url, {evento: "asignarDesasignarSubMenu", idSubMenu: idSubMenu, idPerfil: idPerfil, asignar: asignar}, function (resp) {
         if (resp === "false") {
             $(ele).prop("checked", !asignar);
         } else {

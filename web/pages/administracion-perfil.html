@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>DELIVERY</title>  
+        <title>Apuesta</title>  
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
         <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
@@ -37,21 +37,22 @@
         <script src="js/administracion-perfil.js"></script>
     </head>
     <body class="hold-transition skin-blue sidebar-mini" style="background: #ECF0F5;">
+        <!--Principal-->
         <div class="content">    
             <div class="row">
                 <div class="col-xs-12">
                     <div class="box">
                         <div class="box-header">
-                            <h3 class="box-title text-bold">Registrar Cargo</h3>
-                            <i class="fa fa-plus-circle" style="color: green; float: right; cursor:pointer; font-size: 26px;" title="Agregar" onclick="pop_registrar_cargo();"></i> 
+                            <h3 class="box-title text-bold">Registrar Perfil</h3>
+                            <i class="fa fa-plus-circle" style="color: green; float: right; cursor:pointer; font-size: 26px;" title="Agregar" onclick="popRegistrarPerfil();"></i> 
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
                             <!--<table id="example1" class="table table-bordered table-striped">-->
-                            <table id="tabla" class="table table-bordered table-hover tabla_general">
+                            <table id="tabla" class="table table-bordered table-hover tabla-general">
                                 <thead>
                                     <tr>
-                                        <th>Descripcion</th>
+                                        <th>Nombre</th>
                                         <th>Editar</th>
                                         <th>Permisos</th>
                                         <th>Eliminar</th>
@@ -62,7 +63,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>Descripcion</th>
+                                        <th>Nombre</th>
                                         <th>Editar</th>
                                         <th>Permisos</th>
                                         <th>Eliminar</th>
@@ -79,18 +80,13 @@
             <!-- /.row -->
         </div>
         <!-- /.content -->
-        <!--CARGANDO-->
-        <div class="overlay-wrapper cargando" id="div_cargando_background">
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
-        </div>
-        <!--REGISTRAR - MODIFICAR CARGO Modal-->
-        <div class="modal" tabindex="-1" role="dialog" id="cargoModal" style="display: none;">
+
+        <!--Registrar - Modificar Perfil Modal-->
+        <div class="modal" tabindex="-1" role="dialog" id="perfilModal" style="display: none;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-center text-bold" id="cargoModalLabel">Registrar Cargo</h5>
+                        <h5 class="modal-title text-center text-bold" id="perfilModalLabel">Registrar Perfil</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -99,13 +95,13 @@
                         <form id="formRegistrarMenu">
                             <input type="hidden" name="id" id="c_id" value=""/>
                             <div class="form-group">
-                                <label for="c_descripcion">Descripción</label>
-                                <input type="text" class="form-control" id="c_descripcion" />
+                                <label for="c_nombre">Nombre</label>
+                                <input type="text" class="form-control" id="c_nombre" />
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" id="boton_cargo" onclick="guardar_cargo()">Crear Menu</button>
+                        <button type="button" class="btn btn-success" id="boton_perfil" onclick="guardarPerfil()">Crear Menu</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
@@ -122,7 +118,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" id="as_id_cargo" value=""/>
+                        <input type="hidden" id="as_id_perfil" value=""/>
                         <div class="row">
                             <div class="col-xs-12">
                                 <div class="box">
@@ -162,10 +158,17 @@
                         <p id="eliminarModalText"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" id="elminarBotonModal">ELIMINAR</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">CANCELAR</button>
+                        <button type="button" class="btn btn-success" id="elminarBotonModal">Eliminar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- ********************************************************* Comun -->
+        <!--CARGANDO-->
+        <div class="overlay-wrapper cargando" id="divCargandoBackground">
+            <div class="overlay">
+                <i class="fa fa-refresh fa-spin"></i>
             </div>
         </div>
         <!--alert modal-->

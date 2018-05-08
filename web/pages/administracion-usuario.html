@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>DELIVERY</title>  
+        <title>Apuesta</title>  
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
         <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
@@ -37,23 +37,24 @@
         <script src="js/administracion-usuario.js"></script>
     </head>
     <body class="hold-transition skin-blue sidebar-mini" style="background: #ECF0F5;">
+        <!--Principal-->
         <div class="content">    
             <div class="row">
                 <div class="col-xs-12">
                     <div class="box">
                         <div class="box-header">
                             <h3 class="box-title text-bold">Registrar Usuario</h3>
-                            <i class="fa fa-plus-circle" style="color: green; float: right; cursor:pointer; font-size: 26px;" title="Agregar" onclick="pop_registrar_usuario();"></i> 
+                            <i class="fa fa-plus-circle" style="color: green; float: right; cursor:pointer; font-size: 26px;" title="Agregar" onclick="popRegistrarUsuario();"></i> 
                         </div>
                         <!-- /.box-header -->
                         <div class="box-body">
                             <!--<table id="example1" class="table table-bordered table-striped">-->
-                            <table id="tabla" class="table table-bordered table-hover tabla_general">
+                            <table id="tabla" class="table table-bordered table-hover tabla-general">
                                 <thead>
                                     <tr>
                                         <th>C.I.</th>
                                         <th>Nombre Completo</th>
-                                        <th>Cargo</th>
+                                        <th>Perfil</th>
                                         <th>Editar</th>
                                         <th>Cambiar Contraseña</th>
                                         <th>Activo</th>
@@ -66,7 +67,7 @@
                                     <tr>
                                         <th>C.I.</th>
                                         <th>Nombre Completo</th>
-                                        <th>Cargo</th>
+                                        <th>Perfil</th>
                                         <th>Editar</th>
                                         <th>Cambiar Contraseña</th>
                                         <th>Activo</th>
@@ -83,18 +84,13 @@
             <!-- /.row -->
         </div>
         <!-- /.content -->
-        <!--CARGANDO-->
-        <div class="overlay-wrapper cargando" id="div_cargando_background">
-            <div class="overlay">
-                <i class="fa fa-refresh fa-spin"></i>
-            </div>
-        </div>
-        <!--REGISTRAR - MODIFICAR CARGO Modal-->
+
+        <!-- Registrar - Modificar Usuario Modal-->
         <div class="modal" tabindex="-1" role="dialog" id="usuarioModal" style="display: none;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-center text-bold" id="usuarioModalLabel">Registrar Cargo</h5>
+                        <h5 class="modal-title text-center text-bold" id="usuarioModalLabel">Registrar Usuario</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
@@ -118,8 +114,8 @@
                                     <input type="password" class="form-control" id="u_contrasena_rep" />
                                 </div>
                                 <div class="form-group usuario_modificacion">
-                                    <label for="u_cargo">Cargo</label>
-                                    <select class="form-control" id="u_cargo" ></select>
+                                    <label for="u_perfil">Perfil</label>
+                                    <select class="form-control" id="u_perfil" ></select>
                                 </div>
                             </fieldset>
                             <fieldset>
@@ -151,7 +147,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" id="boton_usuario" onclick="guardar_usuario()">Crear Menu</button>
+                        <button type="button" class="btn btn-success" id="boton_usuario" onclick="guardarUsuario()">Crear Menu</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
@@ -178,6 +174,13 @@
                 </div>
             </div>
         </div>
+        <!--CARGANDO-->
+        <div class="overlay-wrapper cargando" id="divCargandoBackground">
+            <div class="overlay">
+                <i class="fa fa-refresh fa-spin"></i>
+            </div>
+        </div>
+        <!-- ********************************************************* Comun -->
         <!--alert modal-->
         <div class="modal fade" id="alertModal" tabindex="-3" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">

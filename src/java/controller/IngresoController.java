@@ -36,11 +36,11 @@ public class IngresoController extends HttpServlet {
             String html = "";
             String evento = request.getParameter("evento");
             switch (evento) {
-                case "obtener_menu":
-                    html = obtener_menu(request, con);
+                case "obtenerMenu":
+                    html = obtenerMenu(request, con);
                     break;
-                case "obtener_ingreso":
-                    html = obtener_ingreso(request, con);
+                case "obtenerIngreso":
+                    html = obtenerIngreso(request, con);
                     break;
             }
             con.commit();
@@ -93,22 +93,22 @@ public class IngresoController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private String obtener_menu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String obtenerMenu(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         Usuario usuario = con.getUsuario();
         Menu menu = new Menu(con);
         return menu.bucarMenuYSubMenuXPerfilVisible(usuario.getIdPerfil()).toString();
     }
 
-    private String obtener_ingreso(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String obtenerIngreso(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         Usuario usuario = con.getUsuario();
         Menu menu = new Menu(con);
         JSONObject json = new JSONObject();
-        json.put("Menu", menu.bucarMenuYSubMenuXPerfilVisible(usuario.getIdPerfil()));
+        json.put("menu", menu.bucarMenuYSubMenuXPerfilVisible(usuario.getIdPerfil()));
         Usuario u = con.getUsuario();
-        json.put("Usuario", u.getNombreCompleto());
+        json.put("usuario", u.getNombreCompleto());
         Perfil c = new Perfil(con).buscar(u.getIdPerfil());
         if (c != null) {
-            json.put("Perfil", c.getNombre());
+            json.put("perfil", c.getNombre());
         }
         return json.toString();
     }

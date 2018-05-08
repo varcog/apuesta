@@ -162,11 +162,11 @@ public class Permiso {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    public JSONArray todosXPerfil(int id_perfil) throws SQLException, JSONException {
+    public JSONArray todosXPerfil(int idPerfil) throws SQLException, JSONException {
         String consulta = "SELECT \"Permiso\".*\n"
                 + "	FROM public.\"Permiso\"\n"
-                + "     WHERE \"Permiso\".\"id_perfil\" = ?";
-        PreparedStatement ps = con.statametObject(consulta, id_perfil);
+                + "     WHERE \"Permiso\".\"idPerfil\" = ?";
+        PreparedStatement ps = con.statametObject(consulta, idPerfil);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
         JSONObject obj;
