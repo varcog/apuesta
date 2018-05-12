@@ -58,7 +58,7 @@ public class Perfil {
         String consulta = "INSERT INTO public.\"Perfil\"(\n"
                 + "	\"nombre\")\n"
                 + "	VALUES (?)";
-        int id = con.EjecutarInsert(consulta, "id", nombre);
+        int id = con.ejecutarInsert(consulta, "id", nombre);
         this.id = id;
         return id;
     }
@@ -67,13 +67,13 @@ public class Perfil {
         String consulta = "UPDATE public.\"Perfil\"\n"
                 + "	SET \"nombre\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, nombre, id);
+        con.ejecutarSentencia(consulta, nombre, id);
     }
 
     public void delete() throws SQLException {
         String consulta = "DELETE FROM public.\"Perfil\"\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, id);
+        con.ejecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {

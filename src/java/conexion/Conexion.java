@@ -60,13 +60,13 @@ public class Conexion {
         }
     }
 
-    public void EjecutarSentencia(String sentencia) throws SQLException {
+    public void ejecutarSentencia(String sentencia) throws SQLException {
         PreparedStatement ps = con.prepareStatement(sentencia);
         ps.execute();
         ps.close();
     }
 
-    public void EjecutarSentencia(String sentencia, Object... campos) throws SQLException {
+    public void ejecutarSentencia(String sentencia, Object... campos) throws SQLException {
         PreparedStatement ps = con.prepareStatement(sentencia);
         for (int i = 0; i < campos.length; i++) {
             ps.setObject(i + 1, campos[i]);
@@ -75,7 +75,7 @@ public class Conexion {
         ps.close();
     }
 
-    public void EjecutarSentencia(String sentencia, String... campos) throws SQLException {
+    public void ejecutarSentencia(String sentencia, String... campos) throws SQLException {
         PreparedStatement ps = con.prepareStatement(sentencia);
         for (int i = 0; i < campos.length; i++) {
             ps.setString(i + 1, campos[i]);
@@ -84,7 +84,7 @@ public class Conexion {
         ps.close();
     }
 
-    public int EjecutarInsert(String consulta, String columnID, Object... campos) throws SQLException {
+    public int ejecutarInsert(String consulta, String columnID, Object... campos) throws SQLException {
         consulta = consulta.replaceAll(";", "");
         consulta += "\nRETURNING \"" + columnID + "\";";
         PreparedStatement ps = con.prepareStatement(consulta);
@@ -100,7 +100,7 @@ public class Conexion {
         return id;
     }
 
-    public int EjecutarInsert(String consulta, String columnID, String... campos) throws SQLException {
+    public int ejecutarInsert(String consulta, String columnID, String... campos) throws SQLException {
         consulta = consulta.replaceAll(";", "");
         consulta += "\nRETURNING \"" + columnID + "\";";
         PreparedStatement ps = con.prepareStatement(consulta);
@@ -116,7 +116,7 @@ public class Conexion {
         return id;
     }
 
-    public void Close() {
+    public void close() {
         if (conectado) {
             try {
                 con.close();
@@ -127,7 +127,7 @@ public class Conexion {
         }
     }
 
-    public ResultSet EjecutarConsulta(String consulta) throws SQLException {
+    public ResultSet ejecutarConsulta(String consulta) throws SQLException {
         PreparedStatement ps;
         try {
             ps = con.prepareStatement(consulta);
@@ -140,7 +140,7 @@ public class Conexion {
         }
     }
 
-    public ResultSet EjecutarConsulta(String consulta, Object... campos) throws SQLException {
+    public ResultSet ejecutarConsulta(String consulta, Object... campos) throws SQLException {
         PreparedStatement ps;
         try {
             ps = statametObject(consulta);
@@ -192,7 +192,7 @@ public class Conexion {
         return conectado;
     }
 
-    public void Transacction() {
+    public void transacction() {
         try {
             if (con.getAutoCommit()) {
                 con.setAutoCommit(false);
@@ -202,7 +202,7 @@ public class Conexion {
         }
     }
 
-    public void TransacctionEnd() {
+    public void transacctionEnd() {
         try {
             if (!con.getAutoCommit()) {
                 con.setAutoCommit(true);

@@ -14,7 +14,7 @@ public class DataBaseOracle {
                 + "(SELECT DBA_TABLES.TABLE_NAME FROM SYS.DBA_TABLES WHERE (DBA_TABLES.OWNER = '" + tablespace + "')\n"
                 + "UNION \n"
                 + "select DBA_VIEWS.VIEW_NAME from SYS.DBA_VIEWS WHERE (DBA_VIEWS.OWNER = '" + tablespace + "')) TABLAS  ORDER BY 1";
-        ResultSet rs = con.EjecutarConsulta(consulta);
+        ResultSet rs = con.ejecutarConsulta(consulta);
         while (rs.next()) {
             lista.add(rs.getString("TABLE_NAME"));
         }
@@ -31,7 +31,7 @@ public class DataBaseOracle {
                     + "SELECT  DBA_VIEWS.VIEW_NAME , DBA_TAB_COLUMNS.COLUMN_NAME, DBA_TAB_COLUMNS.DATA_TYPE   FROM SYS.DBA_VIEWS, SYS.DBA_TAB_COLUMNS  WHERE  (DBA_TAB_COLUMNS.OWNER = DBA_VIEWS.OWNER)  AND (DBA_TAB_COLUMNS.TABLE_NAME = DBA_VIEWS.VIEW_NAME)   AND (DBA_VIEWS.OWNER = '" + tablespace + "')\n"
                     + ") TABLAS\n"
                     + "WHERE (TABLAS.TABLE_NAME = '" + nombreTabla + "')";
-            ResultSet rs = con.EjecutarConsulta(consulta);
+            ResultSet rs = con.ejecutarConsulta(consulta);
             return rs;
         } catch (Exception e) {
             e.printStackTrace();

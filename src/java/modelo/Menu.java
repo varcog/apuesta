@@ -59,7 +59,7 @@ public class Menu {
         String consulta = "INSERT INTO public.\"Menu\"(\n"
                 + "	\"nombre\")\n"
                 + "	VALUES (?)";
-        int id = con.EjecutarInsert(consulta, "id", nombre);
+        int id = con.ejecutarInsert(consulta, "id", nombre);
         this.id = id;
         return id;
     }
@@ -68,13 +68,13 @@ public class Menu {
         String consulta = "UPDATE public.\"Menu\"\n"
                 + "	SET \"nombre\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, nombre, id);
+        con.ejecutarSentencia(consulta, nombre, id);
     }
 
     public void delete() throws SQLException {
         String consulta = "DELETE FROM public.\"Menu\"\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, id);
+        con.ejecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {
@@ -109,14 +109,15 @@ public class Menu {
         return null;
     }
 
-    public JSONObject toJSONObject() throws SQLException, JSONException {
+    public JSONObject toJSONObject() throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("id", id);
         obj.put("nombre", nombre);
         return obj;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    /* ********************************************************************** */
+    // Negocio
     public JSONObject bucarMenuYSubMenuTodos() throws SQLException, JSONException {
         String consulta = "SELECT * FROM public.\"Menu\"\n"
                 + "ORDER BY \"nombre\" ASC ";

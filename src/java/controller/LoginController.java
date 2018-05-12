@@ -23,7 +23,7 @@ public class LoginController extends HttpServlet {
             Usuario u = (Usuario) request.getSession().getAttribute("usr");
             Conexion con = u.getCon();
             if (con != null && con.isConectado()) {
-                con.Close();
+                con.close();
             }
         }
         request.getSession().setAttribute("usr", null);
@@ -48,7 +48,7 @@ public class LoginController extends HttpServlet {
                 response.sendRedirect("index.html");
             }
         } catch (Exception e) {
-            con.Close();
+            con.close();
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Usuario=" + usr + " INGRESÓ MAL INGRESAR SU CONTRASEÑA EL DÍA " + new Date().toString(), "Usuario=" + usr + " INGRESÓ MAL INGRESAR SU CONTRASEÑA EL DÍA " + new Date().toString());
             response.sendRedirect("index.html");
         }

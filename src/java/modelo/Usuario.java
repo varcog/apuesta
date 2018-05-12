@@ -201,14 +201,14 @@ public class Usuario {
         String consulta = "INSERT INTO public.\"Usuario\"(\n"
                 + "	\"nombres\", \"apellidos\", \"foto\", \"fechaNacimiento\", \"telefono\", \"sexo\", \"direccion\", \"fechaCreacion\", \"idUsuarioAprueba\", \"idUsuarioRecomienda\", \"estado\", \"fechaAnulacion\", \"usuario\", \"password\", \"idPerfil\", \"ci\", \"idUsuarioCreador\")\n"
                 + "	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        this.id = con.EjecutarInsert(consulta, "id", nombres, apellidos, foto, fechaNacimiento == null ? null : new java.sql.Date(fechaNacimiento.getTime()), telefono, sexo, direccion, fechaCreacion == null ? null : new java.sql.Date(fechaCreacion.getTime()), idUsuarioAprueba > 0 ? idUsuarioAprueba : null, idUsuarioRecomienda > 0 ? idUsuarioRecomienda : null, ESTADO_CREADO, fechaAnulacion == null ? null : new java.sql.Date(fechaAnulacion.getTime()), usuario, password, idPerfil > 0 ? idPerfil : null, ci, idUsuarioCreador > 0 ? idUsuarioCreador : null);
+        this.id = con.ejecutarInsert(consulta, "id", nombres, apellidos, foto, fechaNacimiento == null ? null : new java.sql.Date(fechaNacimiento.getTime()), telefono, sexo, direccion, fechaCreacion == null ? null : new java.sql.Date(fechaCreacion.getTime()), idUsuarioAprueba > 0 ? idUsuarioAprueba : null, idUsuarioRecomienda > 0 ? idUsuarioRecomienda : null, ESTADO_CREADO, fechaAnulacion == null ? null : new java.sql.Date(fechaAnulacion.getTime()), usuario, password, idPerfil > 0 ? idPerfil : null, ci, idUsuarioCreador > 0 ? idUsuarioCreador : null);
         return this.id;
     }
 
     public void delete() throws SQLException {
         String consulta = "DELETE FROM public.\"Usuario\"\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, id);
+        con.ejecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {
@@ -389,28 +389,28 @@ public class Usuario {
         String consulta = "UPDATE public.\"Usuario\"\n"
                 + "	SET \"nombres\"=?,\"apellidos\"=?,\"fechaNacimiento\"=?,\"sexo\"=?,\"idPerfil\"=?,\"telefono\"=?,\"direccion\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, nombres, apellidos, fn, sexo, idPerfil, telefono, direccion, id);
+        con.ejecutarSentencia(consulta, nombres, apellidos, fn, sexo, idPerfil, telefono, direccion, id);
     }
 
     public void updateContrasena() throws SQLException {
         String consulta = "UPDATE public.\"Usuario\"\n"
                 + "	SET \"password\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, password, id);
+        con.ejecutarSentencia(consulta, password, id);
     }
 
     public void updateEstado() throws SQLException {
         String consulta = "UPDATE public.\"Usuario\"\n"
                 + "	SET \"estado\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, estado, id);
+        con.ejecutarSentencia(consulta, estado, id);
     }
 
     public void updateFoto() throws SQLException {
         String consulta = "UPDATE public.\"Usuario\"\n"
                 + "	SET \"foto\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, estado, id);
+        con.ejecutarSentencia(consulta, estado, id);
     }
 
     public String getNombreCompleto() {

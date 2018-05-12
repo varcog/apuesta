@@ -101,7 +101,7 @@ public class SubMenu {
         String consulta = "INSERT INTO public.\"SubMenu\"(\n"
                 + "	\"nombre\", \"imagen\", \"url\", \"idMenu\", \"visible\")\n"
                 + "	VALUES (?,?,?,?,?)";
-        int id = con.EjecutarInsert(consulta, "id", nombre, imagen, url, idMenu, visible);
+        int id = con.ejecutarInsert(consulta, "id", nombre, imagen, url, idMenu, visible);
         this.id = id;
         return id;
     }
@@ -110,13 +110,13 @@ public class SubMenu {
         String consulta = "UPDATE public.\"SubMenu\"\n"
                 + "	SET \"nombre\"=?, \"imagen\"=?, \"url\"=?, \"idMenu\"=?, \"visible\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, nombre, imagen, url, idMenu, visible, id);
+        con.ejecutarSentencia(consulta, nombre, imagen, url, idMenu, visible, id);
     }
 
     public void delete() throws SQLException {
         String consulta = "DELETE FROM public.\"SubMenu\"\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, id);
+        con.ejecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {
@@ -255,6 +255,6 @@ public class SubMenu {
         String consulta = "UPDATE public.\"SubMenu\"\n"
                 + "	SET \"visible\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, visible, id);
+        con.ejecutarSentencia(consulta, visible, id);
     }
 }

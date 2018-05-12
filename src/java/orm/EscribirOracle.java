@@ -25,7 +25,7 @@ public class EscribirOracle {
                 CamposTabla c = new CamposTabla(campos.getString("COLUMN_NAME"), campos.getString("DATA_TYPE"));
                 lista.add(c);
             }
-            con.Close();
+            con.close();
 
             pw.println(Cimport());
             pw.println("\n");
@@ -50,7 +50,7 @@ public class EscribirOracle {
             pw.println(CGetYSet(nombreTabla, lista));
             pw.println("\n");
             pw.println("}");
-            con.Close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

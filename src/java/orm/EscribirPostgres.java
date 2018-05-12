@@ -18,14 +18,14 @@ public class EscribirPostgres {
             fichero = new FileWriter("c:/Modelo/" + nombreTabla + ".java");
             pw = new PrintWriter(fichero);
 
-            ResultSet campos = DataBaseOracle.Campostabla(nombreTabla, con, tablespace);
+            ResultSet campos = DataBasePostgres.Campostabla(nombreTabla, con, tablespace);
             List<CamposTabla> lista = new ArrayList<>();
 
             while (campos.next()) {
                 CamposTabla c = new CamposTabla(campos.getString("COLUMN_NAME"), campos.getString("DATA_TYPE"));
                 lista.add(c);
             }
-            con.Close();
+            con.close();
 
             pw.println(Cimport());
             pw.println("\n");
@@ -35,8 +35,13 @@ public class EscribirPostgres {
             pw.println("\n");
             pw.println(CConstructorVacio(nombreTabla));
             pw.println("\n");
+            pw.println(CConstructorLlenoConexion(nombreTabla, lista));
+            pw.println("\n");
             pw.println(CConstructorLleno(nombreTabla, lista));
             pw.println("\n");
+            pw.println(CGetYSet(nombreTabla, lista));
+            pw.println("\n");
+            pw.println("    ////////////////////////////////////////////////////////////////////////////\n");
             pw.println(CInsertar(nombreTabla, lista, tablespace));
             pw.println("\n");
             pw.println(CUpdate(nombreTabla, lista, tablespace));
@@ -47,10 +52,15 @@ public class EscribirPostgres {
             pw.println("\n");
             pw.println(CBuscar(nombreTabla, tablespace, lista));
             pw.println("\n");
-            pw.println(CGetYSet(nombreTabla, lista));
+            pw.println(CBuscarObject(nombreTabla, tablespace, lista));
+            pw.println("\n");
+            pw.println(CToJSON(nombreTabla, tablespace, lista));
+            pw.println("\n");
+            pw.println("    /* ********************************************************************** */\n");
+            pw.println("    // Negocio");
             pw.println("\n");
             pw.println("}");
-            con.Close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -67,74 +77,59 @@ public class EscribirPostgres {
     }
 
     private static String CInsertar(String nombre_clase, List<CamposTabla> lista, String tablespace) throws SQLException {
-        String ccampos = "public int Insertar() throws SQLException {\n";
-        ccampos += "String consulta = \"insert into " + tablespace + "." + nombre_clase + "(";
-
+        String nombres = "";
+        String values = "";
+        String insert = "";
         for (int i = 0; i < lista.size(); i++) {
+            if (!lista.get(i).getNombre().equals("id")) {
+                nombres += "\\\"" + lista.get(i).getNombre() + "\\\"";
+                values += "?";
 
-            ccampos += lista.get(i).getNombre();
-            if (i != lista.size() - 1) {
-                ccampos += ", ";
+                if (lista.get(i).getTipo().equals("date")) {
+                    insert += lista.get(i).getNombre() + " == null ? null : java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                } else {
+                    insert += lista.get(i).getNombre();
+                }
+                if (i != lista.size() - 1) {
+                    nombres += ", ";
+                    values += ", ";
+                    insert += ", ";
+                }
             }
         }
-
-        ccampos += ") VALUES (";
-
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getTipo().equals("NUMBER")) {
-                ccampos += "\"+" + lista.get(i).getNombre() + "+\"";
-            }
-            if (lista.get(i).getTipo().equals("VARCHAR2")) {
-                ccampos += "'\"+" + lista.get(i).getNombre() + "+\"'";
-            }
-            if (lista.get(i).getTipo().equals("FLOAT")) {
-                ccampos += "\"+" + lista.get(i).getNombre() + "+\"";
-            }
-            if (lista.get(i).getTipo().equals("DATE")) {
-                ccampos += "\"+get" + lista.get(i).getNombre() + "_INSERT()+\"";
-            }
-            if (i != lista.size() - 1) {
-                ccampos += ",";
-            }
-        }
-
-        ccampos += ")\";\n";
-
-        ccampos += "con.EjecutarSentencia(consulta);\n";
-        ccampos += "consulta = \"select " + tablespace + "." + nombre_clase + "_SEQ.currval as ID from dual\";\n";
-        ccampos += "ResultSet rs = con.EjecutarConsulta(consulta);";
-        ccampos += "rs.next();\n";
-        ccampos += "return rs.getInt(\"ID\");\n";
+        String ccampos = "public int insert() throws SQLException {\n";
+        ccampos += "String consulta = \"INSERT INTO " + tablespace + ".\\\"" + nombre_clase + "\\\"(\n";
+        ccampos += "	" + nombres + ")\n";
+        ccampos += "	VALUES (" + values + ")\";";
+        ccampos += "this.id  = con.ejecutarInsert(consulta, id, " + insert + ");\n";
+        ccampos += "return this.id\n";
         ccampos += "}";
         return ccampos;
     }
 
     private static String CUpdate(String nombre_clase, List<CamposTabla> lista, String tablespace) throws SQLException {
-        String ccampos = "public boolean Update() throws SQLException {\n";
-        ccampos += "String consulta = \"update " + tablespace + "." + nombre_clase + " set ";
-
+        String nombres = "";
+        String insert = "";
         for (int i = 0; i < lista.size(); i++) {
-            ccampos += lista.get(i).getNombre() + "=";
-            if (lista.get(i).getTipo().equals("NUMBER")) {
-                ccampos += "\"+" + lista.get(i).getNombre() + "+\"";
-            }
-            if (lista.get(i).getTipo().equals("VARCHAR2")) {
-                ccampos += "'\"+" + lista.get(i).getNombre() + "+\"'";
-            }
-            if (lista.get(i).getTipo().equals("FLOAT")) {
-                ccampos += "\"+" + lista.get(i).getNombre() + "+\"";
-            }
-            if (lista.get(i).getTipo().equals("DATE")) {
-                ccampos += "\"+get" + lista.get(i).getNombre() + "_INSERT()+\"";
-            }
-            if (i != lista.size() - 1) {
-                ccampos += ",";
+            if (!lista.get(i).getNombre().equals("id")) {
+                nombres += "\\\"" + lista.get(i).getNombre() + "\\\" = ?";
+                if (lista.get(i).getTipo().equals("date")) {
+                    insert += lista.get(i).getNombre() + " == null ? null : java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                } else {
+                    insert += lista.get(i).getNombre();
+                }
+                if (i != lista.size() - 1) {
+                    nombres += ", ";
+                    insert += ", ";
+                }
             }
         }
-        ccampos += " where ID = \"+getID();\n";
-
-        ccampos += "con.EjecutarSentencia(consulta);\n";
-        ccampos += "return true;\n";
+        String ccampos = "public void update() throws SQLException {\n";
+        ccampos += "String consulta = \"UPDATE " + tablespace + ".\\\"" + nombre_clase + "\\\"\n";
+        ccampos += "	SET " + nombres + "\n";
+        ccampos += "	WHERE \\\"id\\\"=?;\"";
+        ccampos += "con.ejecutarSentencia(consulta, " + insert + ", id);\n";
+        ccampos += "return this.id\n";
         ccampos += "}";
         return ccampos;
     }
@@ -145,52 +140,69 @@ public class EscribirPostgres {
         for (int i = 0; i < lista.size(); i++) {
             String tipo = lista.get(i).getTipo();
             String nombre = lista.get(i).getNombre();
+            String nombreU = lista.get(i).getNombreUpperCase();
 
-            if (tipo.equals("NUMBER")) {
-                ccampos += "public int get" + nombre + "(){\nreturn " + nombre + ";\n}\n";
-                ccampos += "public void set" + nombre + "(int " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
+            if (tipo.equals("integer")) {
+                ccampos += "public int get" + nombreU + "(){\nreturn " + nombre + ";\n}\n";
+                ccampos += "public void set" + nombreU + "(int " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
             }
-            if (tipo.equals("VARCHAR2")) {
-                ccampos += "public String get" + nombre + "(){\nreturn " + nombre + "==null?\"\":" + nombre + ";\n}\n";
-                ccampos += "public void set" + nombre + "(String " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
+            if (tipo.equals("boolean")) {
+                ccampos += "public boolean is" + nombreU + "(){\nreturn " + nombre + ";\n}\n";
+                ccampos += "public void set" + nombreU + "(boolean " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
             }
-            if (tipo.equals("FLOAT")) {
-                ccampos += "public double get" + nombre + "(){\nreturn " + nombre + ";\n}\n";
-                ccampos += "public void set" + nombre + "(Double " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
+            if (tipo.contains("character")) {
+                ccampos += "public String get" + nombreU + "(){\nreturn " + nombre + "==null?\"\":" + nombre + ";\n}\n";
+                ccampos += "public void set" + nombreU + "(String " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
             }
-            if (tipo.equals("DATE")) {
+            if (tipo.contains("numeric")) {
+                ccampos += "public double get" + nombreU + "(){\nreturn " + nombre + ";\n}\n";
+                ccampos += "public void set" + nombreU + "(Double " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
+            }
+            if (tipo.equals("date")) {
 
-                ccampos += "public String get" + nombre + "_FORMATO() {\nif(" + nombre + "!=null)\n{\nSimpleDateFormat sdf = new SimpleDateFormat(\"dd/MM/yyyy\");\nreturn sdf.format(" + nombre + ");\n}\nelse\nreturn \"\";\n}\n";
-                ccampos += "public String get" + nombre + "_INSERT() {\nif(" + nombre + "!=null)\n{\nSimpleDateFormat sdf = new SimpleDateFormat(\"dd/MM/yyyy\");\nreturn \"to_date('\"+sdf.format(" + nombre + ")+\"','dd/MM/yyyy')\";\n}\nelse\nreturn \"null\";\n}";
-                ccampos += "public Date get" + nombre + "() {\nreturn " + nombre + ";\n}";
-
-                ccampos += "public void set" + nombre + "(Date " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
+//                ccampos += "public String get" + nombreU + "Formato() {\nif(" + nombre + "!=null)\n{\nSimpleDateFormat sdf = new SimpleDateFormat(\"dd/MM/yyyy\");\nreturn sdf.format(" + nombre + ");\n}\nelse\nreturn \"\";\n}\n";
+                ccampos += "public Date get" + nombreU + "() {\nreturn " + nombre + ";\n}";
+                ccampos += "public void set" + nombreU + "(Date " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
             }
         }
-
         ccampos += "public Conexion getCon(){\nreturn this.con;\n}\n";
         ccampos += "public void setCon(Conexion con){\n this.con=con;\n}\n";
         return ccampos;
     }
 
     private static String CEliminar(String nombre_clase, List<CamposTabla> lista, String tablespace) {
-        String ccampos = "public boolean EliminarXid()  throws SQLException {\n";
-        ccampos += "String consulta = \"delete from " + tablespace + "." + nombre_clase + " where ID= \"+getID();\n";
-        ccampos += "con.EjecutarSentencia(consulta);\n";
-        ccampos += "return true;\n";
+        String ccampos = "public void delete()  throws SQLException {\n";
+        ccampos += "String consulta = \"delete from " + tablespace + ".\\\"" + nombre_clase + "\\\" where \\\"id\\\"= ?;\"\n";
+        ccampos += "con.ejecutarSentencia(consulta);\n";
         ccampos += "}";
-        ccampos += "\n\n";
-        ccampos += "public boolean EliminarXid(int id)  throws SQLException {\n";
-        ccampos += "String consulta = \"delete from " + tablespace + "." + nombre_clase + " where ID= \"+id;\n";
-        ccampos += "con.EjecutarSentencia(consulta);\n";
-        ccampos += "return true;\n";
-        ccampos += "}";
+//        ccampos += "\n\n";
+//        ccampos += "public boolean EliminarXid(int id)  throws SQLException {\n";
+//        ccampos += "String consulta = \"delete from " + tablespace + "." + nombre_clase + " where ID= \"+id;\n";
+//        ccampos += "con.EjecutarSentencia(consulta);\n";
+//        ccampos += "return true;\n";
+//        ccampos += "}";
         return ccampos;
     }
 
     private static String CTodos(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
-        String ccampos = "public JSONArray Todos()  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"select * from " + tablespace + "." + nombre_clase + "\";\n";
+        String ccampos = "public JSONArray todos()  throws SQLException, JSONException{\n";
+        ccampos += "String consulta = \"SELECT\n";
+        for (int i = 0; i < lista.size(); i++) {
+            String tipo = lista.get(i).getTipo();
+            String nombre = lista.get(i).getNombre();
+            if (tipo.equals("date")) {
+
+                ccampos += "    to_char(\\\"" + nombre_clase + "\\\"." + nombre + ", 'DD/MM/YYYY') AS " + nombre;
+            } else {
+                ccampos += "    \\\"" + nombre_clase + "\\\"." + nombre;
+            }
+            if (i != lista.size() - 1) {
+                ccampos += ",\n";
+            } else {
+                ccampos += "\n";
+            }
+        }
+        ccampos += "    FROM " + tablespace + "." + nombre_clase + "\";\n";
         ccampos += "PreparedStatement ps=con.statamet(consulta);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
         ccampos += "JSONArray json = new JSONArray();\n";
@@ -199,17 +211,20 @@ public class EscribirPostgres {
         ccampos += "obj= new JSONObject();\n";
         for (int i = 0; i < lista.size(); i++) {
 
-            if (lista.get(i).getTipo().equals("NUMBER")) {
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getBoolean(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getInt(\"" + lista.get(i).getNombre() + "\"));\n";
             }
-            if (lista.get(i).getTipo().equals("VARCHAR2")) {
+            if (lista.get(i).getTipo().contains("character")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
-            if (lista.get(i).getTipo().equals("FLOAT")) {
+            if (lista.get(i).getTipo().contains("numeric")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\"";
             }
-            if (lista.get(i).getTipo().equals("DATE")) {
-                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDate(\"" + lista.get(i).getNombre() + "\"));\n";
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
         }
         ccampos += "json.put(obj);\n";
@@ -223,26 +238,45 @@ public class EscribirPostgres {
     }
 
     private static String CBuscar(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
-
         String ccampos = "public JSONObject Buscar(int id)  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"select * from " + tablespace + "." + nombre_clase + " where ID=\"+id;\n";
-        ccampos += "PreparedStatement ps=con.statamet(consulta);\n";
+        ccampos += "String consulta = \"SELECT\n";
+        for (int i = 0; i < lista.size(); i++) {
+            String tipo = lista.get(i).getTipo();
+            String nombre = lista.get(i).getNombre();
+            if (tipo.equals("date")) {
+
+                ccampos += "    to_char(\\\"" + nombre_clase + "\\\"." + nombre + ", 'DD/MM/YYYY') AS " + nombre;
+            } else {
+                ccampos += "    \\\"" + nombre_clase + "\\\"." + nombre;
+            }
+            if (i != lista.size() - 1) {
+                ccampos += ",\n";
+            } else {
+                ccampos += "\n";
+            }
+        }
+        ccampos += "    FROM " + tablespace + "." + nombre_clase + "\n";
+        ccampos += "    WHERE \\\"id\\\" = ?;\"\n";
+        ccampos += "PreparedStatement ps = con.statametObject(consulta, id);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
         ccampos += "JSONObject obj = new JSONObject();\n";
         ccampos += "if(rs.next()){\n";
         for (int i = 0; i < lista.size(); i++) {
 
-            if (lista.get(i).getTipo().equals("NUMBER")) {
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getBoolean(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getInt(\"" + lista.get(i).getNombre() + "\"));\n";
             }
-            if (lista.get(i).getTipo().equals("VARCHAR2")) {
+            if (lista.get(i).getTipo().contains("character")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
-            if (lista.get(i).getTipo().equals("FLOAT")) {
+            if (lista.get(i).getTipo().contains("numeric")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\"";
             }
-            if (lista.get(i).getTipo().equals("DATE")) {
-                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDate(\"" + lista.get(i).getNombre() + "\"));\n";
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
         }
         ccampos += "}\n";
@@ -253,13 +287,60 @@ public class EscribirPostgres {
         return ccampos;
     }
 
+    private static String CBuscarObject(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
+        String ccampos = "public " + nombre_clase + " Buscar(int id)  throws SQLException, JSONException{\n";
+        ccampos += "String consulta = \"SELECT * \n";
+        ccampos += "    FROM " + tablespace + "." + nombre_clase + "\n";
+        ccampos += "    WHERE \\\"id\\\" = ?;\"\n";
+        ccampos += "PreparedStatement ps = con.statametObject(consulta, id);\n";
+        ccampos += "ResultSet rs=ps.executeQuery();\n";
+        ccampos += nombre_clase + " obj = null;\n";
+        ccampos += "if(rs.next()){\n";
+        for (int i = 0; i < lista.size(); i++) {
+            ccampos += "obj = new " + nombre_clase + "(con);\n";
+            if (lista.get(i).getTipo().equals("integer")) {
+                ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getInt(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getBoolean(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().contains("character")) {
+                ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().contains("numeric")) {
+                ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getDate(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+        }
+        ccampos += "}\n";
+        ccampos += "rs.close();\n";
+        ccampos += "ps.close();\n";
+        ccampos += "return obj;\n";
+        ccampos += "}";
+        return ccampos;
+    }
+
+    private static String CToJSON(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
+        String ccampos = "public JSONObject toJSONObject()  throws JSONException{\n";
+        ccampos += "JSONObject obj = new JSONObject();\n";
+        for (int i = 0; i < lista.size(); i++) {
+            ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + "));\n";
+        }
+        ccampos += "return obj;\n";
+        ccampos += "}";
+        return ccampos;
+    }
+
     private static String Cimport() {
-        return "package  modelo;\n\nimport Conexion.Conexion;\n"
+        return "package  modelo;\n\n"
+                + "import conexion.Conexion;\n"
                 + "import java.sql.PreparedStatement;\n"
+                + "import java.sql.ResultSet;\n"
                 + "import java.sql.SQLException;\n"
                 + "import java.text.SimpleDateFormat;\n"
                 + "import java.util.Date;\n"
-                + "import java.sql.ResultSet;\n"
                 + "import org.json.JSONArray;\n"
                 + "import org.json.JSONException;\n"
                 + "import org.json.JSONObject;\n";
@@ -278,16 +359,16 @@ public class EscribirPostgres {
         String ccampos = "public " + nombre_clase + "( ";
 
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getTipo().equals("NUMBER")) {
+            if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "int ";
             }
-            if (lista.get(i).getTipo().equals("VARCHAR2")) {
+            if (lista.get(i).getTipo().contains("character")) {
                 ccampos += "String ";
             }
-            if (lista.get(i).getTipo().equals("FLOAT")) {
+            if (lista.get(i).getTipo().contains("numeric")) {
                 ccampos += "Double ";
             }
-            if (lista.get(i).getTipo().equals("DATE")) {
+            if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "Date ";
             }
             ccampos += lista.get(i).getNombre();
@@ -315,26 +396,58 @@ public class EscribirPostgres {
         return ccampos;
     }
 
-    private static String cinisializar(String nombre_clase, List<CamposTabla> lista) throws SQLException {
+    private static String CConstructorLlenoConexion(String nombre_clase, List<CamposTabla> lista) throws SQLException {
 
+        String ccampos = "public " + nombre_clase + "( ";
+
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getTipo().equals("integer")) {
+                ccampos += "int ";
+            }
+            if (lista.get(i).getTipo().contains("character")) {
+                ccampos += "String ";
+            }
+            if (lista.get(i).getTipo().contains("numeric")) {
+                ccampos += "Double ";
+            }
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "Date ";
+            }
+            ccampos += lista.get(i).getNombre();
+
+            if (i != lista.size() - 1) {
+                ccampos += ", ";
+            }
+
+        }
+        ccampos += ")\n{\n";
+        for (int i = 0; i < lista.size(); i++) {
+            ccampos += "this." + lista.get(i).getNombre() + " = " + lista.get(i).getNombre() + ";\n";
+        }
+        ccampos += "this.con=con;\n";
+        ccampos += "}\n";
+        return ccampos;
+    }
+
+    private static String cinisializar(String nombre_clase, List<CamposTabla> lista) throws SQLException {
         String ccampos = "";
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getTipo().equals("NUMBER")) {
-                ccampos += "private int ";
+            if (lista.get(i).getTipo().equals("integer")) {
+                ccampos += "\tprivate int ";
             }
-            if (lista.get(i).getTipo().equals("VARCHAR2")) {
-                ccampos += "private String ";
+            if (lista.get(i).getTipo().contains("character")) {
+                ccampos += "\tprivate String ";
             }
-            if (lista.get(i).getTipo().equals("FLOAT")) {
-                ccampos += "private Double ";
+            if (lista.get(i).getTipo().contains("numeric")) {
+                ccampos += "\tprivate Double ";
             }
-            if (lista.get(i).getTipo().equals("DATE")) {
-                ccampos += "private Date ";
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "\tprivate Date ";
             }
 
             ccampos += lista.get(i).getNombre() + ";\n";
         }
-        ccampos += "private Conexion con = null;\n";
+        ccampos += "\tprivate Conexion con = null;\n";
         return ccampos;
     }
 

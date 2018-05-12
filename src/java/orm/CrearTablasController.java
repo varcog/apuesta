@@ -28,8 +28,8 @@ public class CrearTablasController extends HttpServlet {
                 case "cargar":
                     html = cargar(request, con);
                     break;
-                case "crear_tablas_seleccionadas":
-                    html = crear_tablas_seleccionadas(request, con);
+                case "crearTablasSeleccionadas":
+                    html = crearTablasSeleccionadas(request, con);
                     break;
             }
             con.commit();
@@ -42,7 +42,7 @@ public class CrearTablasController extends HttpServlet {
     }
 
     private String cargar(HttpServletRequest request, Conexion con) throws SQLException {
-        List<String> tablas = DataBaseOracle.tablas(con, "BROKER");
+        List<String> tablas = DataBasePostgres.tablas(con, "public");
         JSONArray json = new JSONArray();
         for (String tabla : tablas) {
             json.put(tabla);
@@ -50,10 +50,10 @@ public class CrearTablasController extends HttpServlet {
         return json.toString();
     }
 
-    private String crear_tablas_seleccionadas(HttpServletRequest request, Conexion con) {
+    private String crearTablasSeleccionadas(HttpServletRequest request, Conexion con) {
         String nombre[] = request.getParameterValues("nombre[]");
         for (String nom : nombre) {
-            EscribirOracle.escribirClases(nom, "BROKER", con);
+            EscribirPostgres.escribirClases(nom, "public", con);
         }
         return true + "";
     }

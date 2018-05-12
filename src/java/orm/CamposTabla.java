@@ -17,6 +17,10 @@ public class CamposTabla {
         return nombre;
     }
 
+    public String getNombreUpperCase() {
+        return (nombre.charAt(0) + "").toUpperCase() + nombre.substring(1);
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }

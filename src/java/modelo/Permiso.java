@@ -92,7 +92,7 @@ public class Permiso {
         String consulta = "INSERT INTO public.\"Permiso\"(\n"
                 + "	\"idPerfil\", \"idSubMenu\", \"alta\", \"baja\", \"modificacion\")\n"
                 + "	VALUES (?,?,?,?,?)";
-        int id = con.EjecutarInsert(consulta, "id", idPerfil, idSubMenu, alta, baja, modificacion);
+        int id = con.ejecutarInsert(consulta, "id", idPerfil, idSubMenu, alta, baja, modificacion);
         this.id = id;
         return id;
     }
@@ -101,13 +101,13 @@ public class Permiso {
         String consulta = "UPDATE public.\"Permiso\"\n"
                 + "	SET \"idPerfil\"=?, \"idSubMenu\"=?, \"alta\"=?, \"baja\"=?, \"modificacion\"=?\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, idPerfil, idSubMenu, alta, baja, modificacion, id);
+        con.ejecutarSentencia(consulta, idPerfil, idSubMenu, alta, baja, modificacion, id);
     }
 
     public void delete() throws SQLException {
         String consulta = "DELETE FROM public.\"Permiso\"\n"
                 + "	WHERE \"id\"=?;";
-        con.EjecutarSentencia(consulta, id);
+        con.ejecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {
@@ -189,6 +189,6 @@ public class Permiso {
         String consulta = "DELETE FROM public.\"Permiso\"\n"
                 + "	WHERE \"Permiso\".\"idPerfil\"=?\n"
                 + "           AND \"Permiso\".\"idSubMenu\"=?;";
-        con.EjecutarSentencia(consulta, idPerfil, idSubMenu);
+        con.ejecutarSentencia(consulta, idPerfil, idSubMenu);
     }
 }
