@@ -525,4 +525,54 @@ public class Usuario {
         ps.close();
         return id;
     }
+    
+    public JSONArray todosRelacionadores() throws SQLException, JSONException {
+        String consulta = "SELECT \"Usuario\".\"id\",\n "
+                + "               \"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre\n"
+                + "     FROM public.\"Usuario\"\n"
+                + "          LEFT JOIN public.\"Perfil\" ON \"Usuario\".\"idPerfil\" = \"Perfil\".\"id\"\n"
+                + "     WHERE \"Perfil\".\"relacionador\" = true\n"
+                + "       AND \"Usuario\".\"estado\" = " + ESTADO_APROBADO + "\n"
+                + "ORDER BY \"Usuario\".\"nombres\" ASC, \"Usuario\".\"apellidos\" ASC ";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+        java.sql.Date aux;
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("nombre", rs.getString("nombre"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+    
+    public JSONArray todosCasa() throws SQLException, JSONException {
+        String consulta = "SELECT \"Usuario\".\"id\",\n "
+                + "               \"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre\n"
+                + "     FROM public.\"Usuario\"\n"
+                + "          LEFT JOIN public.\"Perfil\" ON \"Usuario\".\"idPerfil\" = \"Perfil\".\"id\"\n"
+                + "     WHERE \"Perfil\".\"casa\" = true\n"
+                + "       AND \"Usuario\".\"estado\" = " + ESTADO_APROBADO + "\n"
+                + "ORDER BY \"Usuario\".\"nombres\" ASC, \"Usuario\".\"apellidos\" ASC ";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
+        java.sql.Date aux;
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("nombre", rs.getString("nombre"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
 }

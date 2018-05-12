@@ -31,7 +31,7 @@ public class EscribirPostgres {
                 CamposTabla c = new CamposTabla(campos.getString("nombre_columna"), campos.getString("tipo"));
                 lista.add(c);
             }
-            con.close();
+//            con.close();
 
             pw.println(Cimport());
             pw.println("\n");
@@ -62,11 +62,11 @@ public class EscribirPostgres {
             pw.println("\n");
             pw.println(CToJSON(nombreTabla, tablespace, lista));
             pw.println("\n");
-            pw.println("    /* ********************************************************************** */\n");
+            pw.println("    /* ********************************************************************** */");
             pw.println("    // Negocio");
             pw.println("\n");
             pw.println("}");
-            con.close();
+//            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -94,7 +94,11 @@ public class EscribirPostgres {
                 if (lista.get(i).getTipo().equals("date")) {
                     insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
                 } else {
-                    insert += lista.get(i).getNombre();
+                    if ("id".equals(lista.get(i).getNombre().substring(0, 2)) && lista.get(i).getTipo().equals("integer")) {
+                        insert += lista.get(i).getNombre() + " > 0 ? " + lista.get(i).getNombre() + " : null";
+                    } else {
+                        insert += lista.get(i).getNombre();
+                    }
                 }
                 if (i != lista.size() - 1) {
                     nombres += ", ";
@@ -104,9 +108,9 @@ public class EscribirPostgres {
             }
         }
         String ccampos = "public int insert() throws SQLException {\n";
-        ccampos += "String consulta = \"INSERT INTO " + tablespace + ".\\\"" + nombre_clase + "\\\"(\"\n";
-        ccampos += "+ \"    " + nombres + ")\"\n";
-        ccampos += "+ \"    VALUES (" + values + ")\";\n";
+        ccampos += "String consulta = \"INSERT INTO " + tablespace + ".\\\"" + nombre_clase + "\\\"(\\n\"\n";
+        ccampos += "+ \"    " + nombres + ")\\n\"\n";
+        ccampos += "+ \"    VALUES (" + values + ")\\n\";\n";
         ccampos += "this.id  = con.ejecutarInsert(consulta, \"id\", " + insert + ");\n";
         ccampos += "return this.id;\n";
         ccampos += "}";
@@ -122,7 +126,11 @@ public class EscribirPostgres {
                 if (lista.get(i).getTipo().equals("date")) {
                     insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
                 } else {
-                    insert += lista.get(i).getNombre();
+                    if ("id".equals(lista.get(i).getNombre().substring(0, 2)) && lista.get(i).getTipo().equals("integer")) {
+                        insert += lista.get(i).getNombre() + " > 0 ? " + lista.get(i).getNombre() + " : null";
+                    } else {
+                        insert += lista.get(i).getNombre();
+                    }
                 }
                 if (i != lista.size() - 1) {
                     nombres += ", ";
@@ -131,8 +139,8 @@ public class EscribirPostgres {
             }
         }
         String ccampos = "public void update() throws SQLException {\n";
-        ccampos += "String consulta = \"UPDATE " + tablespace + ".\\\"" + nombre_clase + "\\\"\"\n";
-        ccampos += "+ \"    SET " + nombres + "\"\n";
+        ccampos += "String consulta = \"UPDATE " + tablespace + ".\\\"" + nombre_clase + "\\\"\\n\"\n";
+        ccampos += "+ \"    SET " + nombres + "\\n\"\n";
         ccampos += "+ \"    WHERE \\\"id\\\"=?\";\n";
         ccampos += "con.ejecutarSentencia(consulta, " + insert + ", id);\n";
         ccampos += "}";
@@ -191,7 +199,7 @@ public class EscribirPostgres {
 
     private static String CTodos(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
         String ccampos = "public JSONArray todos()  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"SELECT\"\n";
+        ccampos += "String consulta = \"SELECT\\n\"\n";
         for (int i = 0; i < lista.size(); i++) {
             String tipo = lista.get(i).getTipo();
             String nombre = lista.get(i).getNombre();
@@ -201,9 +209,9 @@ public class EscribirPostgres {
                 ccampos += "+ \"    \\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\"";
             }
             if (i != lista.size() - 1) {
-                ccampos += ",\"\n";
+                ccampos += ",\\n\"\n";
             } else {
-                ccampos += "\"\n";
+                ccampos += "\\n\"\n";
             }
         }
         ccampos += "+ \"    FROM " + tablespace + ".\\\"" + nombre_clase + "\\\";\";\n";
@@ -243,7 +251,7 @@ public class EscribirPostgres {
 
     private static String CBuscar(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
         String ccampos = "public JSONObject buscarJSONObject(int id)  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"SELECT\"\n";
+        ccampos += "String consulta = \"SELECT\\n\"\n";
         for (int i = 0; i < lista.size(); i++) {
             String tipo = lista.get(i).getTipo();
             String nombre = lista.get(i).getNombre();
@@ -254,12 +262,12 @@ public class EscribirPostgres {
                 ccampos += "+ \"    \\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\"";
             }
             if (i != lista.size() - 1) {
-                ccampos += ",\"\n";
+                ccampos += ",\\n\"\n";
             } else {
-                ccampos += "\"\n";
+                ccampos += "\\n\"\n";
             }
         }
-        ccampos += "+ \"    FROM " + tablespace + ".\\\"" + nombre_clase + "\\\"\"\n";
+        ccampos += "+ \"    FROM " + tablespace + ".\\\"" + nombre_clase + "\\\"\\n\"\n";
         ccampos += "+ \"    WHERE \\\"id\\\" = ?;\";\n";
         ccampos += "PreparedStatement ps = con.statametObject(consulta, id);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
@@ -293,8 +301,8 @@ public class EscribirPostgres {
 
     private static String CBuscarObject(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
         String ccampos = "public " + nombre_clase + " buscar(int id)  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"SELECT *\"\n";
-        ccampos += "+ \"    FROM " + tablespace + ".\\\"" + nombre_clase + "\\\"\"\n";
+        ccampos += "String consulta = \"SELECT *\\n\"\n";
+        ccampos += "+ \"    FROM " + tablespace + ".\\\"" + nombre_clase + "\\\"\\n\"\n";
         ccampos += "+ \"    WHERE \\\"id\\\" = ?;\";\n";
         ccampos += "PreparedStatement ps = con.statametObject(consulta, id);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
