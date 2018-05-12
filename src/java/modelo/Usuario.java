@@ -412,6 +412,12 @@ public class Usuario {
                 + "	WHERE \"id\"=?;";
         con.ejecutarSentencia(consulta, estado, id);
     }
+    public void updateFoto(String foto) throws SQLException {
+        String consulta = "UPDATE public.\"Usuario\"\n"
+                + "	SET \"foto\"=?\n"
+                + "	WHERE \"id\"=?;";
+        con.ejecutarSentencia(consulta, foto, id);
+    }
 
     public String getNombreCompleto() {
         String res = "";

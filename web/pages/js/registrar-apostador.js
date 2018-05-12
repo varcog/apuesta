@@ -23,7 +23,7 @@ function init() {
         //////////////// Perfil 
         html = "";
         $.each(json.perfiles, function (i, perfil) {
-            html += "<option value='" + perfil.id + "'> " + perfil.descripcion + "</option>";
+            html += "<option value='" + perfil.id + "'> " + perfil.nombre + "</option>";
         });
         $("#u_perfil").html(html);
         ocultarCargando();
@@ -71,6 +71,11 @@ function popRegistrarUsuario() {
 
     $('#boton_usuario').text("Crear Usuario");
     openModal('#usuarioModal');
+    $(".calendario").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});    
+        //$("[data-mask]").inputmask();
+    $('.calendario').datepicker({
+        autoclose: true
+    });
 }
 
 function guardarUsuario() {
@@ -192,6 +197,11 @@ function popModificarUsuario(id, ele) {
         $('#boton_usuario').text("Modificar Usuario");
         ocultarCargando();
         openModal('#usuarioModal');
+        $(".calendario").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});    
+        //$("[data-mask]").inputmask();
+        $('.calendario').datepicker({
+            autoclose: true
+        });
     });
 }
 

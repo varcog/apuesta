@@ -42,8 +42,13 @@
                                     <span class="hidden-xs usuario"></span>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li class="user-header">
-                                        <img src="dist/img/user2-160x160.jpg" class="img-circle usr_img" alt="User Image">
+                                    <li class="user-header">   
+                                        <form id="form-foto-peril">
+                                            <input type="hidden" name="evento" value="cambiarFotoPerfil"/>
+                                            <input type="hidden" name="old" value=""/>
+                                            <input type="file" style="display: none;" name="file_foto_perfil" onchange="okCambiarFotoPerfil(this);" accept="image/*"/>
+                                        </form>
+                                        <img src="dist/img/user2-160x160.jpg" style="cursor: pointer;" class="img-circle usr_img" alt="User Image"  onclick="cambiarFotoPerfil();" id="img-foto-perfil">
                                         <p>
                                             <span class="nombre_usuario"></span>
                                             <small class="cargo"></small>

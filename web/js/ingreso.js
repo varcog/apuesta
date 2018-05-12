@@ -27,6 +27,7 @@ $(document).ready(function () {
             });
             $("#menu").append(html);
             $(".nombre_usuario").text((json.usuario || ""));
+            $(".usr_img").attr("src",json.foto);
             $(".cargo").text((json.perfil || ""));
         }
     });
@@ -36,3 +37,30 @@ function cambiarMenu(url) {
     $("#contentFrame").attr("src", url);
 }
 
+
+function cambiarFotoPerfil(ele) {
+    $("input[name=file_foto_perfil]").click();    
+    var img=$("#img-foto-perfil").attr("src");
+    $("input[name=old]").val(img);
+}
+function okCambiarFotoPerfil(ele) {
+    var formData = new FormData($("#form-foto-peril")[0]);
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: formData,
+        mimeType: "multipart/form-data",
+        contentType: false,
+        cache: false,
+        processData: false,        
+        success: function (data, textStatus, jqXHR)
+        {
+            $(".usr_img").attr("src",data);
+            $("input[name=file_foto_perfil]").val("");                    
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {            
+            $("input[name=file_foto_perfil]").val("");
+        }         
+    });
+}
