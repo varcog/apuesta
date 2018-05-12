@@ -41,7 +41,7 @@
         <div class="content">    
             <div class="row">
                 <div class="col-xs-12">
-                    <div class="box">
+                    <div class="box box-success">
                         <div class="box-header">
                             <h3 class="box-title text-bold">Registrar Apostador</h3>
                             <i class="fa fa-plus-circle" style="color: green; float: right; cursor:pointer; font-size: 26px;" title="Agregar" onclick="popRegistrarUsuario();"></i> 
@@ -56,8 +56,7 @@
                                         <th>Nombre Completo</th>
                                         <th>Perfil</th>
                                         <th>Editar</th>
-                                        <th>Cambiar Contraseña</th>
-                                        <th>Activo</th>
+                                        <th>Cambiar Contraseña</th>                                        
                                     </tr>
                                 </thead>
                                 <tbody id="cuerpo">
@@ -97,11 +96,7 @@
                                 <div class="form-group usuario_creacion">
                                     <label for="u_contrasena_rep">Repetir Contraseña</label>
                                     <input type="password" class="form-control" id="u_contrasena_rep" />
-                                </div>
-                                <div class="form-group usuario_modificacion">
-                                    <label for="u_perfil">Perfil</label>
-                                    <select class="form-control" id="u_perfil" ></select>
-                                </div>
+                                </div>                                
                             </fieldset>
                             <fieldset>
                                 <legend>Datos de Usuario</legend>
@@ -132,6 +127,20 @@
                                         <option value="M">Masculino</option>
                                         <option value="F">Femenino</option>
                                     </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Direccion</label>
+                                    <textarea class="form-control" rows="3" placeholder="Direccion" id="u_direccion"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Celular:</label>
+                                    <div class="input-group">
+                                      <div class="input-group-addon">
+                                        <i class="fa fa-phone"></i>
+                                      </div>
+                                      <input type="text" class="form-control celular" id="u_celular" data-inputmask="&quot;mask&quot;: &quot;(999) 999-99999&quot;" data-mask="">
+                                    </div>
+                                    <!-- /.input group -->
                                 </div>
                             </fieldset>
                         </form>

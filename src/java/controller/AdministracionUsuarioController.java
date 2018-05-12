@@ -56,6 +56,12 @@ public class AdministracionUsuarioController extends HttpServlet {
                 case "datosUsuario":
                     html = datosUsuario(request, con);
                     break;
+                case "updateEstado":
+                    html = updateEstado(request, con);
+                    break;
+                case "updatePerfil":
+                    html = updatePerfil(request, con);
+                    break;
             }
             con.commit();
             response.getWriter().write(html);
@@ -108,7 +114,7 @@ public class AdministracionUsuarioController extends HttpServlet {
     }// </editor-fold>
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        JSONObject json = new JSONObject();
+        JSONObject json = new JSONObject();        
         json.put("perfiles", new Perfil(con).todos());
         json.put("usuarios", new Usuario(con).todosConPerfil());
         return json.toString();
@@ -118,12 +124,13 @@ public class AdministracionUsuarioController extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         int accion = Integer.parseInt(request.getParameter("accion"));
         String usuario = request.getParameter("usuario");
-        String contrasena = request.getParameter("contrasena");
-        int perfil = Integer.parseInt(request.getParameter("perfil"));
+        String contrasena = request.getParameter("contrasena");        
         String ci = request.getParameter("ci");
         String nombres = request.getParameter("nombres");
         String apellidos = request.getParameter("apellidos");
         String fechaNacimiento = request.getParameter("fechaNacimiento");
+        String direccion = request.getParameter("direccion");
+        String celular = request.getParameter("celular");
         Date fechaNac;
         SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
         try {
@@ -136,19 +143,21 @@ public class AdministracionUsuarioController extends HttpServlet {
         String pass;
         switch (accion) {
             case 0: // crear
-//                pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
-//                u = new Usuario(0, usuario, pass, nombres, apellidos, fecha_nac, new Date(), ci, sexo, cargo, con.getUsuario().getId(), true);
-//                u.setCon(con);
-//                u.insert();
-//                return u.toJSONObject().toString();
-                return "true";
+                pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
+                u = new Usuario(usuario,pass, nombres,apellidos,fechaNac, ci, celular, direccion, sexo, con.getUsuario().getId(), con.getUsuario().getId());
+                u.setCon(con);
+                u.insert();
+                return u.toJSONObject().toString();
+                //return "true";
             case 1: // modificar
                 u = new Usuario(con).buscar(id);
                 if (u == null) {
                     return "false";
                 }
-                u.setIdPerfil(perfil);
+                u.setIdPerfil(3);
                 u.setNombres(nombres);
+                u.setDireccion(direccion);
+                u.setTelefono(celular);
                 u.setApellidos(apellidos);
                 u.setFechaNacimiento(fechaNac);
                 u.setSexo(sexo);
@@ -283,5 +292,24 @@ public class AdministracionUsuarioController extends HttpServlet {
 //            return p.toJSONObject().toString();
 //        }
 //    }
+
+    private String updateEstado(HttpServletRequest request, Conexion con) throws SQLException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        int estado = Integer.parseInt(request.getParameter("estado"));
+        Usuario us = new Usuario(con);
+        us.setId(id);
+        us.setEstado(estado);
+        us.updateEstado();
+        return "true";
+    }
+    private String updatePerfil(HttpServletRequest request, Conexion con) throws SQLException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        int tipo = Integer.parseInt(request.getParameter("tipo"));
+        Usuario us = new Usuario(con);
+        us.setId(id);
+        us.setIdPerfil(tipo);
+        us.updateIdPerfil();
+        return "true";
+    }
 
 }

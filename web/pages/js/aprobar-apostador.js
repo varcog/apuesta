@@ -1,5 +1,5 @@
 var url = "../AdministracionUsuarioController";
-var tabla, tablaSubMenu;
+var tabla, tablaSubMenu, _option_perfiles;
 $(document).ready(function () {
     init();
 });
@@ -8,11 +8,19 @@ function init() {
     mostrarCargando();
     $.post(url, {evento: "init"}, function (resp) {
         var json = $.parseJSON(resp);
+         _option_perfiles = "";        
+        $.each(json.perfiles, function (i, obj) {
+            _option_perfiles += "<option value='"+obj.id+"'>"+obj.nombre+"</option>";            
+        });
         var html = "";        
         $.each(json.usuarios, function (i, obj) {
             html += usuarioFilaHtml(obj);            
         });
-        $("#cuerpo").html(html);
+        $("#cuerpo").html(html);       
+        
+        $(".perfiles").each(function(i,obj){            
+            $(obj).val($(obj).data("id_perfil"));
+        });
         
         tabla = $('#tabla').DataTable({
             "language": {
@@ -38,15 +46,65 @@ function usuarioFilaHtml(obj) {
     var tr = "<tr data-id='" + obj.id + "' class='"+color+" usuario_" + obj.id + "'>";
     tr += "<td>" + (obj.ci || "") + "</td>";
     tr += "<td>" + (obj.nombres || "") +" "+ (obj.apellidos || "") + "</td>";
-    tr += "<td>" + (obj.perfil || "") + "</td>";
+    //tr += "<td>" + (obj.perfil || "") + "</td>";    
     tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-edit text-warning' title='Editar' onclick='popModificarUsuario(" + obj.id + ",this);'></i>";
-    tr += "</td>";
-    tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-gear text-muted' title='Cambiar Contraseña' onclick='popCambiarContrasena(" + obj.id + ",this);'></i>";
+    tr += "<select onchange='updatePerfil(this);' data-id_perfil='"+obj.idPerfil+"' class='perfiles'>";    
+    tr += _option_perfiles;
+    tr += "</select>";
     tr += "</td>";    
+    tr += "<td class='text-center'>";
+    tr += "<select onchange='updateEstado(this);'>";    
+    switch(obj.estado){
+        case 0:
+            tr += "<option value='0' selected>INACTIVO</option>";
+            tr += "<option value='1'>CREADO</option>";
+            tr += "<option value='2'>APROBADO</option>";
+            break;
+        case 1:
+            tr += "<option value='0'>INACTIVO</option>";
+            tr += "<option value='1' selected>CREADO</option>";
+            tr += "<option value='2'>APROBADO</option>";
+            break;
+        case 2:
+            tr += "<option value='0'>INACTIVO</option>";
+            tr += "<option value='1'>CREADO</option>";
+            tr += "<option value='2' selected>APROBADO</option>";
+            break;
+    }    
+    tr += "</select>";
+    tr += "</td>";        
     tr += "</tr>";
     return tr;
+}
+
+function updateEstado(ele) {
+    var id = $(ele).parent().parent().data("id");
+    var estado = parseInt($(ele).val());
+    $.post(url, {evento: "updateEstado",id:id,estado:estado}, function (resp) {
+        switch(estado){
+            case 2 :
+                $(".usuario_"+id).removeClass("bg-warning");
+                $(".usuario_"+id).removeClass("bg-danger");                
+                break;
+            case 1 :
+                $(".usuario_"+id).removeClass("bg-warning");
+                $(".usuario_"+id).removeClass("bg-danger");
+                $(".usuario_"+id).addClass("bg-warning");                
+                break;
+            case 0 :
+                $(".usuario_"+id).removeClass("bg-warning");
+                $(".usuario_"+id).removeClass("bg-danger");                
+                $(".usuario_"+id).addClass("bg-danger");                 
+                break;
+        }    
+    });
+}
+function updatePerfil(ele) {
+    var id = $(ele).parent().parent().data("id");
+    var tipo = parseInt($(ele).val());
+    $.post(url, {evento: "updatePerfil",id:id,tipo:tipo}, function (resp) {
+               
+    });
 }
 
 function popRegistrarUsuario() {
