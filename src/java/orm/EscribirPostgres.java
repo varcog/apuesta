@@ -1,6 +1,7 @@
 package orm;
 
 import conexion.Conexion;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
@@ -10,12 +11,17 @@ import java.util.List;
 
 public class EscribirPostgres {
 
+    public static String rutaF = System.getProperty("os.name").toLowerCase().contains("windows") ? "c:/Modelo/" : System.getProperty("user.home") + "/Modelo";
+
     public static void escribirClases(String nombreTabla, String tablespace, Conexion con) {
         FileWriter fichero = null;
         PrintWriter pw = null;
         try {
-
-            fichero = new FileWriter("c:/Modelo/" + nombreTabla + ".java");
+            File f = new File(rutaF);
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+            fichero = new FileWriter(rutaF + nombreTabla + ".java");
             pw = new PrintWriter(fichero);
 
             ResultSet campos = DataBasePostgres.Campostabla(nombreTabla, con, tablespace);

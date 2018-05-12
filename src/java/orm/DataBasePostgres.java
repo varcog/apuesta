@@ -1,11 +1,14 @@
 package orm;
 
 import conexion.Conexion;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,6 +69,10 @@ public class DataBasePostgres {
                 System.out.println("\t" + rs.getString("nombre_columna") + "\t" + rs.getString("tipo"));
             }
         }
+//        Properties properties = System.getProperties();
+//        properties.list(System.out);
+//        System.out.println(System.getProperty("user.dir") + File.separator + "src" + File.separator + "java" + File.separator + "modelo" + File.separator);
+//        System.out.println(System.getProperty("java.class.path"));
     }
 
 }
