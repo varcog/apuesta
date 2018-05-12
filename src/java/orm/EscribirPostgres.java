@@ -22,7 +22,7 @@ public class EscribirPostgres {
             List<CamposTabla> lista = new ArrayList<>();
 
             while (campos.next()) {
-                CamposTabla c = new CamposTabla(campos.getString("COLUMN_NAME"), campos.getString("DATA_TYPE"));
+                CamposTabla c = new CamposTabla(campos.getString("nombre_columna"), campos.getString("tipo"));
                 lista.add(c);
             }
             con.close();
@@ -86,7 +86,7 @@ public class EscribirPostgres {
                 values += "?";
 
                 if (lista.get(i).getTipo().equals("date")) {
-                    insert += lista.get(i).getNombre() + " == null ? null : java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
                 } else {
                     insert += lista.get(i).getNombre();
                 }
@@ -98,11 +98,11 @@ public class EscribirPostgres {
             }
         }
         String ccampos = "public int insert() throws SQLException {\n";
-        ccampos += "String consulta = \"INSERT INTO " + tablespace + ".\\\"" + nombre_clase + "\\\"(\n";
-        ccampos += "	" + nombres + ")\n";
-        ccampos += "	VALUES (" + values + ")\";";
-        ccampos += "this.id  = con.ejecutarInsert(consulta, id, " + insert + ");\n";
-        ccampos += "return this.id\n";
+        ccampos += "String consulta = \"INSERT INTO " + tablespace + ".\\\"" + nombre_clase + "\\\"(\"\n";
+        ccampos += "+ \"    " + nombres + ")\"\n";
+        ccampos += "+ \"    VALUES (" + values + ")\";\n";
+        ccampos += "this.id  = con.ejecutarInsert(consulta, \"id\", " + insert + ");\n";
+        ccampos += "return this.id;\n";
         ccampos += "}";
         return ccampos;
     }
@@ -114,7 +114,7 @@ public class EscribirPostgres {
             if (!lista.get(i).getNombre().equals("id")) {
                 nombres += "\\\"" + lista.get(i).getNombre() + "\\\" = ?";
                 if (lista.get(i).getTipo().equals("date")) {
-                    insert += lista.get(i).getNombre() + " == null ? null : java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
                 } else {
                     insert += lista.get(i).getNombre();
                 }
@@ -125,11 +125,10 @@ public class EscribirPostgres {
             }
         }
         String ccampos = "public void update() throws SQLException {\n";
-        ccampos += "String consulta = \"UPDATE " + tablespace + ".\\\"" + nombre_clase + "\\\"\n";
-        ccampos += "	SET " + nombres + "\n";
-        ccampos += "	WHERE \\\"id\\\"=?;\"";
+        ccampos += "String consulta = \"UPDATE " + tablespace + ".\\\"" + nombre_clase + "\\\"\"\n";
+        ccampos += "+ \"    SET " + nombres + "\"\n";
+        ccampos += "+ \"    WHERE \\\"id\\\"=?\";\n";
         ccampos += "con.ejecutarSentencia(consulta, " + insert + ", id);\n";
-        ccampos += "return this.id\n";
         ccampos += "}";
         return ccampos;
     }
@@ -172,7 +171,7 @@ public class EscribirPostgres {
 
     private static String CEliminar(String nombre_clase, List<CamposTabla> lista, String tablespace) {
         String ccampos = "public void delete()  throws SQLException {\n";
-        ccampos += "String consulta = \"delete from " + tablespace + ".\\\"" + nombre_clase + "\\\" where \\\"id\\\"= ?;\"\n";
+        ccampos += "String consulta = \"delete from " + tablespace + ".\\\"" + nombre_clase + "\\\" where \\\"id\\\"= ?;\";\n";
         ccampos += "con.ejecutarSentencia(consulta);\n";
         ccampos += "}";
 //        ccampos += "\n\n";
@@ -186,23 +185,22 @@ public class EscribirPostgres {
 
     private static String CTodos(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
         String ccampos = "public JSONArray todos()  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"SELECT\n";
+        ccampos += "String consulta = \"SELECT\"\n";
         for (int i = 0; i < lista.size(); i++) {
             String tipo = lista.get(i).getTipo();
             String nombre = lista.get(i).getNombre();
             if (tipo.equals("date")) {
-
-                ccampos += "    to_char(\\\"" + nombre_clase + "\\\"." + nombre + ", 'DD/MM/YYYY') AS " + nombre;
+                ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\"." + nombre + ", 'DD/MM/YYYY') AS " + nombre;
             } else {
-                ccampos += "    \\\"" + nombre_clase + "\\\"." + nombre;
+                ccampos += "+ \"    \\\"" + nombre_clase + "\\\"." + nombre;
             }
             if (i != lista.size() - 1) {
-                ccampos += ",\n";
+                ccampos += ",\"\n";
             } else {
-                ccampos += "\n";
+                ccampos += "\"\n";
             }
         }
-        ccampos += "    FROM " + tablespace + "." + nombre_clase + "\";\n";
+        ccampos += "+ \"    FROM " + tablespace + "." + nombre_clase + ";\";\n";
         ccampos += "PreparedStatement ps=con.statamet(consulta);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
         ccampos += "JSONArray json = new JSONArray();\n";
@@ -221,7 +219,7 @@ public class EscribirPostgres {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
             if (lista.get(i).getTipo().contains("numeric")) {
-                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\"";
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\n";
             }
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
@@ -238,25 +236,25 @@ public class EscribirPostgres {
     }
 
     private static String CBuscar(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
-        String ccampos = "public JSONObject Buscar(int id)  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"SELECT\n";
+        String ccampos = "public JSONObject buscarJSONObject(int id)  throws SQLException, JSONException{\n";
+        ccampos += "String consulta = \"SELECT\"\n";
         for (int i = 0; i < lista.size(); i++) {
             String tipo = lista.get(i).getTipo();
             String nombre = lista.get(i).getNombre();
             if (tipo.equals("date")) {
 
-                ccampos += "    to_char(\\\"" + nombre_clase + "\\\"." + nombre + ", 'DD/MM/YYYY') AS " + nombre;
+                ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\"." + nombre + ", 'DD/MM/YYYY') AS " + nombre;
             } else {
-                ccampos += "    \\\"" + nombre_clase + "\\\"." + nombre;
+                ccampos += "+ \"    \\\"" + nombre_clase + "\\\"." + nombre;
             }
             if (i != lista.size() - 1) {
-                ccampos += ",\n";
+                ccampos += ",\"\n";
             } else {
-                ccampos += "\n";
+                ccampos += "\"\n";
             }
         }
-        ccampos += "    FROM " + tablespace + "." + nombre_clase + "\n";
-        ccampos += "    WHERE \\\"id\\\" = ?;\"\n";
+        ccampos += "+ \"    FROM " + tablespace + "." + nombre_clase + "\"\n";
+        ccampos += "+ \"    WHERE \\\"id\\\" = ?;\";\n";
         ccampos += "PreparedStatement ps = con.statametObject(consulta, id);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
         ccampos += "JSONObject obj = new JSONObject();\n";
@@ -273,7 +271,7 @@ public class EscribirPostgres {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
             if (lista.get(i).getTipo().contains("numeric")) {
-                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\"";
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\n";
             }
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
@@ -288,16 +286,16 @@ public class EscribirPostgres {
     }
 
     private static String CBuscarObject(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
-        String ccampos = "public " + nombre_clase + " Buscar(int id)  throws SQLException, JSONException{\n";
-        ccampos += "String consulta = \"SELECT * \n";
-        ccampos += "    FROM " + tablespace + "." + nombre_clase + "\n";
-        ccampos += "    WHERE \\\"id\\\" = ?;\"\n";
+        String ccampos = "public " + nombre_clase + " buscar(int id)  throws SQLException, JSONException{\n";
+        ccampos += "String consulta = \"SELECT *\"\n";
+        ccampos += "+ \"    FROM " + tablespace + "." + nombre_clase + "\"\n";
+        ccampos += "+ \"    WHERE \\\"id\\\" = ?;\";\n";
         ccampos += "PreparedStatement ps = con.statametObject(consulta, id);\n";
         ccampos += "ResultSet rs=ps.executeQuery();\n";
         ccampos += nombre_clase + " obj = null;\n";
         ccampos += "if(rs.next()){\n";
+        ccampos += "obj = new " + nombre_clase + "(con);\n";
         for (int i = 0; i < lista.size(); i++) {
-            ccampos += "obj = new " + nombre_clase + "(con);\n";
             if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getInt(\"" + lista.get(i).getNombre() + "\"));\n";
             }
@@ -324,9 +322,14 @@ public class EscribirPostgres {
 
     private static String CToJSON(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
         String ccampos = "public JSONObject toJSONObject()  throws JSONException{\n";
+        ccampos += "SimpleDateFormat f = new SimpleDateFormat(\"dd/MM/yyyy\");\n";
         ccampos += "JSONObject obj = new JSONObject();\n";
         for (int i = 0; i < lista.size(); i++) {
-            ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + "));\n";
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + " == null ? \"\" : f.format(" + lista.get(i).getNombre() + "));\n";
+            } else {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + ");\n";
+            }
         }
         ccampos += "return obj;\n";
         ccampos += "}";
@@ -361,6 +364,9 @@ public class EscribirPostgres {
         for (int i = 0; i < lista.size(); i++) {
             if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "int ";
+            }
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "boolean ";
             }
             if (lista.get(i).getTipo().contains("character")) {
                 ccampos += "String ";
@@ -404,6 +410,9 @@ public class EscribirPostgres {
             if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "int ";
             }
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "boolean ";
+            }
             if (lista.get(i).getTipo().contains("character")) {
                 ccampos += "String ";
             }
@@ -420,7 +429,7 @@ public class EscribirPostgres {
             }
 
         }
-        ccampos += ")\n{\n";
+        ccampos += ", Conexion con)\n{\n";
         for (int i = 0; i < lista.size(); i++) {
             ccampos += "this." + lista.get(i).getNombre() + " = " + lista.get(i).getNombre() + ";\n";
         }
@@ -434,6 +443,9 @@ public class EscribirPostgres {
         for (int i = 0; i < lista.size(); i++) {
             if (lista.get(i).getTipo().equals("integer")) {
                 ccampos += "\tprivate int ";
+            }
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "\tprivate boolean ";
             }
             if (lista.get(i).getTipo().contains("character")) {
                 ccampos += "\tprivate String ";
