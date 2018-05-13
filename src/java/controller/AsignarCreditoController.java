@@ -14,8 +14,8 @@ import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@WebServlet(name = "TraspasoCreditoController", urlPatterns = {"/TraspasoCreditoController"})
-public class TraspasoCreditoController extends HttpServlet {
+@WebServlet(name = "AsignarCreditoController", urlPatterns = {"/AsignarCreditoController"})
+public class AsignarCreditoController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
