@@ -1,4 +1,4 @@
-var url = "../EntregaRelacionadorController";
+var url = "../PrestamoCreditoController";
 var tabla, tablaSubMenu;
 $(document).ready(function () {
     init();
@@ -10,8 +10,8 @@ function init() {
     $.post(url, {evento: "init"}, function (resp) {
         var json = $.parseJSON(resp);
         var html = "";
-        $.each(json.entregaRelacionador, function (i, obj) {
-            html += entregaRelacionadorFilaHtml(obj);
+        $.each(json.prestamos, function (i, obj) {
+            html += prestamosFilaHtml(obj);
         });
         $("#cuerpo").html(html);
         html = "";
@@ -20,11 +20,6 @@ function init() {
         });
         $("#c_relacionador").html(html);
         html = "";
-        $.each(json.entregas, function (i, obj) {
-            html += "<option value='" + obj.id + "'>" + (obj.nombre || "") + "</option>";
-        });
-        $("#c_entrega").html(html);
-
         formato_decimal_all();
 
         tabla = $('#tabla').DataTable({
@@ -36,12 +31,17 @@ function init() {
     });
 }
 
-function entregaRelacionadorFilaHtml(obj) {
-    var tr = "<tr data-id='" + obj.id + "' class='er_" + obj.id + "'>";
-    tr += "<td>" + (obj.fecha || "") + "</td>";
-    tr += "<td class='text-right'>" + new BigNumber(obj.monto || "0").toFormat() + "</td>";
-    tr += "<td>" + (obj.relacionador || "") + "</td>";
-    tr += "<td>" + (obj.entrega || "") + "</td>";
+function prestamosFilaHtml(obj) {
+//    fa-eye
+    var tr = "<tr data-idUsuario='" + obj.idUsuario + "' class='pr_" + obj.idUsuario + "'>";
+    tr += "<td>" + (obj.nombre || "") + "</td>";
+    tr += "<td class='text-right'>" + new BigNumber(obj.deuda || "0").toFormat() + "</td>";
+    tr += "<td class='text-center'>";
+    tr += "<i class='fa fa-eye text-muted' title='Ver Sub Menu' onclick='popVerDetalle(" + obj.idUsuario + ",this);'></i>";
+    tr += "</td>";
+    tr += "<td class='text-center'>";
+    tr += "<i class='fa fa-money text-green' title='Ver Sub Menu' onclick='popPagar(" + obj.idUsuario + ",this);'></i>";
+    tr += "</td>";
     tr += "</tr>";
     return tr;
 }
@@ -80,7 +80,7 @@ function okGuardarEntregaRelacionador() {
             openAlert("No se Guardo, Intentelo de nuevo.");
         } else {
             var json = $.parseJSON(resp);
-            tabla.row.add($(entregaRelacionadorFilaHtml(json))).draw(false);
+            tabla.row.add($(prestamosFilaHtml(json))).draw(false);
             cerrarModal();
             cerrarModal();
             openAlert("Guardado Correctamente.", "Información");

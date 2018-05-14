@@ -6,7 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
@@ -16,7 +20,9 @@ public class SisEventos {
     public SisEventos() {
     }
 
-    public String decodeUTF8(String text) throws UnsupportedEncodingException {
+    public static RoundingMode tipo_redondeo = RoundingMode.HALF_EVEN;
+
+    public static String decodeUTF8(String text) throws UnsupportedEncodingException {
         return new String(text.getBytes("ISO-8859-15"), "UTF-8");
     }
 
@@ -77,5 +83,30 @@ public class SisEventos {
             Logger.getLogger(SisEventos.class.getName()).log(Level.SEVERE, "Error no se ha podido eliminar el  archivo " + archivo, ex);
             return false;
         }
+    }
+
+    public double arreglarErrorSuma2D(double monto) throws ParseException {
+        RoundingMode aux = tipo_redondeo;
+        tipo_redondeo = RoundingMode.HALF_EVEN;
+        double res = acomodarDosDecimalesD(monto);
+        tipo_redondeo = aux;
+        return res;
+    }
+
+    public static double acomodarDosDecimalesD(double monto) throws ParseException  {
+        return acomodarDecimalesD(monto, 2);
+    }
+
+    public static double acomodarDecimalesD(double monto, int cantidad_decimales) throws ParseException  {
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        DecimalFormat formatter = new DecimalFormat();
+        formatter.setDecimalFormatSymbols(dfs);
+        formatter.setGroupingUsed(false);
+        formatter.setMaximumFractionDigits(cantidad_decimales);
+        formatter.setMinimumFractionDigits(cantidad_decimales);
+        formatter.setRoundingMode(tipo_redondeo);
+        String res = formatter.format(monto);
+        return formatter.parse(res).doubleValue();
     }
 }

@@ -3,19 +3,19 @@ package controller;
 import conexion.Conexion;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
+import java.text.ParseException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.EntregaRelacionador;
+import modelo.Prestamo;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-@WebServlet(name = "EntregaRelacionadorController", urlPatterns = {"/EntregaRelacionadorController"})
-public class EntregaRelacionadorController extends HttpServlet {
+@WebServlet(name = "PrestamoCreditoController", urlPatterns = {"/PrestamoCreditoController"})
+public class PrestamoCreditoController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -45,7 +45,7 @@ public class EntregaRelacionadorController extends HttpServlet {
             }
             con.commit();
             response.getWriter().write(html);
-        } catch (SQLException | JSONException ex) {
+        } catch (SQLException | JSONException | ParseException ex) {
             con.error(this, ex);
             response.getWriter().write("false");
         }
@@ -90,11 +90,10 @@ public class EntregaRelacionadorController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
         JSONObject json = new JSONObject();
-        json.put("entregaRelacionador", new EntregaRelacionador(con).todosNombres());
+        json.put("prestamos", new Prestamo(con).todosPrestatarios());
         json.put("relacionadores", new Usuario(con).todosRelacionadores());
-        json.put("entregas", new Usuario(con).todosCasa());
         return json.toString();
 
     }
@@ -103,9 +102,7 @@ public class EntregaRelacionadorController extends HttpServlet {
         double monto = Double.parseDouble(request.getParameter("monto"));
         int relacionador = Integer.parseInt(request.getParameter("relacionador"));
         int entrega = Integer.parseInt(request.getParameter("entrega"));
-        EntregaRelacionador er = new EntregaRelacionador(0, relacionador, monto, entrega, new Date(), con);
-        er.insert();
-        return er.BuscarConNombres().toString();
+        return null;
     }
 
 }
