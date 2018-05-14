@@ -19,9 +19,7 @@ function init() {
         $(".calendario").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});    
         $(".celular").inputmask();    
             //$("[data-mask]").inputmask();
-        $('.calendario').datepicker({
-            autoclose: true
-        });
+        $('.calendario').calendario();
         ocultarCargando();
     });
 }

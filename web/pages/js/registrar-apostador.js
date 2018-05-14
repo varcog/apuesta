@@ -79,9 +79,7 @@ function popRegistrarUsuario() {
     $(".calendario").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});    
     $(".celular").inputmask();    
         //$("[data-mask]").inputmask();
-    $('.calendario').datepicker({
-        autoclose: true
-    });
+    $('.calendario').calendario();
 }
 
 function guardarUsuario() {
@@ -220,9 +218,7 @@ function popModificarUsuario(id, ele) {
         openModal('#usuarioModal');
         $(".calendario").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});    
         //$("[data-mask]").inputmask();
-        $('.calendario').datepicker({
-            autoclose: true
-        });
+        $('.calendario').calendario();
         $(".celular").inputmask();    
     });
 }
