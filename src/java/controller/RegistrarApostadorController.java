@@ -15,6 +15,7 @@ import modelo.Perfil;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
+import util.SisEventos;
 import util.StringMD;
 
 @WebServlet(name = "RegistrarApostadorController", urlPatterns = {"/RegistrarApostadorController"})
@@ -115,12 +116,12 @@ public class RegistrarApostadorController extends HttpServlet {
     private String guardarUsuario(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         int id = Integer.parseInt(request.getParameter("id"));
         int accion = Integer.parseInt(request.getParameter("accion"));
-        String usuario = request.getParameter("usuario");
-        String contrasena = request.getParameter("contrasena");
+        String usuario = SisEventos.decodeUTF8(request.getParameter("usuario"));
+        String contrasena = SisEventos.decodeUTF8(request.getParameter("contrasena"));        
         int perfil = Integer.parseInt(request.getParameter("perfil"));
-        String ci = request.getParameter("ci");
-        String nombres = request.getParameter("nombres");
-        String apellidos = request.getParameter("apellidos");
+        String ci = SisEventos.decodeUTF8(request.getParameter("ci"));        
+        String nombres = SisEventos.decodeUTF8(request.getParameter("nombres"));        
+        String apellidos = SisEventos.decodeUTF8(request.getParameter("apellidos"));                
         String fechaNacimiento = request.getParameter("fechaNacimiento");
         Date fechaNac;
         SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");

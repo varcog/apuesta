@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Equipos;
+import modelo.Estadio;
 import modelo.Partidos;
 import modelo.Usuario;
 import org.json.JSONException;
@@ -64,6 +65,9 @@ public class creacionPartidosController extends HttpServlet {
                     break;                             
                 case "crearPartido":
                     html = crearPartido(request, con);
+                    break;                             
+                case "eliminar":
+                    html = eliminar(request, con);
                     break;                             
             }
             con.commit();
@@ -122,19 +126,29 @@ public class creacionPartidosController extends HttpServlet {
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {                
         JSONObject obj = new JSONObject();
         obj.put("Equipos", new Equipos(con).todos());
-        obj.put("partidos", new Partidos(con).todos());
+        obj.put("Partidos", new Partidos(con).todos());
+        obj.put("Estadios", new Estadio(con).todos());
         return obj.toString();
     }
 
     private String crearPartido(HttpServletRequest request, Conexion con) throws ParseException, SQLException, JSONException {
         String fecha = request.getParameter("fecha");
         String hora = request.getParameter("hora");
-        int id1 = Integer.parseInt(request.getParameter("id1"));
+        int id1 = Integer.parseInt(request.getParameter("id1"));        
         int id2 = Integer.parseInt(request.getParameter("id2"));
+        int idEstadio = Integer.parseInt(request.getParameter("idEstadio"));
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy kk:mm");
         Date dfecha = formato.parse(fecha+" "+hora);
-        Partidos p = new Partidos(0, dfecha, id1, id2, con);
-        p.insert();
-        return p.toJSONObject().toString();
+        Partidos p = new Partidos(0, dfecha, id1, id2, con.getUsuario().getId(),idEstadio, con);
+        int id=p.insert();
+        return new Partidos(con).buscarCompleto(id).toString();
+    }
+
+    private String eliminar(HttpServletRequest request, Conexion con) throws SQLException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Partidos p = new Partidos(con);
+        p.setId(id);
+        p.delete();
+        return true+"";
     }
 }

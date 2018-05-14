@@ -7,13 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
-import modelo.Partidos;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 public class DataBasePostgres {
 
@@ -72,24 +67,7 @@ public class DataBasePostgres {
 //                System.out.println("\t" + rs.getString("nombre_columna") + "\t" + rs.getString("tipo"));
 //            }
 //        }
-        String consulta = "SELECT *\n"
-                + "    FROM public.\"Partidos\"\n"
-                + "    WHERE \"id\" = ?;";
-        PreparedStatement ps = con.statametObject(consulta, 10);
-        ResultSet rs = ps.executeQuery();
-        Partidos obj = null;
-        if (rs.next()) {
-            obj = new Partidos(con);
-            obj.setId(rs.getInt("id"));
-            obj.setFecha(rs.getTimestamp("fecha"));
-            obj.setIdEquipo1(rs.getInt("idEquipo1"));
-            obj.setIdEquipo2(rs.getInt("idEquipo2"));
-            System.out.println(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(obj.getFecha()));
-        }
-
-        rs.close();
-        ps.close();
-        con.close();
+        
 
 //        Properties properties = System.getProperties();
 //        properties.list(System.out);

@@ -8,10 +8,9 @@ package controller;
 import conexion.Conexion;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -21,6 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import modelo.Equipos;
+import modelo.Estadio;
 import modelo.Parametros;
 import modelo.Usuario;
 import org.json.JSONException;
@@ -31,8 +32,8 @@ import util.SisEventos;
  * @author equipo_2
  */
 @MultipartConfig
-@WebServlet(name = "editarPerfilController", urlPatterns = {"/editarPerfilController"})
-public class editarPerfilController extends HttpServlet {
+@WebServlet(name = "creacionEstadiosController", urlPatterns = {"/creacionEstadiosController"})
+public class creacionEstadiosController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -64,10 +65,13 @@ public class editarPerfilController extends HttpServlet {
             switch (evento) {
                 case "init":
                     html = init(request, con);
-                    break;                
+                    break;
                 case "guardarDatos":
                     html = guardarDatos(request, con);
-                    break;                
+                    break;
+                case "eliminar":
+                    html = eliminar(request, con);
+                    break;
             }
             con.commit();
             response.getWriter().write(html);
@@ -122,43 +126,64 @@ public class editarPerfilController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {                
-        return new Usuario(con).getPerfil(con.getUsuario().getId()).toString();
+        return new Estadio(con).todos().toString();
     }
-
-    private String guardarDatos(HttpServletRequest request, Conexion con) throws ParseException, SQLException, IOException, ServletException {
-        String nombres = request.getParameter("nombres");
-        String apellidos = request.getParameter("apellidos");
-        String fecNac = request.getParameter("fecNac");
-        String telefono = request.getParameter("telefono");
-        String sexo = request.getParameter("sexo");
-        String direccion = request.getParameter("direccion");
-        Usuario us = con.getUsuario();
-        us.setNombres(nombres);
-        us.setApellidos(apellidos);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date fecha = format.parse(fecNac);        
-        us.setFechaNacimiento(fecha);
-        us.setTelefono(telefono);
-        us.setSexo(sexo);
-        us.setDireccion(direccion);
-        us.updateDatos();        
+    
+    private String guardarDatos(HttpServletRequest request, Conexion con) throws ParseException, SQLException, IOException, ServletException, JSONException {
+        String nombre = SisEventos.decodeUTF8(request.getParameter("nombre"));
+        String descripcion = SisEventos.decodeUTF8(request.getParameter("descripcion"));
+        int id = Integer.parseInt(request.getParameter("id"));                
+        int capacidad = Integer.parseInt(request.getParameter("capacidad"));                
         Part peril=request.getPart("foto");
-        String old = request.getParameter("old");
+        String old="";
+        boolean nuevo=true;
+        if(id!=0){
+            nuevo=false;
+            old = request.getParameter("old");        
+            String []a = old.split("/");
+            old= a[3];
+        }        
         String ruta=this.getServletContext().getRealPath("/");
-        String nombre="";
+        
+        Estadio es = new Estadio(id, nombre, descripcion, old,capacidad, con);        
+        if(id==0) id=es.insert();
+        else {
+            es.update();
+        }
+        
+        
+        String nombref="";
+        String nombres;
         if(peril!=null){
             if(peril.getSubmittedFileName().length()>0){
-                String rutaBk = new Parametros(con).getRutaBakup();                
-                new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta+old);
-                new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk+old);
-                nombre="img"+File.separator+"perfil"+File.separator+con.getUsuario().getId()+peril.getSubmittedFileName();
-                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), ruta+nombre);
-                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), rutaBk+nombre);
-                con.getUsuario().updateFoto(nombre);
+                String rutaBk = new Parametros(con).getRutaBakup();     
+                if(!nuevo){
+                    new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta+File.separator+"img"+File.separator+"estadios"+File.separator+old);
+                    new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk+File.separator+"img"+File.separator+"estadios"+File.separator+old);                
+                }
+                nombres = id+peril.getSubmittedFileName();
+                nombref="img"+File.separator+"estadios"+File.separator+id+peril.getSubmittedFileName();                
+                es.setFoto(nombres);
+                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), ruta+nombref);
+                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), rutaBk+nombref);                
+                es.update();
             }
-        }
-        return nombre;
+        }                
+        return es.toJSONObject().toString();
+    }
+
+    private String eliminar(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Estadio e = new Estadio(con).buscar(id);
+        String rutaBk = new Parametros(con).getRutaBakup();
+        String ruta=this.getServletContext().getRealPath("/");
+        if(e.getFoto().length()>0){
+            new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta+File.separator+"img"+File.separator+"estadios"+File.separator+e.getFoto());
+            new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk+File.separator+"img"+File.separator+"estadios"+File.separator+e.getFoto());        
+        }        
+        e.setId(id);
+        e.delete();
+        return true+"";
     }
 }

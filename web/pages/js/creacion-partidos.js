@@ -18,29 +18,41 @@ function init() {
         $.each(json.Partidos,function(i,partido){
             if(fecha!==partido.fecha){
                 fecha = partido.fecha;
+                var res = fecha.split("/");
+                var cod = "";
+                $.each(res,function(i,obj){
+                    cod+=obj;
+                });
                 cuerpo+="<li class='time-label'>";
-                cuerpo+="<span class='bg-red'>";
+                cuerpo+="<span class='bg-red fec_"+cod+" fecha'>";
                 cuerpo+=fecha;
                 cuerpo+="</span>";
                 cuerpo+="</li>";                
             }
             cuerpo+=armarPartidos(partido);
-        });       
-        $("#cuerpo").html(cuerpo);        
+        });
+        $("#cuerpo").html(cuerpo);
+        cuerpo="";
+        $.each(json.Estadios,function(i,estadio){
+            cuerpo+="<option value='"+estadio.id+"'>"+estadio.nombre+"</option>";
+        });
+        $("select[name=estadio]").html(cuerpo);
         ocultarCargando();
     });
 }
 function armarPartidos(partido) {
     var cuerpo = "<li>";
-    cuerpo+="<i class='fa fa-envelope bg-blue'></i>";
-    cuerpo+="<div class='timeline-item'></div>";
+    cuerpo+="<i class='fa fa-futbol-o bg-blue'></i>";    
+    cuerpo+="<div class='timeline-item'>";
     cuerpo+="<span class='time'><i class='fa fa-clock-o'></i>"+partido.hora+"</span>";
-    cuerpo+="<h3 class='timeline-header'><a href='#'>"+partido.nombre1+" 0</a> VS <a href='#'>"+partido.nombre2+" 0</a></h3>";
+    cuerpo+="<h3 class='timeline-header'><a href='#'>"+partido.nombre1+"<span style='margin-left:5px;' class='flag-icon "+partido.icono1+"'></span></a> VS <a href='#'>"+partido.nombre2+"<span style='margin-left:5px;' class='flag-icon "+partido.icono2+"'></span></a></h3>";
     cuerpo+="<div class='timeline-body'>";
-    cuerpo+="";
+    cuerpo+="<h2>"+partido.nombreEstadio+"</h2>";    
+    cuerpo+="<img alt='' src='../img/estadios/"+partido.fotoEstadio+"' style='width:240px;'/>";
     cuerpo+="</div>";
-    cuerpo+="<div class='timeline-footer'>";
-    cuerpo+="<a class='btn btn-primary btn-xs'>VER RESUMEN</a>";
+    cuerpo+="<div class='timeline-footer'>";    
+    cuerpo+="<a class='btn btn-danger btn-xs' style='margin-left:5px;' onclick='eliminar("+partido.id+",this);'>Eliminar</a>";
+    cuerpo+="</div>";
     cuerpo+="</div>";
     cuerpo+="</li>";
     return cuerpo;
@@ -63,11 +75,12 @@ function popRegistrarPartido() {
     openModal('#popCreacionPartido');
 }
 
-function crearPartido(){
+function crearPartido(){    
     var fecha = $("#fechaPartido").val();
     var hora = $("input[name=horaPartido]").val();
     var id1 = $("select[name=equipo1]").val();
     var id2 = $("select[name=equipo2]").val();
+    var idEstadio = $("select[name=estadio]").val();
     if(id1==id2){
         $("select[name=equipo1]").val("");
         $("select[name=equipo2]").val("");
@@ -81,8 +94,50 @@ function crearPartido(){
         $("input[name=horaPartido]").focus();
         return;
     }
-    $.post(url, {evento: "crearPartido",fecha:fecha,hora:hora,id1:id1,id2:id2}, function (resp) {
+    if(idEstadio<=0){
+        return ;
+    }
+    mostrarCargando();
+    $.post(url, {evento: "crearPartido",idEstadio:idEstadio,fecha:fecha,hora:hora,id1:id1,id2:id2}, function (resp) {
         var partido = $.parseJSON(resp);
+        addPartido(partido);
+        ocultarCargando();
         cerrarModal();        
     });    
+}
+function addPartido(partido) {
+    var res = partido.fecha.split("/");
+    var cod = "";
+    $.each(res,function(i,obj){
+        cod+=obj;
+    });
+    if($(".fec_"+cod).length>0){                
+        $(".fec_"+cod).parent().after(armarPartidos(partido));
+    }else{
+        var fecha = partido.fecha;
+        var cuerpo = "";
+        var res = fecha.split("/");
+        var cod = "";
+        $.each(res,function(i,obj){
+            cod+=obj;
+        });
+        cuerpo+="<li class='time-label'>";
+        cuerpo+="<span class='bg-red fec_"+cod+" fecha'>";
+        cuerpo+=fecha;
+        cuerpo+="</span>";
+        cuerpo+="</li>";
+        cuerpo+=armarPartidos(partido);
+        $("#cuerpo").append(cuerpo);
+    }
+}
+function modificar(id) {
+    
+}
+
+function eliminar(id,ele) {
+    $.post(url, {evento: "eliminar",id:id}, function (resp) {
+        if(resp==="true"){
+            $(ele).parent().parent().parent().remove();
+        }
+    });
 }

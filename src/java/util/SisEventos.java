@@ -23,6 +23,7 @@ public class SisEventos {
     public static RoundingMode tipo_redondeo = RoundingMode.HALF_EVEN;
 
     public static String decodeUTF8(String text) throws UnsupportedEncodingException {
+        if(text==null) return "";
         return new String(text.getBytes("ISO-8859-15"), "UTF-8");
     }
 

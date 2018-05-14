@@ -120,6 +120,30 @@ public class Equipos {
         ps.close();
         return json;
     }
+    public JSONArray todosJugadores() throws SQLException, JSONException {
+        String consulta = "SELECT\n"
+                + "    \"Equipos\".\"id\",\n"
+                + "    \"Equipos\".\"nombre\",\n"
+                + "    \"Equipos\".\"icono\",\n"
+                + "    \"Equipos\".\"mundialesGanados\"\n"
+                + "    FROM public.\"Equipos\" ORDER BY nombre;";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("nombre", rs.getString("nombre"));
+            obj.put("icono", rs.getString("icono"));
+            obj.put("mundialesGanados", rs.getInt("mundialesGanados"));
+            obj.put("jugadores", "");
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
 
     public JSONObject buscarJSONObject(int id) throws SQLException, JSONException {
         String consulta = "SELECT\n"
