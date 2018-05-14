@@ -47,7 +47,7 @@
                 <div class="col-xs-12">
                     <div class="box">
                         <div class="box-header">
-                            <h3 class="box-title text-bold">Traspasar Credito</h3>
+                            <h3 class="box-title text-bold">Prestatarios</h3>
                             <i class="fa fa-plus-circle" style="color: green; float: right; cursor:pointer; font-size: 26px;" title="Agregar" onclick="popPrestar();"></i> 
                         </div>
                         <!-- /.box-header -->
@@ -73,30 +73,30 @@
         </div>        
 
         <!--Registrar - Modificar Perfil Modal-->
-        <div class="modal" tabindex="-1" role="dialog" id="registroModal" style="display: none;">
+        <div class="modal" tabindex="-1" role="dialog" id="prestarModal" style="display: none;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-center text-bold" id="registroModalLabel">Registrar Entrega a Relacionador</h5>
+                        <h5 class="modal-title text-center text-bold" id="prestarModalLabel">Prestar Credito a Relacionador</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="formRegistrar">
+                        <form id="formPrestar">
                             <input type="hidden" name="id" id="c_id" value=""/>
                             <div class="form-group">
                                 <label for="c_relacionador">Relacionador:</label>
                                 <select class="form-control" id="c_relacionador" ></select>
                             </div>
                             <div class="form-group">
-                                <label for="c_nombre">Monto a Pestar:</label>
+                                <label for="c_monto">Monto a Pestar:</label>
                                 <input type="text" class="form-control numero_decimal" id="c_monto" />
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" id="boton_perfil" onclick="guardarEntregaRelacionador()">Entregar Credito a Relacionador</button>
+                        <button type="button" class="btn btn-success" id="botonPrestar" onclick="prestar()">Prestar Credito a Relacionador</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                     </div>
                 </div>

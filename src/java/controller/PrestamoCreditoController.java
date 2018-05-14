@@ -13,6 +13,7 @@ import modelo.Prestamo;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
+import util.SisEventos;
 
 @WebServlet(name = "PrestamoCreditoController", urlPatterns = {"/PrestamoCreditoController"})
 public class PrestamoCreditoController extends HttpServlet {
@@ -39,8 +40,14 @@ public class PrestamoCreditoController extends HttpServlet {
                 case "init":
                     html = init(request, con);
                     break;
-                case "guardarEntregaRelacionador":
-                    html = guardarEntregaRelacionador(request, con);
+                case "prestar":
+                    html = prestar(request, con);
+                    break;
+                case "pagarEfectivo":
+                    html = pagarEfectivo(request, con);
+                    break;
+                case "pagarBilletera":
+                    html = pagarBilletera(request, con);
                     break;
             }
             con.commit();
@@ -98,10 +105,33 @@ public class PrestamoCreditoController extends HttpServlet {
 
     }
 
-    private String guardarEntregaRelacionador(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+    private String prestar(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
         double monto = Double.parseDouble(request.getParameter("monto"));
         int relacionador = Integer.parseInt(request.getParameter("relacionador"));
         int entrega = Integer.parseInt(request.getParameter("entrega"));
+        String nombre = null;
+        SisEventos.decodeUTF8(nombre);
+        SisEventos.decodeUTF8(request.getParameter(""));
+        return null;
+    }
+
+    private String pagarEfectivo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        int relacionador = Integer.parseInt(request.getParameter("relacionador"));
+        int entrega = Integer.parseInt(request.getParameter("entrega"));
+        String nombre = null;
+        SisEventos.decodeUTF8(nombre);
+        SisEventos.decodeUTF8(request.getParameter(""));
+        return null;
+    }
+
+    private String pagarBilletera(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        int relacionador = Integer.parseInt(request.getParameter("relacionador"));
+        int entrega = Integer.parseInt(request.getParameter("entrega"));
+        String nombre = null;
+        SisEventos.decodeUTF8(nombre);
+        SisEventos.decodeUTF8(request.getParameter(""));
         return null;
     }
 

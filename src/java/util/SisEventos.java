@@ -110,4 +110,12 @@ public class SisEventos {
         String res = formatter.format(monto);
         return formatter.parse(res).doubleValue();
     }
+    
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String nombre = "ñoño hóla";
+        System.out.println(nombre);
+        System.out.println(SisEventos.decodeUTF8("ñoño hóla"));
+        System.out.println(SisEventos.decodeUTF8(SisEventos.decodeUTF8(SisEventos.decodeUTF8("ñoño hóla"))));
+        System.out.println(SisEventos.decodeUTF8(SisEventos.decodeUTF8(SisEventos.decodeUTF8(SisEventos.decodeUTF8("ñoño hóla")))));
+    }
 }

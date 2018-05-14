@@ -92,10 +92,11 @@ public class EscribirPostgres {
                 values += "?";
 
                 if (lista.get(i).getTipo().equals("date")) {
+                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                } else if (lista.get(i).getTipo().contains("timestamp")) {
                     insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Timestamp(" + lista.get(i).getNombre() + ".getTime())";
-                }
-                if (lista.get(i).getTipo().contains("timestamp")) {
-                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Timestamp(" + lista.get(i).getNombre() + ".getTime())";
+//                } else if (lista.get(i).getTipo().contains("character")) {
+//                    insert += "SisEventos.decodeUTF8(" + lista.get(i).getNombre() + ")";
                 } else {
                     if ("id".equals(lista.get(i).getNombre().substring(0, 2)) && lista.get(i).getTipo().equals("integer")) {
                         insert += lista.get(i).getNombre() + " > 0 ? " + lista.get(i).getNombre() + " : null";
@@ -128,9 +129,10 @@ public class EscribirPostgres {
                 nombres += "\\\"" + lista.get(i).getNombre() + "\\\" = ?";
                 if (lista.get(i).getTipo().equals("date")) {
                     insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
-                }
-                if (lista.get(i).getTipo().contains("timestamp")) {
+                } else if (lista.get(i).getTipo().contains("timestamp")) {
                     insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Timestamp(" + lista.get(i).getNombre() + ".getTime())";
+//                } else if (lista.get(i).getTipo().contains("character")) {
+//                    insert += "SisEventos.decodeUTF8(" + lista.get(i).getNombre() + ")";
                 } else {
                     if ("id".equals(lista.get(i).getNombre().substring(0, 2)) && lista.get(i).getTipo().equals("integer")) {
                         insert += lista.get(i).getNombre() + " > 0 ? " + lista.get(i).getNombre() + " : null";
@@ -192,7 +194,7 @@ public class EscribirPostgres {
     private static String CEliminar(String nombre_clase, List<CamposTabla> lista, String tablespace) {
         String ccampos = "public void delete()  throws SQLException {\n";
         ccampos += "String consulta = \"delete from " + tablespace + ".\\\"" + nombre_clase + "\\\" where \\\"id\\\"= ?;\";\n";
-        ccampos += "con.ejecutarSentencia(consulta);\n";
+        ccampos += "con.ejecutarSentencia(consulta, id);\n";
         ccampos += "}";
 //        ccampos += "\n\n";
 //        ccampos += "public boolean EliminarXid(int id)  throws SQLException {\n";
@@ -211,8 +213,7 @@ public class EscribirPostgres {
             String nombre = lista.get(i).getNombre();
             if (tipo.equals("date")) {
                 ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY') AS " + nombre;
-            }
-            if (tipo.contains("timestamp")) {
+            } else if (tipo.contains("timestamp")) {
                 ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY HH24:MI:SS') AS " + nombre;
             } else {
                 ccampos += "+ \"    \\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\"";
@@ -269,8 +270,7 @@ public class EscribirPostgres {
             String nombre = lista.get(i).getNombre();
             if (tipo.equals("date")) {
                 ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY') AS " + nombre;
-            }
-            if (tipo.contains("timestamp")) {
+            } else if (tipo.contains("timestamp")) {
                 ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY HH24:MI:SS') AS " + nombre;
             } else {
                 ccampos += "+ \"    \\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\"";
@@ -384,6 +384,7 @@ public class EscribirPostgres {
                 + "import org.json.JSONArray;\n"
                 + "import org.json.JSONException;\n"
                 + "import org.json.JSONObject;\n";
+//                + "import util.SisEventos;\n";
     }
 
     private static String Cinit(String nombreClase) {

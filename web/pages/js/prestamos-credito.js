@@ -46,40 +46,41 @@ function prestamosFilaHtml(obj) {
     return tr;
 }
 
-function popRegistrarEntregaRelacionador() {
+function popPrestar() {
     $("#c_id").val(0);
     $("#c_monto").val(0);
-    $('#boton_perfil').text("Entregar Credito a Relacionador");
-    openModal('#registroModal');
+    openModal('#prestarModal');
 }
 
-function guardarEntregaRelacionador() {
+function prestar() {
     var monto = parseFloat($("#c_monto").val());
     if (isNaN(monto) || monto <= 0) {
         openAlert("El Monto debe ser Mayor a 0.");
         return;
     }
-    popConfirmarGuardar();
+    popConfirmarPrestar();
 }
 
-function popConfirmarGuardar() {
-    $("#confirmarModalText").html("¿Esta seguro de Asignar a <strong>" + $("#c_relacionador").find("option:selected").text() + "</strong> el monto de <strong>" + $("#c_monto")[0].value + "</strong>?");
+function popConfirmarPrestar() {
+    $("#confirmarModalText").html("¿Esta seguro de Prestar Credito a <strong>" + $("#c_relacionador").find("option:selected").text() + "</strong> el monto de <strong>" + $("#c_monto")[0].value + "</strong>?");
     $("#confirmarBotonModal").off("click");
-    $("#confirmarBotonModal").click(okGuardarEntregaRelacionador);
+    $("#confirmarBotonModal").click(okPrestar);
     openModal('#confirmarModal');
 }
 
-function okGuardarEntregaRelacionador() {
+function okPrestar() {
     mostrarCargando();
     var id = $("#c_id").val();
     var relacionador = $("#c_relacionador").val();
-    var entrega = $("#c_entrega").val();
     var monto = parseFloat($("#c_monto").val());
-    $.post(url, {evento: "guardarEntregaRelacionador", id: id, monto: monto, relacionador: relacionador, entrega: entrega}, function (resp) {
+    $.post(url, {evento: "prestar", id: id, monto: monto, relacionador: relacionador}, function (resp) {
         if (resp === "false") {
             openAlert("No se Guardo, Intentelo de nuevo.");
         } else {
             var json = $.parseJSON(resp);
+            if (monto > 0) {
+
+            }
             tabla.row.add($(prestamosFilaHtml(json))).draw(false);
             cerrarModal();
             cerrarModal();

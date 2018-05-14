@@ -14,8 +14,7 @@ public class Billetera {
 
     private int id;
     private int idUsuarioRecibe;
-    private Double debe;
-    private Double haber;
+    private Double monto;
     private int idUsuarioDa;
     private int TipoTransaccion;
     private int idApuesta;
@@ -26,11 +25,10 @@ public class Billetera {
         this.con = con;
     }
 
-    public Billetera(int id, int idUsuarioRecibe, Double debe, Double haber, int idUsuarioDa, int TipoTransaccion, int idApuesta, Date fecha, Conexion con) {
+    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int TipoTransaccion, int idApuesta, Date fecha, Conexion con) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
-        this.debe = debe;
-        this.haber = haber;
+        this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.TipoTransaccion = TipoTransaccion;
         this.idApuesta = idApuesta;
@@ -38,11 +36,10 @@ public class Billetera {
         this.con = con;
     }
 
-    public Billetera(int id, int idUsuarioRecibe, Double debe, Double haber, int idUsuarioDa, int TipoTransaccion, int idApuesta, Date fecha) {
+    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int TipoTransaccion, int idApuesta, Date fecha) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
-        this.debe = debe;
-        this.haber = haber;
+        this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.TipoTransaccion = TipoTransaccion;
         this.idApuesta = idApuesta;
@@ -65,20 +62,12 @@ public class Billetera {
         this.idUsuarioRecibe = idUsuarioRecibe;
     }
 
-    public double getDebe() {
-        return debe;
+    public double getMonto() {
+        return monto;
     }
 
-    public void setDebe(Double debe) {
-        this.debe = debe;
-    }
-
-    public double getHaber() {
-        return haber;
-    }
-
-    public void setHaber(Double haber) {
-        this.haber = haber;
+    public void setMonto(Double monto) {
+        this.monto = monto;
     }
 
     public int getIdUsuarioDa() {
@@ -124,30 +113,29 @@ public class Billetera {
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
         String consulta = "INSERT INTO public.\"Billetera\"(\n"
-                + "    \"idUsuarioRecibe\", \"debe\", \"haber\", \"idUsuarioDa\", \"TipoTransaccion\", \"idApuesta\", \"fecha\")\n"
-                + "    VALUES (?, ?, ?, ?, ?, ?, ?)\n";
-        this.id = con.ejecutarInsert(consulta, "id", idUsuarioRecibe > 0 ? idUsuarioRecibe : null, debe, haber, idUsuarioDa > 0 ? idUsuarioDa : null, TipoTransaccion, idApuesta > 0 ? idApuesta : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()));
+                + "    \"idUsuarioRecibe\", \"monto\", \"idUsuarioDa\", \"TipoTransaccion\", \"idApuesta\", \"fecha\")\n"
+                + "    VALUES (?, ?, ?, ?, ?, ?)\n";
+        this.id = con.ejecutarInsert(consulta, "id", idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, TipoTransaccion, idApuesta > 0 ? idApuesta : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()));
         return this.id;
     }
 
     public void update() throws SQLException {
         String consulta = "UPDATE public.\"Billetera\"\n"
-                + "    SET \"idUsuarioRecibe\" = ?, \"debe\" = ?, \"haber\" = ?, \"idUsuarioDa\" = ?, \"TipoTransaccion\" = ?, \"idApuesta\" = ?, \"fecha\" = ?\n"
+                + "    SET \"idUsuarioRecibe\" = ?, \"monto\" = ?, \"idUsuarioDa\" = ?, \"TipoTransaccion\" = ?, \"idApuesta\" = ?, \"fecha\" = ?\n"
                 + "    WHERE \"id\"=?";
-        con.ejecutarSentencia(consulta, idUsuarioRecibe > 0 ? idUsuarioRecibe : null, debe, haber, idUsuarioDa > 0 ? idUsuarioDa : null, TipoTransaccion, idApuesta > 0 ? idApuesta : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), id);
+        con.ejecutarSentencia(consulta, idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, TipoTransaccion, idApuesta > 0 ? idApuesta : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), id);
     }
 
     public void delete() throws SQLException {
         String consulta = "delete from public.\"Billetera\" where \"id\"= ?;";
-        con.ejecutarSentencia(consulta);
+        con.ejecutarSentencia(consulta, id);
     }
 
     public JSONArray todos() throws SQLException, JSONException {
         String consulta = "SELECT\n"
                 + "    \"Billetera\".\"id\",\n"
                 + "    \"Billetera\".\"idUsuarioRecibe\",\n"
-                + "    \"Billetera\".\"debe\",\n"
-                + "    \"Billetera\".\"haber\",\n"
+                + "    \"Billetera\".\"monto\",\n"
                 + "    \"Billetera\".\"idUsuarioDa\",\n"
                 + "    \"Billetera\".\"TipoTransaccion\",\n"
                 + "    \"Billetera\".\"idApuesta\",\n"
@@ -161,8 +149,7 @@ public class Billetera {
             obj = new JSONObject();
             obj.put("id", rs.getInt("id"));
             obj.put("idUsuarioRecibe", rs.getInt("idUsuarioRecibe"));
-            obj.put("debe", rs.getDouble("debe"));
-            obj.put("haber", rs.getDouble("haber"));
+            obj.put("monto", rs.getDouble("monto"));
             obj.put("idUsuarioDa", rs.getInt("idUsuarioDa"));
             obj.put("TipoTransaccion", rs.getInt("TipoTransaccion"));
             obj.put("idApuesta", rs.getInt("idApuesta"));
@@ -178,8 +165,7 @@ public class Billetera {
         String consulta = "SELECT\n"
                 + "    \"Billetera\".\"id\",\n"
                 + "    \"Billetera\".\"idUsuarioRecibe\",\n"
-                + "    \"Billetera\".\"debe\",\n"
-                + "    \"Billetera\".\"haber\",\n"
+                + "    \"Billetera\".\"monto\",\n"
                 + "    \"Billetera\".\"idUsuarioDa\",\n"
                 + "    \"Billetera\".\"TipoTransaccion\",\n"
                 + "    \"Billetera\".\"idApuesta\",\n"
@@ -192,8 +178,7 @@ public class Billetera {
         if (rs.next()) {
             obj.put("id", rs.getInt("id"));
             obj.put("idUsuarioRecibe", rs.getInt("idUsuarioRecibe"));
-            obj.put("debe", rs.getDouble("debe"));
-            obj.put("haber", rs.getDouble("haber"));
+            obj.put("monto", rs.getDouble("monto"));
             obj.put("idUsuarioDa", rs.getInt("idUsuarioDa"));
             obj.put("TipoTransaccion", rs.getInt("TipoTransaccion"));
             obj.put("idApuesta", rs.getInt("idApuesta"));
@@ -215,8 +200,7 @@ public class Billetera {
             obj = new Billetera(con);
             obj.setId(rs.getInt("id"));
             obj.setIdUsuarioRecibe(rs.getInt("idUsuarioRecibe"));
-            obj.setDebe(rs.getDouble("debe"));
-            obj.setHaber(rs.getDouble("haber"));
+            obj.setMonto(rs.getDouble("monto"));
             obj.setIdUsuarioDa(rs.getInt("idUsuarioDa"));
             obj.setTipoTransaccion(rs.getInt("TipoTransaccion"));
             obj.setIdApuesta(rs.getInt("idApuesta"));
@@ -233,82 +217,46 @@ public class Billetera {
         JSONObject obj = new JSONObject();
         obj.put("id", id);
         obj.put("idUsuarioRecibe", idUsuarioRecibe);
-        obj.put("debe", debe);
-        obj.put("haber", haber);
+        obj.put("monto", monto);
         obj.put("idUsuarioDa", idUsuarioDa);
         obj.put("TipoTransaccion", TipoTransaccion);
         obj.put("idApuesta", idApuesta);
         obj.put("fecha", fecha == null ? "" : f1.format(fecha));
         return obj;
     }
+
     /* ********************************************************************** */
     // Negocio
+    public static int TIPO_TRANSACCION_PRESTAMO = 1;
+    public static int TIPO_TRANSACCION_TRASPASO = 2;
+    public static int TIPO_TRANSACCION_APUESTA = 3;
+    public static int TIPO_TRANSACCION_GANANCIA = 4;
+    public static int TIPO_TRANSACCION_PAGO_PRESTAMO = 5;
+    public static int TIPO_TRANSACCION_RETIRO = 6;
 
-    public JSONArray todosCreditosAsignados() throws SQLException, JSONException {
-        String consulta = "SELECT\n"
-                + "    \"Billetera\".\"id\",\n"
-                + "    \"Billetera\".\"idUsuarioApostador\",\n"
-                + "    \"Billetera\".\"debe\",\n"
-                + "    \"Billetera\".\"haber\",\n"
-                + "    \"Billetera\".\"idUsuarioRelacionador\",\n"
-                + "    \"Billetera\".\"TipoTransaccion\",\n"
-                + "    \"Billetera\".\"idApuesta\",\n"
-                + "    to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY') AS fecha\n"
-                + "    FROM public.\"Billetera\";";
-        PreparedStatement ps = con.statamet(consulta);
+    public double getCreditoDisponible(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT SUM(\"tabla\".\"monto\") AS \"monto\",\n"
+                + "	   \"tabla\".\"idUsuario\"\n"
+                + "FROM (\n"
+                + "    SELECT \"Billetera\".\"monto\",\n"
+                + "           \"Billetera\".\"idUsuarioRecibe\" AS \"idUsuario\"\n"
+                + "    FROM public.\"Billetera\"\n"
+                + "    UNION\n"
+                + "    SELECT \"Billetera\".\"monto\" * -1 AS \"monto\",\n"
+                + "           \"Billetera\".\"idUsuarioDa\" AS \"idUsuario\"\n"
+                + "    FROM public.\"Billetera\"\n"
+                + ") as tabla\n"
+                + "WHERE \"tabla\".\"idUsuario\" = ?\n"
+                + "GROUP BY \"tabla\".\"idUsuario\";";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario);
         ResultSet rs = ps.executeQuery();
-        JSONArray json = new JSONArray();
-        JSONObject obj;
-        while (rs.next()) {
-            obj = new JSONObject();
-            obj.put("id", rs.getInt("id"));
-            obj.put("idUsuarioApostador", rs.getInt("idUsuarioApostador"));
-            obj.put("debe", rs.getDouble("debe"));
-            obj.put("haber", rs.getDouble("haber"));
-            obj.put("idUsuarioRelacionador", rs.getInt("idUsuarioRelacionador"));
-            obj.put("TipoTransaccion", rs.getInt("TipoTransaccion"));
-            obj.put("idApuesta", rs.getInt("idApuesta"));
-            obj.put("fecha", rs.getString("fecha"));
-            json.put(obj);
-        }
+        double credito = rs.next() ? rs.getDouble("monto") : 0;
         rs.close();
         ps.close();
-        return json;
+        return credito;
     }
 
-    public JSONArray getCreditoDisponible() throws SQLException, JSONException {
-        String consulta = "SELECT\n"
-                + "    \"Billetera\".\"id\",\n"
-                + "    \"Billetera\".\"idUsuarioApostador\",\n"
-                + "    \"Billetera\".\"debe\",\n"
-                + "    \"Billetera\".\"haber\",\n"
-                + "    \"Billetera\".\"idUsuarioRelacionador\",\n"
-                + "    \"Billetera\".\"TipoTransaccion\",\n"
-                + "    \"Billetera\".\"idApuesta\",\n"
-                + "    to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY') AS fecha\n"
-                + "    FROM public.\"Billetera\";";
-        PreparedStatement ps = con.statamet(consulta);
-        ResultSet rs = ps.executeQuery();
-        JSONArray json = new JSONArray();
-        JSONObject obj;
-        while (rs.next()) {
-            obj = new JSONObject();
-            obj.put("id", rs.getInt("id"));
-            obj.put("idUsuarioApostador", rs.getInt("idUsuarioApostador"));
-            obj.put("debe", rs.getDouble("debe"));
-            obj.put("haber", rs.getDouble("haber"));
-            obj.put("idUsuarioRelacionador", rs.getInt("idUsuarioRelacionador"));
-            obj.put("TipoTransaccion", rs.getInt("TipoTransaccion"));
-            obj.put("idApuesta", rs.getInt("idApuesta"));
-            obj.put("fecha", rs.getString("fecha"));
-            json.put(obj);
-        }
-        rs.close();
-        ps.close();
-        return json;
-    }
-
-    public JSONArray getDisponibleCredito() throws SQLException, JSONException {
+    public JSONArray getUsuariosConCredito() throws SQLException, JSONException {
         String consulta = "SELECT\n"
                 + "    \"Billetera\".\"id\",\n"
                 + "    \"Billetera\".\"idUsuarioApostador\",\n"
