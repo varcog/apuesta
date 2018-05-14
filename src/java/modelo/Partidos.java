@@ -18,29 +18,32 @@ public class Partidos {
     private int idEquipo2;
     private int idUsuario;
     private int idEstadio;
+    private int idGrupo;
     private Conexion con = null;
 
     public Partidos(Conexion con) {
         this.con = con;
     }
 
-    public Partidos(int id, Date fecha, int idEquipo1, int idEquipo2, int idUsuario, int idEstadio, Conexion con) {
+    public Partidos(int id, Date fecha, int idEquipo1, int idEquipo2, int idUsuario, int idEstadio, int idGrupo, Conexion con) {
         this.id = id;
         this.fecha = fecha;
         this.idEquipo1 = idEquipo1;
         this.idEquipo2 = idEquipo2;
         this.idUsuario = idUsuario;
         this.idEstadio = idEstadio;
+        this.idGrupo = idGrupo;
         this.con = con;
     }
 
-    public Partidos(int id, Date fecha, int idEquipo1, int idEquipo2, int idUsuario, int idEstadio) {
+    public Partidos(int id, Date fecha, int idEquipo1, int idEquipo2, int idUsuario, int idEstadio, int idGrupo) {
         this.id = id;
         this.fecha = fecha;
         this.idEquipo1 = idEquipo1;
         this.idEquipo2 = idEquipo2;
         this.idUsuario = idUsuario;
         this.idEstadio = idEstadio;
+        this.idGrupo = idGrupo;
     }
 
     public int getId() {
@@ -91,6 +94,14 @@ public class Partidos {
         this.idEstadio = idEstadio;
     }
 
+    public int getIdGrupo() {
+        return idGrupo;
+    }
+
+    public void setIdGrupo(int idGrupo) {
+        this.idGrupo = idGrupo;
+    }
+
     public Conexion getCon() {
         return this.con;
     }
@@ -102,113 +113,24 @@ public class Partidos {
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
         String consulta = "INSERT INTO public.\"Partidos\"(\n"
-                + "    \"fecha\", \"idEquipo1\", \"idEquipo2\", \"idUsuario\", \"idEstadio\")\n"
-                + "    VALUES (?, ?, ?, ?, ?)\n";
-        this.id = con.ejecutarInsert(consulta, "id", fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), idEquipo1 > 0 ? idEquipo1 : null, idEquipo2 > 0 ? idEquipo2 : null, idUsuario > 0 ? idUsuario : null, idEstadio > 0 ? idEstadio : null);
+                + "    \"fecha\", \"idEquipo1\", \"idEquipo2\", \"idUsuario\", \"idEstadio\", \"idGrupo\")\n"
+                + "    VALUES (?, ?, ?, ?, ?, ?)\n";
+        this.id = con.ejecutarInsert(consulta, "id", fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), idEquipo1 > 0 ? idEquipo1 : null, idEquipo2 > 0 ? idEquipo2 : null, idUsuario > 0 ? idUsuario : null, idEstadio > 0 ? idEstadio : null, idGrupo > 0 ? idGrupo : null);
         return this.id;
     }
 
     public void update() throws SQLException {
         String consulta = "UPDATE public.\"Partidos\"\n"
-                + "    SET \"fecha\" = ?, \"idEquipo1\" = ?, \"idEquipo2\" = ?, \"idUsuario\" = ?, \"idEstadio\" = ?\n"
+                + "    SET \"fecha\" = ?, \"idEquipo1\" = ?, \"idEquipo2\" = ?, \"idUsuario\" = ?, \"idEstadio\" = ?, \"idGrupo\" = ?\n"
                 + "    WHERE \"id\"=?";
-        con.ejecutarSentencia(consulta, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), idEquipo1 > 0 ? idEquipo1 : null, idEquipo2 > 0 ? idEquipo2 : null, idUsuario > 0 ? idUsuario : null, idEstadio > 0 ? idEstadio : null, id);
+        con.ejecutarSentencia(consulta, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), idEquipo1 > 0 ? idEquipo1 : null, idEquipo2 > 0 ? idEquipo2 : null, idUsuario > 0 ? idUsuario : null, idEstadio > 0 ? idEstadio : null, idGrupo > 0 ? idGrupo : null, id);
     }
 
     public void delete() throws SQLException {
         String consulta = "delete from public.\"Partidos\" where \"id\"= ?;";
-        con.ejecutarSentencia(consulta,id);
+        con.ejecutarSentencia(consulta, id);
     }
-
-    public JSONArray todos() throws SQLException, JSONException {
-        String consulta = "SELECT\n" +
-                            "\"public\".\"Partidos\".\"id\",\n" +
-                            "to_char(\"public\".\"Partidos\".\"fecha\",'DD/MM/YYYY') AS fecha,\n" +
-                            "to_char(\"public\".\"Partidos\".\"fecha\",'HH24:MI') AS hora,\n" +
-                            "\"public\".\"Partidos\".\"idEquipo1\",\n" +
-                            "\"public\".\"Partidos\".\"idEquipo2\",\n" +
-                            "\"public\".\"Equipos\".nombre as nombre1,\n" +
-                            "\"public\".\"Equipos\".icono as icono1,\n" +
-                            "eq.nombre as nombre2,\n" +
-                            "eq.icono as icono2,\n" +
-                            "\"public\".\"Estadio\".id AS idEstadio,\n" +
-                            "\"public\".\"Estadio\".foto as fotoEstadio,\n" +
-                            "\"public\".\"Estadio\".nombre as nombreEstadio\n" +
-                            "FROM\n" +
-                            "\"public\".\"Partidos\"\n" +
-                            "INNER JOIN \"public\".\"Equipos\" ON \"public\".\"Equipos\".\"id\" = \"public\".\"Partidos\".\"idEquipo1\"\n" +
-                            "INNER JOIN \"public\".\"Equipos\" eq ON eq.\"id\" = \"public\".\"Partidos\".\"idEquipo2\"\n" +
-                            "INNER JOIN \"public\".\"Estadio\" ON \"public\".\"Partidos\".\"idEstadio\" = \"public\".\"Estadio\".\"id\"\n" +
-                            "ORDER BY\n" +
-                            "\"public\".\"Partidos\".fecha ASC;";
-        PreparedStatement ps = con.statamet(consulta);
-        ResultSet rs = ps.executeQuery();
-        JSONArray json = new JSONArray();
-        JSONObject obj;
-        while (rs.next()) {
-            obj = new JSONObject();
-            obj.put("id", rs.getInt("id"));            
-            obj.put("fecha", rs.getString("fecha"));            
-            obj.put("hora", rs.getString("hora"));
-            obj.put("idEquipo1", rs.getInt("idEquipo1"));
-            obj.put("idEquipo2", rs.getInt("idEquipo2"));
-            obj.put("nombre1", rs.getString("nombre1"));
-            obj.put("icono1", rs.getString("icono1"));
-            obj.put("nombre2", rs.getString("nombre2"));
-            obj.put("icono2", rs.getString("icono2"));
-            obj.put("idEstadio", rs.getInt("idEstadio"));
-            obj.put("nombreEstadio", rs.getString("nombreEstadio"));
-            obj.put("fotoEstadio", rs.getString("fotoEstadio"));
-            json.put(obj);
-        }
-        rs.close();
-        ps.close();
-        return json;
-    }
-    public JSONObject buscarCompleto(int id) throws SQLException, JSONException {
-        String consulta = "SELECT\n" +
-                            "\"public\".\"Partidos\".\"id\",\n" +
-                            "to_char(\"public\".\"Partidos\".\"fecha\",'DD/MM/YYYY') AS fecha,\n" +
-                            "to_char(\"public\".\"Partidos\".\"fecha\",'HH24:MI') AS hora,\n" +
-                            "\"public\".\"Partidos\".\"idEquipo1\",\n" +
-                            "\"public\".\"Partidos\".\"idEquipo2\",\n" +
-                            "\"public\".\"Equipos\".nombre as nombre1,\n" +
-                            "\"public\".\"Equipos\".icono as icono1,\n" +
-                            "eq.nombre as nombre2,\n" +
-                            "eq.icono as icono2,\n" +
-                            "\"public\".\"Estadio\".id as idEstadio,\n" +
-                            "\"public\".\"Estadio\".foto as fotoEstadio,\n" +
-                            "\"public\".\"Estadio\".nombre as nombreEstadio\n" +
-                            "FROM\n" +
-                            "\"public\".\"Partidos\"\n" +
-                            "INNER JOIN \"public\".\"Equipos\" ON \"public\".\"Equipos\".\"id\" = \"public\".\"Partidos\".\"idEquipo1\"\n" +
-                            "INNER JOIN \"public\".\"Equipos\" eq ON eq.\"id\" = \"public\".\"Partidos\".\"idEquipo2\"\n" +
-                            "INNER JOIN \"public\".\"Estadio\" ON \"public\".\"Partidos\".\"idEstadio\" = \"public\".\"Estadio\".\"id\"\n" +
-                            "Where \"public\".\"Partidos\".id = ?\n" +
-                            "ORDER BY\n" +
-                            "\"public\".\"Partidos\".fecha ASC;";
-        PreparedStatement ps = con.statamet(consulta);
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();        
-        JSONObject obj = new JSONObject();
-        while (rs.next()) {            
-            obj.put("id", rs.getInt("id"));            
-            obj.put("fecha", rs.getString("fecha"));            
-            obj.put("hora", rs.getString("hora"));
-            obj.put("idEquipo1", rs.getInt("idEquipo1"));
-            obj.put("idEquipo2", rs.getInt("idEquipo2"));
-            obj.put("nombre1", rs.getString("nombre1"));
-            obj.put("icono1", rs.getString("icono1"));
-            obj.put("nombre2", rs.getString("nombre2"));
-            obj.put("icono2", rs.getString("icono2"));
-            obj.put("idEstadio", rs.getInt("idEstadio"));
-            obj.put("nombreEstadio", rs.getString("nombreEstadio"));
-            obj.put("fotoEstadio", rs.getString("fotoEstadio"));
-        }
-        rs.close();
-        ps.close();
-        return obj;
-    }
+    
 
     public JSONObject buscarJSONObject(int id) throws SQLException, JSONException {
         String consulta = "SELECT\n"
@@ -217,7 +139,8 @@ public class Partidos {
                 + "    \"Partidos\".\"idEquipo1\",\n"
                 + "    \"Partidos\".\"idEquipo2\",\n"
                 + "    \"Partidos\".\"idUsuario\",\n"
-                + "    \"Partidos\".\"idEstadio\"\n"
+                + "    \"Partidos\".\"idEstadio\",\n"
+                + "    \"Partidos\".\"idGrupo\"\n"
                 + "    FROM public.\"Partidos\"\n"
                 + "    WHERE \"id\" = ?;";
         PreparedStatement ps = con.statametObject(consulta, id);
@@ -230,6 +153,7 @@ public class Partidos {
             obj.put("idEquipo2", rs.getInt("idEquipo2"));
             obj.put("idUsuario", rs.getInt("idUsuario"));
             obj.put("idEstadio", rs.getInt("idEstadio"));
+            obj.put("idGrupo", rs.getInt("idGrupo"));
         }
         rs.close();
         ps.close();
@@ -251,6 +175,7 @@ public class Partidos {
             obj.setIdEquipo2(rs.getInt("idEquipo2"));
             obj.setIdUsuario(rs.getInt("idUsuario"));
             obj.setIdEstadio(rs.getInt("idEstadio"));
+            obj.setIdGrupo(rs.getInt("idGrupo"));
         }
         rs.close();
         ps.close();
@@ -259,19 +184,115 @@ public class Partidos {
 
     public JSONObject toJSONObject() throws JSONException {
         SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat f1 = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat f1 = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         JSONObject obj = new JSONObject();
         obj.put("id", id);
-        obj.put("fecha", fecha == null ? "" : f.format(fecha));
-        obj.put("hora", fecha == null ? "" : f1.format(fecha));
+        obj.put("fecha", fecha == null ? "" : f1.format(fecha));
         obj.put("idEquipo1", idEquipo1);
         obj.put("idEquipo2", idEquipo2);
         obj.put("idUsuario", idUsuario);
         obj.put("idEstadio", idEstadio);
+        obj.put("idGrupo", idGrupo);
         return obj;
     }
 
 
     /* ********************************************************************** */
     // Negocio
+    
+    public JSONArray todos() throws SQLException, JSONException {
+        String consulta = "SELECT\n" +
+                            "\"public\".\"Partidos\".\"id\",\n" +
+                            "to_char(\"public\".\"Partidos\".\"fecha\",'DD/MM/YYYY') AS fecha,\n" +
+                            "to_char(\"public\".\"Partidos\".\"fecha\",'HH24:MI') AS hora,\n" +
+                            "\"public\".\"Partidos\".\"idEquipo1\",\n" +
+                            "\"public\".\"Partidos\".\"idEquipo2\",\n" +
+                            "\"public\".\"Equipos\".nombre as nombre1,\n" +
+                            "\"public\".\"Grupo\".nombre as nombreGrupo,\n" +
+                            "\"public\".\"Equipos\".icono as icono1,\n" +
+                            "eq.nombre as nombre2,\n" +
+                            "eq.icono as icono2,\n" +
+                            "\"public\".\"Estadio\".id AS idEstadio,\n" +
+                            "\"public\".\"Estadio\".foto as fotoEstadio,\n" +
+                            "\"public\".\"Estadio\".nombre as nombreEstadio\n" +
+                            "FROM\n" +
+                            "\"public\".\"Partidos\"\n" +
+                            "INNER JOIN \"public\".\"Equipos\" ON \"public\".\"Equipos\".\"id\" = \"public\".\"Partidos\".\"idEquipo1\"\n" +
+                            "INNER JOIN \"public\".\"Equipos\" eq ON eq.\"id\" = \"public\".\"Partidos\".\"idEquipo2\"\n" +
+                            "INNER JOIN \"public\".\"Estadio\" ON \"public\".\"Partidos\".\"idEstadio\" = \"public\".\"Estadio\".\"id\"\n" +
+                            "INNER JOIN \"public\".\"Grupo\" ON \"public\".\"Partidos\".\"idGrupo\" = \"public\".\"Grupo\".\"id\"\n" +
+                            "ORDER BY\n" +
+                            "\"public\".\"Partidos\".fecha ASC;";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));            
+            obj.put("fecha", rs.getString("fecha"));            
+            obj.put("hora", rs.getString("hora"));
+            obj.put("idEquipo1", rs.getInt("idEquipo1"));
+            obj.put("idEquipo2", rs.getInt("idEquipo2"));
+            obj.put("nombre1", rs.getString("nombre1"));
+            obj.put("icono1", rs.getString("icono1"));
+            obj.put("nombre2", rs.getString("nombre2"));
+            obj.put("nombreGrupo", rs.getString("nombreGrupo"));
+            obj.put("icono2", rs.getString("icono2"));
+            obj.put("idEstadio", rs.getInt("idEstadio"));
+            obj.put("nombreEstadio", rs.getString("nombreEstadio"));
+            obj.put("fotoEstadio", rs.getString("fotoEstadio"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+    public JSONObject buscarCompleto(int id) throws SQLException, JSONException {
+        String consulta = "SELECT\n" +
+                            "\"public\".\"Partidos\".\"id\",\n" +
+                            "to_char(\"public\".\"Partidos\".\"fecha\",'DD/MM/YYYY') AS fecha,\n" +
+                            "to_char(\"public\".\"Partidos\".\"fecha\",'HH24:MI') AS hora,\n" +
+                            "\"public\".\"Partidos\".\"idEquipo1\",\n" +
+                            "\"public\".\"Partidos\".\"idEquipo2\",\n" +
+                            "\"public\".\"Equipos\".nombre as nombre1,\n" +
+                            "\"public\".\"Equipos\".icono as icono1,\n" +
+                            "\"public\".\"Grupo\".nombre as nombreGrupo,\n" +
+                            "eq.nombre as nombre2,\n" +
+                            "eq.icono as icono2,\n" +
+                            "\"public\".\"Estadio\".id as idEstadio,\n" +
+                            "\"public\".\"Estadio\".foto as fotoEstadio,\n" +
+                            "\"public\".\"Estadio\".nombre as nombreEstadio\n" +
+                            "FROM\n" +
+                            "\"public\".\"Partidos\"\n" +
+                            "INNER JOIN \"public\".\"Equipos\" ON \"public\".\"Equipos\".\"id\" = \"public\".\"Partidos\".\"idEquipo1\"\n" +
+                            "INNER JOIN \"public\".\"Equipos\" eq ON eq.\"id\" = \"public\".\"Partidos\".\"idEquipo2\"\n" +
+                            "INNER JOIN \"public\".\"Estadio\" ON \"public\".\"Partidos\".\"idEstadio\" = \"public\".\"Estadio\".\"id\"\n" +
+                            "INNER JOIN \"public\".\"Grupo\" ON \"public\".\"Partidos\".\"idGrupo\" = \"public\".\"Grupo\".\"id\"\n" +
+                            "Where \"public\".\"Partidos\".id = ?\n" +
+                            "ORDER BY\n" +
+                            "\"public\".\"Partidos\".fecha ASC;";
+        PreparedStatement ps = con.statamet(consulta);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();        
+        JSONObject obj = new JSONObject();
+        while (rs.next()) {            
+            obj.put("id", rs.getInt("id"));            
+            obj.put("fecha", rs.getString("fecha"));            
+            obj.put("hora", rs.getString("hora"));
+            obj.put("idEquipo1", rs.getInt("idEquipo1"));
+            obj.put("idEquipo2", rs.getInt("idEquipo2"));
+            obj.put("nombre1", rs.getString("nombre1"));
+            obj.put("nombreGrupo", rs.getString("nombreGrupo"));
+            obj.put("icono1", rs.getString("icono1"));
+            obj.put("nombre2", rs.getString("nombre2"));
+            obj.put("icono2", rs.getString("icono2"));
+            obj.put("idEstadio", rs.getInt("idEstadio"));
+            obj.put("nombreEstadio", rs.getString("nombreEstadio"));
+            obj.put("fotoEstadio", rs.getString("fotoEstadio"));
+        }
+        rs.close();
+        ps.close();
+        return obj;
+    }
 }

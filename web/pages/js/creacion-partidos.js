@@ -13,6 +13,11 @@ function init() {
         });       
         $("select[name=equipo1]").html(cuerpo);
         $("select[name=equipo2]").html(cuerpo);
+        cuerpo = "";
+        $.each(json.Grupos,function(i,grupo){
+            cuerpo+="<option value='"+grupo.id+"'>"+grupo.nombre+"</option>";
+        });       
+        $("select[name=grupo]").html(cuerpo);        
         cuerpo="";
         var fecha = "";
         $.each(json.Partidos,function(i,partido){
@@ -47,7 +52,8 @@ function armarPartidos(partido) {
     cuerpo+="<span class='time'><i class='fa fa-clock-o'></i>"+partido.hora+"</span>";
     cuerpo+="<h3 class='timeline-header'><a href='#'>"+partido.nombre1+"<span style='margin-left:5px;' class='flag-icon "+partido.icono1+"'></span></a> VS <a href='#'>"+partido.nombre2+"<span style='margin-left:5px;' class='flag-icon "+partido.icono2+"'></span></a></h3>";
     cuerpo+="<div class='timeline-body'>";
-    cuerpo+="<h2>"+partido.nombreEstadio+"</h2>";    
+    cuerpo+="<h2>"+partido.nombreGrupo+"</h2>";    
+    cuerpo+="<h4>"+partido.nombreEstadio+"</h4>";        
     cuerpo+="<img alt='' src='../img/estadios/"+partido.fotoEstadio+"' style='width:240px;'/>";
     cuerpo+="</div>";
     cuerpo+="<div class='timeline-footer'>";    
@@ -81,6 +87,7 @@ function crearPartido(){
     var id1 = $("select[name=equipo1]").val();
     var id2 = $("select[name=equipo2]").val();
     var idEstadio = $("select[name=estadio]").val();
+    var idGrupo = $("select[name=grupo]").val();
     if(id1==id2){
         $("select[name=equipo1]").val("");
         $("select[name=equipo2]").val("");
@@ -97,8 +104,11 @@ function crearPartido(){
     if(idEstadio<=0){
         return ;
     }
+    if(idGrupo<=0){
+        return ;
+    }
     mostrarCargando();
-    $.post(url, {evento: "crearPartido",idEstadio:idEstadio,fecha:fecha,hora:hora,id1:id1,id2:id2}, function (resp) {
+    $.post(url, {evento: "crearPartido",idGrupo:idGrupo,idEstadio:idEstadio,fecha:fecha,hora:hora,id1:id1,id2:id2}, function (resp) {
         var partido = $.parseJSON(resp);
         addPartido(partido);
         ocultarCargando();

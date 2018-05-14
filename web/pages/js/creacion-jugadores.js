@@ -75,10 +75,9 @@ function verJugadores(id,ele) {
         var cuerpo = "";
         $.post(url, {evento: "verJugadores",id:id}, function (resp) {
             var json = $.parseJSON(resp);
-            $.each(json,function(i,jugador){
-                if(cont===1){
-                    cuerpo+="<div class='row id_"+id+"'>";
-                }
+            cuerpo+="<i class='fa fa-plus-circle' style='color: green; float: right; cursor:pointer; font-size: 26px;' title='Agregar' onclick='popRegistrarJugador("+id+",this);'></i>";
+            cuerpo+="<div class='row id_"+id+"'>";
+            $.each(json,function(i,jugador){                
                 cuerpo+=armarTargeta(jugador);
                 if(cont===3){
                     cuerpo+="</div>";
@@ -89,7 +88,12 @@ function verJugadores(id,ele) {
             if(cont!==1){
                 cuerpo+="</div>";
             }
-            return cuerpo;
+            $(ele).after(cuerpo);
+            $(ele).data("generado",true);
         });    
     }    
+}
+
+function popRegistrarJugador() {
+    
 }

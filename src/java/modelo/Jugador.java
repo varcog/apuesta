@@ -152,8 +152,10 @@ public class Jugador {
                 + "    \"Jugador\".\"detalle\",\n"
                 + "    \"Jugador\".\"foto\",\n"
                 + "    to_char(\"Jugador\".\"fechaNacimiento\", 'DD/MM/YYYY') AS fechaNacimiento\n"
-                + "    FROM public.\"Jugador\";";
+                + "    FROM public.\"Jugador\"\n"
+                + "    WHERE public.\"Jugador\".\"idEquipo\" = ?;";
         PreparedStatement ps = con.statamet(consulta);
+        ps.setInt(1, idEquipo);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
         JSONObject obj;

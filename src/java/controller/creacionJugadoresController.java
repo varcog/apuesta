@@ -1,21 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import conexion.Conexion;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.text.ParseException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Equipos;
+import modelo.Jugador;
 import modelo.Usuario;
 import org.json.JSONException;
 
@@ -56,6 +50,9 @@ public class creacionJugadoresController extends HttpServlet {
             switch (evento) {
                 case "init":
                     html = init(request, con);
+                    break;                             
+                case "verJugadores":
+                    html = verJugadores(request, con);
                     break;                             
             }
             con.commit();
@@ -110,5 +107,9 @@ public class creacionJugadoresController extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {                
         return new Equipos(con).todos().toString();
+    }
+
+    private String verJugadores(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        return new Jugador(con).todos().toString();
     }
 }

@@ -116,7 +116,7 @@ public class Estadio {
                 + "    \"Estadio\".\"descripcion\",\n"
                 + "    \"Estadio\".\"foto\",\n"
                 + "    \"Estadio\".\"capacidad\"\n"
-                + "    FROM public.\"Estadio\";";
+                + "    FROM public.\"Estadio\" ORDER BY nombre;";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();

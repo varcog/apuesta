@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Equipos;
 import modelo.Estadio;
+import modelo.Grupo;
 import modelo.Partidos;
 import modelo.Usuario;
 import org.json.JSONException;
@@ -128,6 +129,7 @@ public class creacionPartidosController extends HttpServlet {
         obj.put("Equipos", new Equipos(con).todos());
         obj.put("Partidos", new Partidos(con).todos());
         obj.put("Estadios", new Estadio(con).todos());
+        obj.put("Grupos", new Grupo(con).todos());
         return obj.toString();
     }
 
@@ -137,9 +139,10 @@ public class creacionPartidosController extends HttpServlet {
         int id1 = Integer.parseInt(request.getParameter("id1"));        
         int id2 = Integer.parseInt(request.getParameter("id2"));
         int idEstadio = Integer.parseInt(request.getParameter("idEstadio"));
+        int idGrupo = Integer.parseInt(request.getParameter("idGrupo"));
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy kk:mm");
         Date dfecha = formato.parse(fecha+" "+hora);
-        Partidos p = new Partidos(0, dfecha, id1, id2, con.getUsuario().getId(),idEstadio, con);
+        Partidos p = new Partidos(0, dfecha, id1, id2, con.getUsuario().getId(),idEstadio, idGrupo,con);
         int id=p.insert();
         return new Partidos(con).buscarCompleto(id).toString();
     }
