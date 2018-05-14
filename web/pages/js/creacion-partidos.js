@@ -130,9 +130,6 @@ function addPartido(partido) {
         $("#cuerpo").append(cuerpo);
     }
 }
-function modificar(id) {
-    
-}
 
 function eliminar(id,ele) {
     $.post(url, {evento: "eliminar",id:id}, function (resp) {
