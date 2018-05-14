@@ -235,28 +235,25 @@ public class Billetera {
     public static int TIPO_TRANSACCION_RETIRO = 6;
 
     public double getCreditoDisponible(int idUsuario) throws SQLException, JSONException {
-        String consulta = "SELECT SUM(\"tabla\".\"monto\"),\n"
+        String consulta = "SELECT SUM(\"tabla\".\"monto\") AS \"monto\",\n"
                 + "	   \"tabla\".\"idUsuario\"\n"
                 + "FROM (\n"
                 + "    SELECT \"Billetera\".\"monto\",\n"
-                + "           \"Billetera\".\"idUsuarioRecibe\" as \"idUsuario\"\n"
+                + "           \"Billetera\".\"idUsuarioRecibe\" AS \"idUsuario\"\n"
                 + "    FROM public.\"Billetera\"\n"
                 + "    UNION\n"
-                + "    SELECT \"Billetera\".\"monto\" * -1 as \"monto\",\n"
-                + "           \"Billetera\".\"idUsuarioDa\" as \"idUsuario\"\n"
+                + "    SELECT \"Billetera\".\"monto\" * -1 AS \"monto\",\n"
+                + "           \"Billetera\".\"idUsuarioDa\" AS \"idUsuario\"\n"
                 + "    FROM public.\"Billetera\"\n"
                 + ") as tabla\n"
                 + "WHERE \"tabla\".\"idUsuario\" = ?\n"
                 + "GROUP BY \"tabla\".\"idUsuario\";";
         PreparedStatement ps = con.statametObject(consulta, idUsuario);
         ResultSet rs = ps.executeQuery();
-        
-        if (rs.next()) {
-            
-        }
+        double credito = rs.next() ? rs.getDouble("monto") : 0;
         rs.close();
         ps.close();
-        return 0;
+        return credito;
     }
 
     public JSONArray getUsuariosConCredito() throws SQLException, JSONException {
