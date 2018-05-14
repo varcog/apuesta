@@ -92,7 +92,10 @@ public class EscribirPostgres {
                 values += "?";
 
                 if (lista.get(i).getTipo().equals("date")) {
-                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Timestamp(" + lista.get(i).getNombre() + ".getTime())";
+                }
+                if (lista.get(i).getTipo().contains("timestamp")) {
+                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Timestamp(" + lista.get(i).getNombre() + ".getTime())";
                 } else {
                     if ("id".equals(lista.get(i).getNombre().substring(0, 2)) && lista.get(i).getTipo().equals("integer")) {
                         insert += lista.get(i).getNombre() + " > 0 ? " + lista.get(i).getNombre() + " : null";
@@ -125,6 +128,9 @@ public class EscribirPostgres {
                 nombres += "\\\"" + lista.get(i).getNombre() + "\\\" = ?";
                 if (lista.get(i).getTipo().equals("date")) {
                     insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Date(" + lista.get(i).getNombre() + ".getTime())";
+                }
+                if (lista.get(i).getTipo().contains("timestamp")) {
+                    insert += lista.get(i).getNombre() + " == null ? null : new java.sql.Timestamp(" + lista.get(i).getNombre() + ".getTime())";
                 } else {
                     if ("id".equals(lista.get(i).getNombre().substring(0, 2)) && lista.get(i).getTipo().equals("integer")) {
                         insert += lista.get(i).getNombre() + " > 0 ? " + lista.get(i).getNombre() + " : null";
@@ -171,7 +177,7 @@ public class EscribirPostgres {
                 ccampos += "public double get" + nombreU + "(){\nreturn " + nombre + ";\n}\n";
                 ccampos += "public void set" + nombreU + "(Double " + nombre + "){\n this." + nombre + " = " + nombre + ";\n}\n";
             }
-            if (tipo.equals("date")) {
+            if (tipo.equals("date") || tipo.contains("timestamp")) {
 
 //                ccampos += "public String get" + nombreU + "Formato() {\nif(" + nombre + "!=null)\n{\nSimpleDateFormat sdf = new SimpleDateFormat(\"dd/MM/yyyy\");\nreturn sdf.format(" + nombre + ");\n}\nelse\nreturn \"\";\n}\n";
                 ccampos += "public Date get" + nombreU + "() {\nreturn " + nombre + ";\n}";
@@ -205,6 +211,9 @@ public class EscribirPostgres {
             String nombre = lista.get(i).getNombre();
             if (tipo.equals("date")) {
                 ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY') AS " + nombre;
+            }
+            if (tipo.contains("timestamp")) {
+                ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY HH24:MI:SS') AS " + nombre;
             } else {
                 ccampos += "+ \"    \\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\"";
             }
@@ -238,6 +247,9 @@ public class EscribirPostgres {
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
+            if (lista.get(i).getTipo().contains("timestamp")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
         }
         ccampos += "json.put(obj);\n";
         ccampos += "}\n";
@@ -256,8 +268,10 @@ public class EscribirPostgres {
             String tipo = lista.get(i).getTipo();
             String nombre = lista.get(i).getNombre();
             if (tipo.equals("date")) {
-
                 ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY') AS " + nombre;
+            }
+            if (tipo.contains("timestamp")) {
+                ccampos += "+ \"    to_char(\\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\", 'DD/MM/YYYY HH24:MI:SS') AS " + nombre;
             } else {
                 ccampos += "+ \"    \\\"" + nombre_clase + "\\\".\\\"" + nombre + "\\\"";
             }
@@ -288,6 +302,9 @@ public class EscribirPostgres {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getDouble(\"" + lista.get(i).getNombre() + "\"));\n";
             }
             if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
+            if (lista.get(i).getTipo().contains("timestamp")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\",rs.getString(\"" + lista.get(i).getNombre() + "\"));\n";
             }
         }
@@ -325,6 +342,9 @@ public class EscribirPostgres {
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getDate(\"" + lista.get(i).getNombre() + "\"));\n";
             }
+            if (lista.get(i).getTipo().contains("timestamp")) {
+                ccampos += "obj.set" + lista.get(i).getNombreUpperCase() + "(rs.getTimestamp(\"" + lista.get(i).getNombre() + "\"));\n";
+            }
         }
         ccampos += "}\n";
         ccampos += "rs.close();\n";
@@ -337,10 +357,13 @@ public class EscribirPostgres {
     private static String CToJSON(String nombre_clase, String tablespace, List<CamposTabla> lista) throws SQLException {
         String ccampos = "public JSONObject toJSONObject()  throws JSONException{\n";
         ccampos += "SimpleDateFormat f = new SimpleDateFormat(\"dd/MM/yyyy\");\n";
+        ccampos += "SimpleDateFormat f1 = new SimpleDateFormat(\"dd/MM/yyyy HH:mm:ss\");\n";
         ccampos += "JSONObject obj = new JSONObject();\n";
         for (int i = 0; i < lista.size(); i++) {
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + " == null ? \"\" : f.format(" + lista.get(i).getNombre() + "));\n";
+            } else if (lista.get(i).getTipo().contains("timestamp")) {
+                ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + " == null ? \"\" : f1.format(" + lista.get(i).getNombre() + "));\n";
             } else {
                 ccampos += "obj.put(\"" + lista.get(i).getNombre() + "\"," + lista.get(i).getNombre() + ");\n";
             }
@@ -391,6 +414,9 @@ public class EscribirPostgres {
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "Date ";
             }
+            if (lista.get(i).getTipo().contains("timestamp")) {
+                ccampos += "Date ";
+            }
             ccampos += lista.get(i).getNombre();
 
             if (i != lista.size() - 1) {
@@ -436,6 +462,9 @@ public class EscribirPostgres {
             if (lista.get(i).getTipo().equals("date")) {
                 ccampos += "Date ";
             }
+            if (lista.get(i).getTipo().contains("timestamp")) {
+                ccampos += "Date ";
+            }
             ccampos += lista.get(i).getNombre();
 
             if (i != lista.size() - 1) {
@@ -468,6 +497,9 @@ public class EscribirPostgres {
                 ccampos += "\tprivate Double ";
             }
             if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "\tprivate Date ";
+            }
+            if (lista.get(i).getTipo().contains("timestamp")) {
                 ccampos += "\tprivate Date ";
             }
 
