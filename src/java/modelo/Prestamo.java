@@ -220,7 +220,7 @@ public class Prestamo {
                 + "    SUM(\"Prestamo\".\"debe\") AS debe,\n"
                 + "    SUM(\"Prestamo\".\"haber\") AS haber\n"
                 + "    FROM public.\"Prestamo\"\n"
-                + "         INNER JOUN public.\"Usuario\" ON \"Usuario\".\"id\" = \"Prestamo\".\"idUsuario\"\n"
+                + "         INNER JOIN public.\"Usuario\" ON \"Usuario\".\"id\" = \"Prestamo\".\"idUsuario\"\n"
                 + "    GROUP BY \"Prestamo\".\"idUsuario\",\n"
                 + "             \"Usuario\".\"nombres\",\n"
                 + "             \"Usuario\".\"apellidos\"\n"
@@ -234,13 +234,47 @@ public class Prestamo {
         while (rs.next()) {
             deuda = rs.getDouble("haber") - rs.getDouble("debe");
             deuda = SisEventos.acomodarDosDecimalesD(deuda);
-            if (deuda > 0) {
+            if (deuda < 0) {
+                deuda = SisEventos.acomodarDosDecimalesD(deuda * -1);
                 obj = new JSONObject();
-                obj.put("id", rs.getInt("id"));
                 obj.put("idUsuario", rs.getInt("idUsuario"));
-                obj.put("nombre", rs.getDouble("nombre"));
+                obj.put("nombre", rs.getString("nombre"));
                 obj.put("deuda", deuda);
                 json.put(obj);
+            }
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    public JSONObject getPrestatario(int idUsuario) throws SQLException, JSONException, ParseException {
+        String consulta = "SELECT\n"
+                + "    \"Prestamo\".\"idUsuario\",\n"
+                + "    \"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre,\n"
+                + "    SUM(\"Prestamo\".\"debe\") AS debe,\n"
+                + "    SUM(\"Prestamo\".\"haber\") AS haber\n"
+                + "    FROM public.\"Prestamo\"\n"
+                + "         INNER JOIN public.\"Usuario\" ON \"Usuario\".\"id\" = \"Prestamo\".\"idUsuario\"\n"
+                + "    WHERE \"Prestamo\".\"idUsuario\" = ?\n"
+                + "    GROUP BY \"Prestamo\".\"idUsuario\",\n"
+                + "             \"Usuario\".\"nombres\",\n"
+                + "             \"Usuario\".\"apellidos\"\n"
+                + "    ORDER BY \"Usuario\".\"nombres\",\n"
+                + "             \"Usuario\".\"apellidos\";";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONObject json = null;
+        double deuda;
+        if (rs.next()) {
+            deuda = rs.getDouble("haber") - rs.getDouble("debe");
+            deuda = SisEventos.acomodarDosDecimalesD(deuda);
+            if (deuda < 0) {
+                deuda = SisEventos.acomodarDosDecimalesD(deuda * -1);
+                json = new JSONObject();
+                json.put("idUsuario", rs.getInt("idUsuario"));
+                json.put("nombre", rs.getString("nombre"));
+                json.put("deuda", deuda);
             }
         }
         rs.close();

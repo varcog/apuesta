@@ -4,11 +4,14 @@ import conexion.Conexion;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.Billetera;
+import modelo.Menu;
 import modelo.Prestamo;
 import modelo.Usuario;
 import org.json.JSONException;
@@ -105,14 +108,17 @@ public class PrestamoCreditoController extends HttpServlet {
 
     }
 
-    private String prestar(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
-        double monto = Double.parseDouble(request.getParameter("monto"));
+    private String prestar(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
         int relacionador = Integer.parseInt(request.getParameter("relacionador"));
-        int entrega = Integer.parseInt(request.getParameter("entrega"));
-        String nombre = null;
-        SisEventos.decodeUTF8(nombre);
-        SisEventos.decodeUTF8(request.getParameter(""));
-        return null;
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        int idCasa = new Usuario(con).getIdCasa();
+        Date hoy = new Date();
+        Billetera b = new Billetera(0, relacionador, monto, idCasa, Billetera.TIPO_TRANSACCION_PRESTAMO, 0, hoy, con);
+        b.insert();
+        Prestamo p = new Prestamo(0, relacionador, monto, 0.0, b.getId(), hoy, con);
+        p.insert();
+        JSONObject json = p.getPrestatario(relacionador);
+        return json == null ? "null" : json.toString();
     }
 
     private String pagarEfectivo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {

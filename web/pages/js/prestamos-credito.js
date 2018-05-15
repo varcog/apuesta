@@ -37,10 +37,10 @@ function prestamosFilaHtml(obj) {
     tr += "<td>" + (obj.nombre || "") + "</td>";
     tr += "<td class='text-right'>" + new BigNumber(obj.deuda || "0").toFormat() + "</td>";
     tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-eye text-muted' title='Ver Sub Menu' onclick='popVerDetalle(" + obj.idUsuario + ",this);'></i>";
+    tr += "<i class='fa fa-eye text-warning' title='Ver Sub Menu' onclick='popVerDetalle(" + obj.idUsuario + ",this);'></i>";
     tr += "</td>";
     tr += "<td class='text-center'>";
-    tr += "<i class='fa fa-money text-green' title='Ver Sub Menu' onclick='popPagar(" + obj.idUsuario + ",this);'></i>";
+    tr += "<i class='fa fa-money text-green' title='Pagar' onclick='popPagar(" + obj.idUsuario + ",this);'></i>";
     tr += "</td>";
     tr += "</tr>";
     return tr;
@@ -75,13 +75,19 @@ function okPrestar() {
     var monto = parseFloat($("#c_monto").val());
     $.post(url, {evento: "prestar", id: id, monto: monto, relacionador: relacionador}, function (resp) {
         if (resp === "false") {
+            cerrarModal();
             openAlert("No se Guardo, Intentelo de nuevo.");
         } else {
             var json = $.parseJSON(resp);
-            if (monto > 0) {
-
+            if (json === null) {
+                // eliminar
+                tabla.row('.pr_' + json.idUsuario).remove().draw(false);
+            } else if ($('.pr_' + json.idUsuario).length > 0) {
+                tabla.cell(".pr_" + json.idUsuario + " > td:eq(1)").data((json.deuda || "0"));
+                tabla.rows().invalidate();
+            } else {
+                tabla.row.add($(prestamosFilaHtml(json))).draw(false);
             }
-            tabla.row.add($(prestamosFilaHtml(json))).draw(false);
             cerrarModal();
             cerrarModal();
             openAlert("Guardado Correctamente.", "Información");

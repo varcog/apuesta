@@ -144,7 +144,7 @@ public class AdministracionUsuarioController extends HttpServlet {
         switch (accion) {
             case 0: // crear
                 pass = StringMD.getStringMessageDigest(contrasena, StringMD.SHA512);
-                u = new Usuario(usuario,pass, nombres,apellidos,fechaNac, ci, celular, direccion, sexo, con.getUsuario().getId(), con.getUsuario().getId());
+                u = new Usuario(usuario,pass, nombres,apellidos,fechaNac, ci, celular, direccion, sexo, con.getUsuario().getId(), con.getUsuario().getId(), con);
                 u.setCon(con);
                 u.insert();
                 return u.toJSONObject().toString();

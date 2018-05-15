@@ -79,7 +79,7 @@ body {
 ***************************************************************************** */
 
 .tabla-general .fa{
-    font-size: 18px;
+    font-size: 25px;
     cursor: pointer;
 }
 
@@ -100,6 +100,10 @@ body {
 
 .fs-img_20 {
     font-size: 20px;
+}
+
+.fs-img_25 {
+    font-size: 25px;
 }
 
 .fs-img_50 {

@@ -43,7 +43,8 @@ public class Usuario {
         this.con = con;
     }
 
-    public Usuario(String usuario, String password, String nombres, String apellidos, Date fechaNacimiento, String ci, String telefono, String direccion, String sexo, int idUsuarioCreador, int idUsuarioRecomienda) throws SQLException {
+    public Usuario(String usuario, String password, String nombres, String apellidos, Date fechaNacimiento, String ci, String telefono, String direccion, String sexo, int idUsuarioCreador, int idUsuarioRecomienda, Conexion con) throws SQLException {
+        this.con = con;
         this.id = 0;
         this.usuario = usuario;
         this.password = password;
@@ -51,20 +52,17 @@ public class Usuario {
         this.apellidos = apellidos;
         this.foto = "dist/img/user2-160x160.jpg";
         this.fechaNacimiento = fechaNacimiento;
-        this.fechaCreacion = new Date();        
+        this.fechaCreacion = new Date();
         this.ci = ci;
         this.telefono = telefono;
         this.direccion = direccion;
-        this.sexo = sexo;         
+        this.sexo = sexo;
         this.idPerfil = getApostador();
         this.idUsuarioCreador = idUsuarioCreador;
         this.idUsuarioRecomienda = idUsuarioRecomienda;
         this.idUsuarioAprueba = 0;
-        this.estado = 1;
+        this.estado = ESTADO_CREADO;
     }
-        
-    
-    
 
     public int getId() {
         return id;
@@ -428,6 +426,7 @@ public class Usuario {
                 + "	WHERE \"id\"=?;";
         con.ejecutarSentencia(consulta, estado, id);
     }
+
     public void updateIdPerfil() throws SQLException {
         String consulta = "UPDATE public.\"Usuario\"\n"
                 + "	SET \"idPerfil\"=?\n"
@@ -441,6 +440,7 @@ public class Usuario {
                 + "	WHERE \"id\"=?;";
         con.ejecutarSentencia(consulta, estado, id);
     }
+
     public void updateFoto(String foto) throws SQLException {
         String consulta = "UPDATE public.\"Usuario\"\n"
                 + "	SET \"foto\"=?\n"
@@ -451,7 +451,7 @@ public class Usuario {
     public String getNombreCompleto() {
         String res = "";
         if (nombres != null) {
-            res += nombres+" ";
+            res += nombres + " ";
         }
         if (apellidos != null) {
             res += apellidos;
@@ -476,25 +476,25 @@ public class Usuario {
     }
 
     public JSONObject getPerfil(int id) throws SQLException, JSONException {
-        String consulta = "SELECT\n" +
-                            "\"public\".\"Usuario\".ci,\n" +
-                            "\"public\".\"Usuario\".nombres,\n" +
-                            "\"public\".\"Usuario\".apellidos,\n" +
-                            "\"public\".\"Usuario\".foto,\n" +
-                            "to_char(\"public\".\"Usuario\".\"fechaNacimiento\",'DD/MM/YYYY') as fechaNacimiento,\n" +
-                            "\"public\".\"Usuario\".telefono,\n" +
-                            "\"public\".\"Usuario\".sexo,\n" +
-                            "\"public\".\"Usuario\".direccion,\n" +
-                            "\"public\".\"Perfil\".nombre as perfil\n" +
-                            "FROM\n" +
-                            "\"public\".\"Usuario\"\n" +
-                            "INNER JOIN \"public\".\"Perfil\" ON \"public\".\"Usuario\".\"idPerfil\" = \"public\".\"Perfil\".\"id\"\n" +
-                            "WHERE\n" +
-                            "\"public\".\"Usuario\".\"id\" = "+id;
+        String consulta = "SELECT\n"
+                + "\"public\".\"Usuario\".ci,\n"
+                + "\"public\".\"Usuario\".nombres,\n"
+                + "\"public\".\"Usuario\".apellidos,\n"
+                + "\"public\".\"Usuario\".foto,\n"
+                + "to_char(\"public\".\"Usuario\".\"fechaNacimiento\",'DD/MM/YYYY') as fechaNacimiento,\n"
+                + "\"public\".\"Usuario\".telefono,\n"
+                + "\"public\".\"Usuario\".sexo,\n"
+                + "\"public\".\"Usuario\".direccion,\n"
+                + "\"public\".\"Perfil\".nombre as perfil\n"
+                + "FROM\n"
+                + "\"public\".\"Usuario\"\n"
+                + "INNER JOIN \"public\".\"Perfil\" ON \"public\".\"Usuario\".\"idPerfil\" = \"public\".\"Perfil\".\"id\"\n"
+                + "WHERE\n"
+                + "\"public\".\"Usuario\".\"id\" = " + id;
         PreparedStatement ps = con.statamet(consulta);
-        ResultSet rs = ps.executeQuery();        
-        JSONObject obj=new JSONObject();
-        if (rs.next()) {            
+        ResultSet rs = ps.executeQuery();
+        JSONObject obj = new JSONObject();
+        if (rs.next()) {
             obj.put("ci", rs.getString("ci"));
             obj.put("nombres", rs.getString("nombres"));
             obj.put("apellidos", rs.getString("apellidos"));
@@ -509,23 +509,25 @@ public class Usuario {
         ps.close();
         return obj;
     }
-    
-    private int getApostador() throws SQLException{
-        String consulta = "SELECT\n" +
-                            "\"public\".\"Perfil\".\"id\"\n" +
-                            "FROM\n" +
-                            "\"public\".\"Perfil\"\n" +
-                            "WHERE\n" +
-                            "\"public\".\"Perfil\".\"porDefecto\" = true";
+
+    private int getApostador() throws SQLException {
+        String consulta = "SELECT\n"
+                + "\"public\".\"Perfil\".\"id\"\n"
+                + "FROM\n"
+                + "\"public\".\"Perfil\"\n"
+                + "WHERE\n"
+                + "\"public\".\"Perfil\".\"porDefecto\" = true";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         int id = 0;
-        if(rs.next()) id = rs.getInt("id");
+        if (rs.next()) {
+            id = rs.getInt("id");
+        }
         rs.close();
         ps.close();
         return id;
     }
-    
+
     public JSONArray todosRelacionadores() throws SQLException, JSONException {
         String consulta = "SELECT \"Usuario\".\"id\",\n "
                 + "               \"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre\n"
@@ -550,7 +552,7 @@ public class Usuario {
         ps.close();
         return json;
     }
-    
+
     public JSONArray todosCasa() throws SQLException, JSONException {
         String consulta = "SELECT \"Usuario\".\"id\",\n "
                 + "               \"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre\n"
@@ -574,5 +576,19 @@ public class Usuario {
         rs.close();
         ps.close();
         return json;
+    }
+
+    public int getIdCasa() throws SQLException, JSONException {
+        String consulta = "SELECT \"Usuario\".\"id\"\n "
+                + "     FROM public.\"Usuario\"\n"
+                + "          LEFT JOIN public.\"Perfil\" ON \"Usuario\".\"idPerfil\" = \"Perfil\".\"id\"\n"
+                + "     WHERE \"Perfil\".\"casa\" = true\n"
+                + "       AND \"Usuario\".\"estado\" = " + ESTADO_APROBADO + "\n";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        int idUsuario = rs.next() ? rs.getInt("id") : 0;
+        rs.close();
+        ps.close();
+        return idUsuario;
     }
 }
