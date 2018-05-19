@@ -48,7 +48,7 @@
                 <div class="col-xs-12">
                     <div class="box">
                         <div class="box-header">
-                            <h3 class="box-title text-bold">Creacion de Equipos</h3>                            
+                            <h3 class="box-title text-bold">Creacion de Jugadores</h3>                            
                         </div>
                         <div class="input-group">
                             <input type="text" class="form-control" name="buscador" onkeyup="buscar(event);">
@@ -89,5 +89,99 @@
                 </div>
             </div>
         </div>
+        
+        <!-----*********CREACION JUGADOR************----->
+        <div class="modal fade" id="popCreacionJugador" tabindex="-3" role="dialog" aria-labelledby="popCreacionJugador" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="creadorModalLabel">CREAR JUGADOR</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- Profile Image -->
+                                <div class="box box-success">
+                                    <div class="box-body box-profile">
+                                        <form id="form">
+                                            <input type="hidden" name="evento" value="guardarDatos"/>
+                                            <input type="hidden" name="id" value="0"/>
+                                            <input type="hidden" name="idEquipo" value="0"/>
+                                            <input type="hidden" name="old" value=""/>
+                                            <input type="file" style="display: none;" name="foto" onchange="okCambiarFoto(this);"/>
+                                            <img class="profile-user-img img-responsive img-circle est_img" style="cursor: pointer;" onclick="cambiarFoto();" src="" alt="Cambiar foto">                                            
+                                            <ul class="list-group list-group-unbordered">
+                                                <li class="list-group-item">
+                                                    <label>Nombres</label>
+                                                    <input type="text" class="form-control" name="nombres" />
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <label>Apellidos</label>
+                                                    <input type="text" class="form-control" name="apellidos" />
+                                                </li>
+                                                <div  class="list-group-item">                                    
+                                                    <label for="u_fecha_nacimiento">Fecha de Nacimiento</label>
+                                                    <div class="input-group">
+                                                        <div class="input-group-addon">
+                                                            <i class="fa fa-calendar"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control calendario" name="fechaNacimiento" id="fechaNacimiento" data-inputmask="'alias': 'dd/mm/yyyy'" data-mask=""/>
+                                                    </div>                                                                    
+                                                </div>
+                                                <div class="list-group-item">
+                                                    <label>Posicion<i class='fa fa-plus-circle' style='color: green; float: left; cursor:pointer; font-size: 26px; margin-left:15px;' title='Agregar' onclick='popRegistrarPosicion();'></i></label>
+                                                    <select class="form-control" size="10" name="posicion"></select>
+                                                </div>
+                                                <li class="list-group-item">
+                                                    <label>Equipo en que Juega</label>
+                                                    <textarea class="form-control" rows="3" placeholder="Nombre de Equipo" name="detalle"></textarea>
+                                                </li>                                                
+                                            </ul>   
+                                        </form>
+                                    </div>                                    
+                                </div>
+                            </div>                         
+                        </div>                                            
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="button" id="btnCrear" onclick="guardarDatos();">CREAR JUGADOR</button>
+                        <button class="btn btn-danger" type="button" id="btnEliminar" onclick="eliminar();">ELIMINAR JUGADOR</button>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-----*********POSICIONES************----->
+        <div class="modal fade" id="popCreacionPosiciones" tabindex="-3" role="dialog" aria-labelledby="popCreacionPosiciones" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="creadorModalLabel">CREAR POSICION</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                               <ul class="list-group list-group-unbordered">
+                                    <li class="list-group-item">
+                                        <label>Nombre Posicion</label>
+                                        <input type="text" class="form-control" name="nombrePosicion" />
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="button" id="btnCrearPosicion" onclick="guardarPosicion();">CREAR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </body>
 </html>
