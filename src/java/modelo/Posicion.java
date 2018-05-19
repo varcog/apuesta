@@ -80,7 +80,7 @@ public class Posicion {
         String consulta = "SELECT\n"
                 + "    \"Posicion\".\"id\",\n"
                 + "    \"Posicion\".\"nombre\"\n"
-                + "    FROM public.\"Posicion\";";
+                + "    FROM public.\"Posicion\" order by nombre;";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();

@@ -142,6 +142,7 @@ public class creacionEstadiosController extends HttpServlet {
             nuevo=false;
             old = request.getParameter("old");        
             String []a = old.split("/");
+            if(a.length>3)
             old= a[3];
         }        
         String ruta=this.getServletContext().getRealPath("/");
@@ -159,8 +160,10 @@ public class creacionEstadiosController extends HttpServlet {
             if(peril.getSubmittedFileName().length()>0){
                 String rutaBk = new Parametros(con).getRutaBakup();     
                 if(!nuevo){
-                    new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta+File.separator+"img"+File.separator+"estadios"+File.separator+old);
-                    new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk+File.separator+"img"+File.separator+"estadios"+File.separator+old);                
+                    if(old.length()>0){
+                        new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta+File.separator+"img"+File.separator+"estadios"+File.separator+old);
+                        new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk+File.separator+"img"+File.separator+"estadios"+File.separator+old);                
+                    }
                 }
                 nombres = id+peril.getSubmittedFileName();
                 nombref="img"+File.separator+"estadios"+File.separator+id+peril.getSubmittedFileName();                

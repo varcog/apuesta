@@ -132,28 +132,43 @@ public class Jugador {
 
     public void update() throws SQLException {
         String consulta = "UPDATE public.\"Jugador\"\n"
-                + "    SET \"nombres\" = ?, \"apellidos\" = ?, \"idPosicion\" = ?, \"idEquipo\" = ?, \"detalle\" = ?, \"foto\" = ?, \"fechaNacimiento\" = ?\n"
+                + "    SET \"nombres\" = ?, \"apellidos\" = ?, \"idPosicion\" = ?, \"idEquipo\" = ?, \"detalle\" = ?, \"fechaNacimiento\" = ?\n"
                 + "    WHERE \"id\"=?";
-        con.ejecutarSentencia(consulta, nombres, apellidos, idPosicion > 0 ? idPosicion : null, idEquipo > 0 ? idEquipo : null, detalle, foto, fechaNacimiento == null ? null : new java.sql.Date(fechaNacimiento.getTime()), id);
+        con.ejecutarSentencia(consulta, nombres, apellidos, idPosicion > 0 ? idPosicion : null, idEquipo > 0 ? idEquipo : null, detalle,  fechaNacimiento == null ? null : new java.sql.Date(fechaNacimiento.getTime()), id);
+    }
+    public void updateFoto() throws SQLException {
+        String consulta = "UPDATE public.\"Jugador\"\n"
+                + "    SET \"foto\" = ?\n"
+                + "    WHERE \"id\"=?";
+        con.ejecutarSentencia(consulta, foto, id);
     }
 
     public void delete() throws SQLException {
         String consulta = "delete from public.\"Jugador\" where \"id\"= ?;";
         con.ejecutarSentencia(consulta, id);
     }
+    public void delete(int id) throws SQLException {
+        String consulta = "delete from public.\"Jugador\" where \"id\"= ?;";
+        con.ejecutarSentencia(consulta, id);
+    }
 
-    public JSONArray todos() throws SQLException, JSONException {
-        String consulta = "SELECT\n"
-                + "    \"Jugador\".\"id\",\n"
-                + "    \"Jugador\".\"nombres\",\n"
-                + "    \"Jugador\".\"apellidos\",\n"
-                + "    \"Jugador\".\"idPosicion\",\n"
-                + "    \"Jugador\".\"idEquipo\",\n"
-                + "    \"Jugador\".\"detalle\",\n"
-                + "    \"Jugador\".\"foto\",\n"
-                + "    to_char(\"Jugador\".\"fechaNacimiento\", 'DD/MM/YYYY') AS fechaNacimiento\n"
-                + "    FROM public.\"Jugador\"\n"
-                + "    WHERE public.\"Jugador\".\"idEquipo\" = ?;";
+    public JSONArray todos(int idEquipo) throws SQLException, JSONException {
+        String consulta = "SELECT\n" +
+                            "\"public\".\"Jugador\".\"id\",\n" +
+                            "\"public\".\"Jugador\".nombres,\n" +
+                            "\"public\".\"Jugador\".apellidos,\n" +
+                            "\"public\".\"Jugador\".\"idPosicion\",\n" +
+                            "\"public\".\"Jugador\".\"idEquipo\",\n" +
+                            "\"public\".\"Jugador\".detalle,\n" +
+                            "\"public\".\"Jugador\".foto,\n" +
+                            "to_char(\"public\".\"Jugador\".\"fechaNacimiento\", 'DD/MM/YYYY') AS fechaNacimiento,\n" +
+                            "\"public\".\"Posicion\".nombre AS posicion,\n" +
+                            "date_part('year',age(\"public\".\"Jugador\".\"fechaNacimiento\"))  AS edad\n" +
+                            "FROM\n" +
+                            "\"public\".\"Jugador\"\n" +
+                            "INNER JOIN \"public\".\"Posicion\" ON \"public\".\"Jugador\".\"idPosicion\" = \"public\".\"Posicion\".\"id\"\n" +
+                            "WHERE\n" +
+                            "\"public\".\"Jugador\".\"idEquipo\" = ?;";
         PreparedStatement ps = con.statamet(consulta);
         ps.setInt(1, idEquipo);
         ResultSet rs = ps.executeQuery();
@@ -169,11 +184,51 @@ public class Jugador {
             obj.put("detalle", rs.getString("detalle"));
             obj.put("foto", rs.getString("foto"));
             obj.put("fechaNacimiento", rs.getString("fechaNacimiento"));
+            obj.put("edad", rs.getInt("edad"));
+            obj.put("posicion", rs.getString("posicion"));
             json.put(obj);
         }
         rs.close();
         ps.close();
         return json;
+    }
+    public JSONObject buscarTarjeta(int id) throws SQLException, JSONException {
+        String consulta = "SELECT\n" +
+                            "\"public\".\"Jugador\".\"id\",\n" +
+                            "\"public\".\"Jugador\".nombres,\n" +
+                            "\"public\".\"Jugador\".apellidos,\n" +
+                            "\"public\".\"Jugador\".\"idPosicion\",\n" +
+                            "\"public\".\"Jugador\".\"idEquipo\",\n" +
+                            "\"public\".\"Jugador\".detalle,\n" +
+                            "\"public\".\"Jugador\".foto,\n" +
+                            "to_char(\"public\".\"Jugador\".\"fechaNacimiento\", 'DD/MM/YYYY') AS fechaNacimiento,\n" +
+                            "\"public\".\"Posicion\".nombre AS posicion,\n" +
+                            "date_part('year',age(\"public\".\"Jugador\".\"fechaNacimiento\"))  AS edad\n" +
+                            "FROM\n" +
+                            "\"public\".\"Jugador\"\n" +
+                            "INNER JOIN \"public\".\"Posicion\" ON \"public\".\"Jugador\".\"idPosicion\" = \"public\".\"Posicion\".\"id\"\n" +
+                            "WHERE\n" +
+                            "\"public\".\"Jugador\".\"id\" = ?;";
+        PreparedStatement ps = con.statamet(consulta);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();        
+        JSONObject obj=null;
+        if (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("nombres", rs.getString("nombres"));
+            obj.put("apellidos", rs.getString("apellidos"));
+            obj.put("idPosicion", rs.getInt("idPosicion"));
+            obj.put("idEquipo", rs.getInt("idEquipo"));
+            obj.put("detalle", rs.getString("detalle"));
+            obj.put("foto", rs.getString("foto"));
+            obj.put("fechaNacimiento", rs.getString("fechaNacimiento"));
+            obj.put("edad", rs.getInt("edad"));
+            obj.put("posicion", rs.getString("posicion"));            
+        }
+        rs.close();
+        ps.close();
+        return obj;
     }
 
     public JSONObject buscarJSONObject(int id) throws SQLException, JSONException {
