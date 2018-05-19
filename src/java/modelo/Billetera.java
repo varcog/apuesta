@@ -1,6 +1,7 @@
 package modelo;
 
 import conexion.Conexion;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -224,33 +225,119 @@ public class Billetera {
         obj.put("fecha", fecha == null ? "" : f1.format(fecha));
         return obj;
     }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Negocio
     public static final int TIPO_TRANSACCION_PRESTAMO = 1;
     public static final int TIPO_TRANSACCION_TRASPASO = 2;
     public static final int TIPO_TRANSACCION_APUESTA = 3;
     public static final int TIPO_TRANSACCION_GANANCIA = 4;
     public static final int TIPO_TRANSACCION_PAGO_PRESTAMO = 5;
     public static final int TIPO_TRANSACCION_RETIRO = 6;
+    public static final int TIPO_TRANSACCION_COMPRA = 7;
+    // ESPECIALES PARA LA VISTA
+    public static final int TIPO_TRANSACCION_TRASPASO_DA = -1;
+    public static final int TIPO_TRANSACCION_TRASPASO_RECIBE = -2;
 
     public double getCreditoDisponible(int idUsuario) throws SQLException, JSONException {
-        String consulta = "SELECT SUM(\"tabla\".\"monto\") AS \"monto\",\n"
-                + "	   \"tabla\".\"idUsuario\"\n"
-                + "FROM (\n"
-                + "    SELECT \"Billetera\".\"monto\",\n"
-                + "           \"Billetera\".\"idUsuarioRecibe\" AS \"idUsuario\"\n"
+        String consulta = "SELECT (\n"
+                + "	SELECT SUM(\"Billetera\".\"monto\")\n"
                 + "    FROM public.\"Billetera\"\n"
-                + "    UNION\n"
-                + "    SELECT \"Billetera\".\"monto\" * -1 AS \"monto\",\n"
-                + "           \"Billetera\".\"idUsuarioDa\" AS \"idUsuario\"\n"
+                + "    WHERE \"idUsuarioRecibe\" = ?\n"
+                + ") - (\n"
+                + "	SELECT \"Billetera\".\"monto\"\n"
                 + "    FROM public.\"Billetera\"\n"
-                + ") as tabla\n"
-                + "WHERE \"tabla\".\"idUsuario\" = ?\n"
-                + "GROUP BY \"tabla\".\"idUsuario\";";
-        PreparedStatement ps = con.statametObject(consulta, idUsuario);
+                + "    WHERE \"idUsuarioDa\" = ?\n"
+                + "\n"
+                + ") AS \"monto\";";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario, idUsuario);
         ResultSet rs = ps.executeQuery();
         double credito = rs.next() ? rs.getDouble("monto") : 0;
         rs.close();
         ps.close();
         return credito;
+    }
+
+    public JSONObject getBalanceUsuario(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioRecibe\" = " + idUsuario + "\n"
+                + "    		  AND \"tipoTransaccion\" = 1\n"
+                + "       ) AS \"prestamo\",\n"
+                + "	   (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioRecibe\" = " + idUsuario + "\n"
+                + "    		  AND \"tipoTransaccion\" = 2\n"
+                + "       ) AS \"recibe\",\n"
+                + "       (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioDa\" = " + idUsuario + "\n"
+                + "              AND \"tipoTransaccion\" = 2\n"
+                + "       ) AS \"da\",\n"
+                + "       (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioDa\" = " + idUsuario + "\n"
+                + "              AND \"tipoTransaccion\" = 3\n"
+                + "       ) AS \"apuesta\",\n"
+                + "       (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioRecibe\" = " + idUsuario + "\n"
+                + "    		  AND \"tipoTransaccion\" = 4\n"
+                + "       ) AS \"ganancia\",\n"
+                + "       (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioDa\" = " + idUsuario + "\n"
+                + "              AND \"tipoTransaccion\" = 5\n"
+                + "       ) AS \"pagoPrestamo\",\n"
+                + "       (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioDa\" = " + idUsuario + "\n"
+                + "              AND \"tipoTransaccion\" = 6\n"
+                + "       ) AS \"retiro\",\n"
+                + "       (\n"
+                + "            SELECT SUM(\"Billetera\".\"monto\") AS \"monto\"\n"
+                + "            FROM public.\"Billetera\"\n"
+                + "            WHERE \"idUsuarioRecibe\" = " + idUsuario + "\n"
+                + "    		  AND \"tipoTransaccion\" = 7\n"
+                + "       ) AS \"compra\"";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONObject json = new JSONObject();
+        if (rs.next()) {
+            json.put("prestamo", rs.getDouble("prestamo"));
+            json.put("recibe", rs.getDouble("recibe"));
+            json.put("da", rs.getDouble("da"));
+            json.put("apuesta", rs.getDouble("apuesta"));
+            json.put("ganancia", rs.getDouble("ganancia"));
+            json.put("pagoPrestamo", rs.getDouble("pagoPrestamo"));
+            json.put("retiro", rs.getDouble("retiro"));
+            json.put("compra", rs.getDouble("compra"));
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    public JSONArray detalleBalanceTipo(int tipo) throws SQLException {
+        String consulta = "";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
     }
 
     public JSONArray getUsuariosCredito() throws SQLException, JSONException {

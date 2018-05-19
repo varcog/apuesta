@@ -282,7 +282,22 @@ public class Prestamo {
         return json;
     }
 
-    public double getMontoPrestado() {
-        return 0;
+    public JSONObject getPrestamoUsuarioPerfil(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT\n"
+                + "    SUM(\"Prestamo\".\"debe\") AS debe,\n"
+                + "    SUM(\"Prestamo\".\"haber\") AS haber\n"
+                + "    FROM public.\"Prestamo\"\n"
+                + "    WHERE \"Prestamo\".\"idUsuario\" = ?\n";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONObject json = null;
+        if (rs.next()) {
+            json = new JSONObject();
+            json.put("debe", rs.getDouble("debe"));
+            json.put("haber", rs.getDouble("haber"));
+        }
+        rs.close();
+        ps.close();
+        return json;
     }
 }

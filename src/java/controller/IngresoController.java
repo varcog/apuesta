@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import modelo.Billetera;
 import modelo.Perfil;
 import modelo.Menu;
 import modelo.Parametros;
@@ -120,6 +121,8 @@ public class IngresoController extends HttpServlet {
         if (c != null) {
             json.put("perfil", c.getNombre());
         }
+        Billetera b  = new Billetera(con);
+        json.put("credito", b.getCreditoDisponible(usuario.getId()));
         return json.toString();
     }
 

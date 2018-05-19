@@ -1,6 +1,7 @@
 var url = "IngresoController";
 
 $(document).ready(function () {
+    formato_decimal_all();
     $.post(url, {evento: "obtenerIngreso"}, function (resp) {
         if (resp === "false")
             location.href = "index.html";
@@ -27,8 +28,10 @@ $(document).ready(function () {
             });
             $("#menu").append(html);
             $(".nombre_usuario").text((json.usuario || ""));
-            $(".usr_img").attr("src",json.foto);
+            $(".usr_img").attr("src", json.foto);
             $(".cargo").text((json.perfil || ""));
+            $(".credito_actual").autoNumeric("set", (json.credito || 0));
+            $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
         }
     });
 });
@@ -39,8 +42,8 @@ function cambiarMenu(url) {
 
 
 function cambiarFotoPerfil(ele) {
-    $("input[name=file_foto_perfil]").click();    
-    var img=$("#img-foto-perfil").attr("src");
+    $("input[name=file_foto_perfil]").click();
+    var img = $("#img-foto-perfil").attr("src");
     $("input[name=old]").val(img);
 }
 function okCambiarFotoPerfil(ele) {
@@ -52,15 +55,15 @@ function okCambiarFotoPerfil(ele) {
         mimeType: "multipart/form-data",
         contentType: false,
         cache: false,
-        processData: false,        
+        processData: false,
         success: function (data, textStatus, jqXHR)
         {
-            $(".usr_img").attr("src",data);
-            $("input[name=file_foto_perfil]").val("");                    
+            $(".usr_img").attr("src", data);
+            $("input[name=file_foto_perfil]").val("");
         },
         error: function (jqXHR, textStatus, errorThrown)
-        {            
+        {
             $("input[name=file_foto_perfil]").val("");
-        }         
+        }
     });
 }

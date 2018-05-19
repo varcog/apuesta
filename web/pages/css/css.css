@@ -148,3 +148,7 @@ body {
 .bg-error {
     background-color: #f2dede !important;
 }
+
+.pointer {
+    cursor: pointer;
+}

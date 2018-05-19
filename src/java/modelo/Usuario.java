@@ -504,6 +504,8 @@ public class Usuario {
             obj.put("sexo", rs.getString("sexo"));
             obj.put("direccion", rs.getString("direccion"));
             obj.put("perfil", rs.getString("perfil"));
+            obj.put("balance", new Billetera(con).getBalanceUsuario(id));
+            obj.put("prestamos", new Prestamo(con).getPrestamoUsuarioPerfil(id));
         }
         rs.close();
         ps.close();

@@ -46,3 +46,15 @@ html, body {
 }
 
 
+.credito_actual_principal {
+    font-size: 19px; 
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.credito_actual_principal.bg-green:hover{
+    color: green !important;
+    background: white !important;
+    border: 1px solid green !important;
+}
+

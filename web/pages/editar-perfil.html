@@ -32,7 +32,11 @@
         <!-- DataTables -->
         <script src="../plugins/datatables/jquery.dataTables.min.js"></script>
         <script src="../plugins/datatables/dataTables.bootstrap.min.js"></script>
-
+        <!--FORMATO NUMERICO-->
+        <script src="../plugins/autoNumeric/autoNumeric.js" type="text/javascript"></script>
+        <script src="../plugins/autoNumeric/bignumber.min.js" type="text/javascript"></script>
+        <script src="../plugins/autoNumeric/formatoNumero.js" type="text/javascript"></script>
+        <!-------------------->
         <script src="js/comun.js" type="text/javascript"></script>
         <script src="js/editar-perfil.js"></script>
     </head>
@@ -71,14 +75,14 @@
                                     <li class="list-group-item">
                                         <label>Celular:</label>
                                         <div class="input-group">
-                                          <div class="input-group-addon">
-                                            <i class="fa fa-phone"></i>
-                                          </div>
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-phone"></i>
+                                            </div>
                                             <input type="text" class="form-control celular" name="telefono" data-inputmask="&quot;mask&quot;: &quot;(999) 999-99999&quot;" data-mask="">
                                         </div>                                    
                                     </li>
                                     <li class="list-group-item">
-                                         <label>Sexo</label>
+                                        <label>Sexo</label>
                                         <select class="form-control" name="sexo" >
                                             <option value="M">Masculino</option>
                                             <option value="F">Femenino</option>
@@ -96,26 +100,68 @@
                     </div>
                     <div class="box box-success">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Balance</h3>
+                            <h3 class="box-title">Balance del Credito</h3>
                         </div>
-                        <div class="box-body box-profile">                            
-                                <li class="list-group-item">
-                                    <b>Total Compras</b> <a class="pull-right">1,322</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>Total Ganancia</b> <a class="pull-right">500</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>Total Perdida</b> <a class="pull-right">500</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>Saldo Actual</b> <a class="pull-right">2,332</a>
-                                </li>
-                            </ul>                            
+                        <div class="box-body box-profile">      
+                            <li class="list-group-item">
+                                <b>Total Prestamos</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalPrestamo">0,00</a><i class="fa fa-plus-circle" style="margin-left: 5px; color: green;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Ganado</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalGanado">0,00</a><i class="fa fa-plus-circle" style="margin-left: 5px; color: green;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Compras</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalCompras">0,00</a><i class="fa fa-plus-circle" style="margin-left: 5px; color: green;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Traspasos Recibidos</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalRecibido">0,00</a><i class="fa fa-plus-circle" style="margin-left: 5px; color: green;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Traspasos Enviados</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalEnviado">0,00</a><i class="fa fa-minus-circle" style="margin-left: 5px; color: red;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Apostado</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalApostado">0,00</a><i class="fa fa-minus-circle" style="margin-left: 5px; color: red;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Retirado</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalRetirado">0,00</a><i class="fa fa-minus-circle" style="margin-left: 5px; color: red;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Pago a Prestamo</b> 
+                                <span class="pull-right"><a class=" pointer" id="bTotalPagoPrestamo">0,00</a><i class="fa fa-minus-circle" style="margin-left: 5px; color: red;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Saldo Actual</b> <a class="pull-right label bg-green" style="font-size: 15px;" id="bTotalSaldo">0,00</a>
+                            </li>
                         </div>
                         <!-- /.box-body -->
                     </div>
                     <!-- /.box -->
+
+                    <div class="box box-success" id="pPrestamos">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Prestamos</h3>
+                        </div>
+                        <div class="box-body box-profile">                            
+                            <li class="list-group-item">
+                                <b>Total Prestamos</b> 
+                                <span class="pull-right"><a class=" pointer" id="pTotalPrestamos">0,00</a><i class="fa fa-plus-circle" style="margin-left: 5px; color: green;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Total Pagos</b> 
+                                <span class="pull-right"><a class=" pointer" id="pTotalPagos">0,00</a><i class="fa fa-minus-circle" style="margin-left: 5px; color: red;"></i> </span>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Deuda Actual</b> <a class="pull-right label bg-red" style="font-size: 15px;" id="pTotalDeuda">0,00</a>
+                            </li>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
 
                     <!-- About Me Box -->
                     <div class="box box-success">
