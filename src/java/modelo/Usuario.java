@@ -495,6 +495,7 @@ public class Usuario {
         ResultSet rs = ps.executeQuery();
         JSONObject obj = new JSONObject();
         if (rs.next()) {
+            Billetera b = new Billetera(con);
             obj.put("ci", rs.getString("ci"));
             obj.put("nombres", rs.getString("nombres"));
             obj.put("apellidos", rs.getString("apellidos"));
@@ -504,8 +505,9 @@ public class Usuario {
             obj.put("sexo", rs.getString("sexo"));
             obj.put("direccion", rs.getString("direccion"));
             obj.put("perfil", rs.getString("perfil"));
-            obj.put("balance", new Billetera(con).getBalanceUsuario(id));
+            obj.put("balance", b.getBalanceUsuario(id));
             obj.put("prestamos", new Prestamo(con).getPrestamoUsuarioPerfil(id));
+            obj.put("transacciones", b.getTransaccionesUsuariosPerfil(id));
         }
         rs.close();
         ps.close();
@@ -593,4 +595,29 @@ public class Usuario {
         ps.close();
         return idUsuario;
     }
+
+    public JSONArray todosNoCasaTraspaso(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT \"Usuario\".\"id\",\n "
+                + "               \"Usuario\".\"usuario\"\n"
+                + "     FROM public.\"Usuario\"\n"
+                + "          LEFT JOIN public.\"Perfil\" ON \"Usuario\".\"idPerfil\" = \"Perfil\".\"id\"\n"
+                + "     WHERE \"Usuario\".\"estado\" = ?\n"
+                + "       AND (\"Perfil\".\"casa\" = false OR \"Perfil\".\"casa\" IS NULL)\n"
+                + "       AND \"Usuario\".\"id\" <> ?\n"
+                + "ORDER BY \"Usuario\".\"usuario\";";
+        PreparedStatement ps = con.statametObject(consulta, ESTADO_APROBADO, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("usuario", rs.getString("usuario"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
 }

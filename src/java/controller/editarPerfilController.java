@@ -14,9 +14,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+import modelo.Billetera;
 import modelo.Parametros;
+import modelo.Prestamo;
 import modelo.Usuario;
 import org.json.JSONException;
+import org.json.JSONObject;
 import util.SisEventos;
 
 @MultipartConfig
@@ -44,20 +47,20 @@ public class editarPerfilController extends HttpServlet {
             switch (evento) {
                 case "init":
                     html = init(request, con);
-                    break;                
+                    break;
                 case "guardarDatos":
                     html = guardarDatos(request, con);
-                    break;                
+                    break;
+                case "okPagarPrestamo":
+                    html = okPagarPrestamo(request, con);
+                    break;
+                case "okTraspasoCredito":
+                    html = okTraspasoCredito(request, con);
+                    break;
             }
             con.commit();
             response.getWriter().write(html);
-        } catch (SQLException ex) {
-            con.error(this, ex);
-            response.getWriter().write("false");
-        } catch (JSONException ex) {
-            con.error(this, ex);
-            response.getWriter().write("false");
-        } catch (ParseException ex) {
+        } catch (SQLException | JSONException | ParseException ex) {
             con.error(this, ex);
             response.getWriter().write("false");
         }
@@ -102,9 +105,12 @@ public class editarPerfilController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    
-    private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {                
-        return new Usuario(con).getPerfil(con.getUsuario().getId()).toString();
+    private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        JSONObject json = new JSONObject();
+        Usuario u = new Usuario(con);
+        json.put("perfil", u.getPerfil(con.getUsuario().getId()));
+        json.put("usuarios", u.todosNoCasaTraspaso(con.getUsuario().getId()));
+        return json.toString();
     }
 
     private String guardarDatos(HttpServletRequest request, Conexion con) throws ParseException, SQLException, IOException, ServletException {
@@ -118,27 +124,38 @@ public class editarPerfilController extends HttpServlet {
         us.setNombres(nombres);
         us.setApellidos(apellidos);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-        Date fecha = format.parse(fecNac);        
+        Date fecha = format.parse(fecNac);
         us.setFechaNacimiento(fecha);
         us.setTelefono(telefono);
         us.setSexo(sexo);
         us.setDireccion(direccion);
-        us.updateDatos();        
-        Part peril=request.getPart("foto");
+        us.updateDatos();
+        Part peril = request.getPart("foto");
         String old = request.getParameter("old");
-        String ruta=this.getServletContext().getRealPath("/");
-        String nombre="";
-        if(peril!=null){
-            if(peril.getSubmittedFileName().length()>0){
-                String rutaBk = new Parametros(con).getRutaBakup();                
-                new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta+old);
-                new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk+old);
-                nombre="img"+File.separator+"perfil"+File.separator+con.getUsuario().getId()+peril.getSubmittedFileName();
-                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), ruta+nombre);
-                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), rutaBk+nombre);
+        String ruta = this.getServletContext().getRealPath("/");
+        String nombre = "";
+        if (peril != null) {
+            if (peril.getSubmittedFileName().length() > 0) {
+                String rutaBk = new Parametros(con).getRutaBakup();
+                new SisEventos().eliminarImagenEnElSistemaDeFicheros(ruta + old);
+                new SisEventos().eliminarImagenEnElSistemaDeFicheros(rutaBk + old);
+                nombre = "img" + File.separator + "perfil" + File.separator + con.getUsuario().getId() + peril.getSubmittedFileName();
+                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), ruta + nombre);
+                new SisEventos().guardarImagenEnElSistemaDeFicheros(peril.getInputStream(), rutaBk + nombre);
                 con.getUsuario().updateFoto(nombre);
             }
         }
         return nombre;
+    }
+
+    private String okPagarPrestamo(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        return new Prestamo(con).pagarPrestamoCredito(monto, con.getUsuario().getId()).toString();
+    }
+
+    private String okTraspasoCredito(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        int idUsuarioRecibe = Integer.parseInt(request.getParameter("idUsuarioRecibe"));
+        return new Billetera(con).TraspasoCredito(monto, con.getUsuario().getId(), idUsuarioRecibe).toString();
     }
 }

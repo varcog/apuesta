@@ -213,6 +213,15 @@ public class Prestamo {
 
     /* ********************************************************************** */
     // Negocio
+    public void setDatos(int id, int idUsuario, Double debe, Double haber, int idBilletera, Date fecha) {
+        this.id = id;
+        this.idUsuario = idUsuario;
+        this.debe = debe;
+        this.haber = haber;
+        this.idBilletera = idBilletera;
+        this.fecha = fecha;
+    }
+
     public JSONArray todosPrestatarios() throws SQLException, JSONException, ParseException {
         String consulta = "SELECT\n"
                 + "    \"Prestamo\".\"idUsuario\",\n"
@@ -298,6 +307,33 @@ public class Prestamo {
         }
         rs.close();
         ps.close();
+        return json;
+    }
+
+    public JSONObject pagarPrestamoCredito(double monto, int idUsuario) throws SQLException, JSONException {
+        JSONObject json = new JSONObject();
+        if (monto < 0) {
+            json.put("resp", "MONTO_0");
+        }
+        Billetera b = new Billetera(con);
+        double saldo = b.getCreditoDisponible(idUsuario);
+        if (saldo < monto) {
+            json.put("resp", "CREDITO_INSUFICIENTE");
+            json.put("credito", saldo);
+        }
+        Date fechaInsert = new Date();
+        b.setFecha(fechaInsert);
+        b.setTipoTransaccion(Billetera.TIPO_TRANSACCION_PAGO_PRESTAMO);
+        b.setIdUsuarioDa(idUsuario);
+        b.setMonto(monto);
+        b.setIdUsuarioRecibe(new Usuario(con).getIdCasa());
+        b.insert();
+        setDatos(0, idUsuario, 0.0, monto, b.getId(), fechaInsert);
+        insert();
+        json.put("balance", b.getBalanceUsuario(idUsuario));
+        json.put("prestamos", getPrestamoUsuarioPerfil(idUsuario));
+        json.put("transacciones", b.getTransaccionesUsuariosPerfil(idUsuario));
+        json.put("credito", b.getCreditoDisponible(idUsuario));
         return json;
     }
 }

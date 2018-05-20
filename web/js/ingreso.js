@@ -30,8 +30,9 @@ $(document).ready(function () {
             $(".nombre_usuario").text((json.usuario || ""));
             $(".usr_img").attr("src", json.foto);
             $(".cargo").text((json.perfil || ""));
-            $(".credito_actual").autoNumeric("set", (json.credito || 0));
-            $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
+            actualizarCredito(json.credito);
+//            $(".credito_actual").autoNumeric("set", (json.credito || 0));
+//            $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
         }
     });
 });
@@ -39,7 +40,6 @@ $(document).ready(function () {
 function cambiarMenu(url) {
     $("#contentFrame").attr("src", url);
 }
-
 
 function cambiarFotoPerfil(ele) {
     $("input[name=file_foto_perfil]").click();
@@ -66,4 +66,9 @@ function okCambiarFotoPerfil(ele) {
             $("input[name=file_foto_perfil]").val("");
         }
     });
+}
+
+function actualizarCredito(credito) {
+    $(".credito_actual").autoNumeric("set", (credito || 0));
+    $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
 }

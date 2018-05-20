@@ -1,7 +1,6 @@
 package modelo;
 
 import conexion.Conexion;
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,7 +17,7 @@ public class Billetera {
     private Double monto;
     private int idUsuarioDa;
     private int tipoTransaccion;
-    private int idApuesta;
+    private int idApuestaPartido;
     private Date fecha;
     private Conexion con = null;
 
@@ -26,24 +25,24 @@ public class Billetera {
         this.con = con;
     }
 
-    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuesta, Date fecha, Conexion con) {
+    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, Date fecha, Conexion con) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
         this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.tipoTransaccion = tipoTransaccion;
-        this.idApuesta = idApuesta;
+        this.idApuestaPartido = idApuestaPartido;
         this.fecha = fecha;
         this.con = con;
     }
 
-    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuesta, Date fecha) {
+    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, Date fecha) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
         this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.tipoTransaccion = tipoTransaccion;
-        this.idApuesta = idApuesta;
+        this.idApuestaPartido = idApuestaPartido;
         this.fecha = fecha;
     }
 
@@ -87,12 +86,12 @@ public class Billetera {
         this.tipoTransaccion = tipoTransaccion;
     }
 
-    public int getIdApuesta() {
-        return idApuesta;
+    public int getIdApuestaPartido() {
+        return idApuestaPartido;
     }
 
-    public void setIdApuesta(int idApuesta) {
-        this.idApuesta = idApuesta;
+    public void setIdApuestaPartido(int idApuestaPartido) {
+        this.idApuestaPartido = idApuestaPartido;
     }
 
     public Date getFecha() {
@@ -114,17 +113,17 @@ public class Billetera {
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
         String consulta = "INSERT INTO public.\"Billetera\"(\n"
-                + "    \"idUsuarioRecibe\", \"monto\", \"idUsuarioDa\", \"tipoTransaccion\", \"idApuesta\", \"fecha\")\n"
+                + "    \"idUsuarioRecibe\", \"monto\", \"idUsuarioDa\", \"tipoTransaccion\", \"idApuestaPartido\", \"fecha\")\n"
                 + "    VALUES (?, ?, ?, ?, ?, ?)\n";
-        this.id = con.ejecutarInsert(consulta, "id", idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuesta > 0 ? idApuesta : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()));
+        this.id = con.ejecutarInsert(consulta, "id", idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuestaPartido > 0 ? idApuestaPartido : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()));
         return this.id;
     }
 
     public void update() throws SQLException {
         String consulta = "UPDATE public.\"Billetera\"\n"
-                + "    SET \"idUsuarioRecibe\" = ?, \"monto\" = ?, \"idUsuarioDa\" = ?, \"tipoTransaccion\" = ?, \"idApuesta\" = ?, \"fecha\" = ?\n"
+                + "    SET \"idUsuarioRecibe\" = ?, \"monto\" = ?, \"idUsuarioDa\" = ?, \"tipoTransaccion\" = ?, \"idApuestaPartido\" = ?, \"fecha\" = ?\n"
                 + "    WHERE \"id\"=?";
-        con.ejecutarSentencia(consulta, idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuesta > 0 ? idApuesta : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), id);
+        con.ejecutarSentencia(consulta, idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuestaPartido > 0 ? idApuestaPartido : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), id);
     }
 
     public void delete() throws SQLException {
@@ -139,7 +138,7 @@ public class Billetera {
                 + "    \"Billetera\".\"monto\",\n"
                 + "    \"Billetera\".\"idUsuarioDa\",\n"
                 + "    \"Billetera\".\"tipoTransaccion\",\n"
-                + "    \"Billetera\".\"idApuesta\",\n"
+                + "    \"Billetera\".\"idApuestaPartido\",\n"
                 + "    to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
                 + "    FROM public.\"Billetera\";";
         PreparedStatement ps = con.statamet(consulta);
@@ -153,7 +152,7 @@ public class Billetera {
             obj.put("monto", rs.getDouble("monto"));
             obj.put("idUsuarioDa", rs.getInt("idUsuarioDa"));
             obj.put("tipoTransaccion", rs.getInt("tipoTransaccion"));
-            obj.put("idApuesta", rs.getInt("idApuesta"));
+            obj.put("idApuestaPartido", rs.getInt("idApuestaPartido"));
             obj.put("fecha", rs.getString("fecha"));
             json.put(obj);
         }
@@ -169,7 +168,7 @@ public class Billetera {
                 + "    \"Billetera\".\"monto\",\n"
                 + "    \"Billetera\".\"idUsuarioDa\",\n"
                 + "    \"Billetera\".\"tipoTransaccion\",\n"
-                + "    \"Billetera\".\"idApuesta\",\n"
+                + "    \"Billetera\".\"idApuestaPartido\",\n"
                 + "    to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
                 + "    FROM public.\"Billetera\"\n"
                 + "    WHERE \"id\" = ?;";
@@ -182,7 +181,7 @@ public class Billetera {
             obj.put("monto", rs.getDouble("monto"));
             obj.put("idUsuarioDa", rs.getInt("idUsuarioDa"));
             obj.put("tipoTransaccion", rs.getInt("tipoTransaccion"));
-            obj.put("idApuesta", rs.getInt("idApuesta"));
+            obj.put("idApuestaPartido", rs.getInt("idApuestaPartido"));
             obj.put("fecha", rs.getString("fecha"));
         }
         rs.close();
@@ -204,7 +203,7 @@ public class Billetera {
             obj.setMonto(rs.getDouble("monto"));
             obj.setIdUsuarioDa(rs.getInt("idUsuarioDa"));
             obj.setTipoTransaccion(rs.getInt("tipoTransaccion"));
-            obj.setIdApuesta(rs.getInt("idApuesta"));
+            obj.setIdApuestaPartido(rs.getInt("idApuestaPartido"));
             obj.setFecha(rs.getTimestamp("fecha"));
         }
         rs.close();
@@ -221,13 +220,23 @@ public class Billetera {
         obj.put("monto", monto);
         obj.put("idUsuarioDa", idUsuarioDa);
         obj.put("tipoTransaccion", tipoTransaccion);
-        obj.put("idApuesta", idApuesta);
+        obj.put("idApuestaPartido", idApuestaPartido);
         obj.put("fecha", fecha == null ? "" : f1.format(fecha));
         return obj;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // Negocio
+    public void setDatos(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, Date fecha) {
+        this.id = id;
+        this.idUsuarioRecibe = idUsuarioRecibe;
+        this.monto = monto;
+        this.idUsuarioDa = idUsuarioDa;
+        this.tipoTransaccion = tipoTransaccion;
+        this.idApuestaPartido = idApuestaPartido;
+        this.fecha = fecha;
+    }
+
     public static final int TIPO_TRANSACCION_PRESTAMO = 1;
     public static final int TIPO_TRANSACCION_TRASPASO = 2;
     public static final int TIPO_TRANSACCION_APUESTA = 3;
@@ -244,15 +253,20 @@ public class Billetera {
                 + "	SELECT SUM(\"Billetera\".\"monto\")\n"
                 + "    FROM public.\"Billetera\"\n"
                 + "    WHERE \"idUsuarioRecibe\" = ?\n"
-                + ") - (\n"
+                + ") AS \"recibe\",\n"
+                + "(\n"
                 + "	SELECT SUM(\"Billetera\".\"monto\")\n"
                 + "    FROM public.\"Billetera\"\n"
                 + "    WHERE \"idUsuarioDa\" = ?\n"
                 + "\n"
-                + ") AS \"monto\";";
+                + ") AS \"da\";";
         PreparedStatement ps = con.statametObject(consulta, idUsuario, idUsuario);
         ResultSet rs = ps.executeQuery();
-        double credito = rs.next() ? rs.getDouble("monto") : 0;
+        double credito = 0;
+        if (rs.next()) {
+            credito = rs.getDouble("recibe") - rs.getDouble("da");
+        }
+//        double credito = rs.next() ? rs.getDouble("monto") : 0;
         rs.close();
         ps.close();
         return credito;
@@ -383,8 +397,8 @@ public class Billetera {
                 + "     \"Billetera\".\"idUsuarioRecibe\",\n"
                 + "     \"Billetera\".\"monto\",\n"
                 + "     \"Billetera\".\"idUsuarioDa\",\n"
-                + "     \"Billetera\".\"TipoTransaccion\",\n"
-                + "     \"Billetera\".\"idApuesta\",\n"
+                + "     \"Billetera\".\"tipoTransaccion\",\n"
+                + "     \"Billetera\".\"idApuestaPartido\",\n"
                 + "     to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha,\n"
                 + "     \"recibe\".\"nombres\" || ' ' || \"recibe\".\"apellidos\"  AS recibe,\n"
                 + "	\"da\".\"nombres\" || ' ' || \"da\".\"apellidos\"  AS da\n"
@@ -394,7 +408,7 @@ public class Billetera {
                 + "WHERE \"Billetera\".\"idUsuarioRecibe\" = ?\n"
                 + "   OR \"Billetera\".\"idUsuarioDa\" = ?\n"
                 + "ORDER BY \"Billetera\".\"fecha\"\n";
-        PreparedStatement ps = con.statamet(consulta);
+        PreparedStatement ps = con.statametObject(consulta, idUsuario, idUsuario);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
         JSONObject obj;
@@ -409,9 +423,11 @@ public class Billetera {
             switch (rs.getInt("tipoTransaccion")) {
                 case TIPO_TRANSACCION_APUESTA:
                     obj.put("transaccion", "Apuesta");
+                    // Traer en detalle de Apuesta
                     break;
                 case TIPO_TRANSACCION_GANANCIA:
                     obj.put("transaccion", "Ganancia");
+                    // Traer en detalle de Apuesta
                     break;
                 case TIPO_TRANSACCION_PAGO_PRESTAMO:
                     obj.put("transaccion", "Pago a Prestamo");
@@ -425,6 +441,9 @@ public class Billetera {
                 case TIPO_TRANSACCION_TRASPASO:
                     obj.put("transaccion", "Traspaso");
                     break;
+                case TIPO_TRANSACCION_COMPRA:
+                    obj.put("transaccion", "Traspaso");
+                    break;
                 default:
                     obj.put("transaccion", "");
             }
@@ -432,6 +451,95 @@ public class Billetera {
         }
         rs.close();
         ps.close();
+        return json;
+    }
+
+    public JSONArray getTransaccionesUsuariosPerfil(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT\n"
+                + "     \"Billetera\".\"id\",\n"
+                + "     \"Billetera\".\"idUsuarioRecibe\",\n"
+                + "     \"Billetera\".\"monto\",\n"
+                + "     \"Billetera\".\"idUsuarioDa\",\n"
+                + "     \"Billetera\".\"tipoTransaccion\",\n"
+                + "     \"Billetera\".\"idApuestaPartido\",\n"
+                + "     to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha,\n"
+                + "     \"recibe\".\"nombres\" || ' ' || \"recibe\".\"apellidos\"  AS recibe,\n"
+                + "	\"da\".\"nombres\" || ' ' || \"da\".\"apellidos\"  AS da\n"
+                + "FROM public.\"Billetera\"\n"
+                + "	INNER JOIN public.\"Usuario\" recibe ON \"recibe\".\"id\" = \"Billetera\".\"idUsuarioRecibe\"\n"
+                + "	INNER JOIN public.\"Usuario\" da ON \"da\".\"id\" = \"Billetera\".\"idUsuarioDa\"\n"
+                + "WHERE \"Billetera\".\"idUsuarioRecibe\" = ?\n"
+                + "   OR \"Billetera\".\"idUsuarioDa\" = ?\n"
+                + "ORDER BY \"Billetera\".\"fecha\" DESC\n";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+//            obj.put("id", rs.getInt("id"));
+//            obj.put("da", rs.getString("da"));
+//            obj.put("recibe", rs.getString("recibe"));
+//            obj.put("fecha", rs.getString("fecha"));
+//            obj.put("monto", rs.getDouble("monto"));
+//            obj.put("tipoTransaccion", rs.getInt("tipoTransaccion"));
+            switch (rs.getInt("tipoTransaccion")) {
+                case TIPO_TRANSACCION_APUESTA:
+                    obj.put("transaccion", "Apuesta");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span> al partido");
+                    // Traer en detalle de Apuesta
+                    break;
+                case TIPO_TRANSACCION_GANANCIA:
+                    obj.put("transaccion", "Ganancia");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span> al partido");
+                    // Traer en detalle de Apuesta
+                    break;
+                case TIPO_TRANSACCION_PAGO_PRESTAMO:
+                    obj.put("transaccion", "Pago a Prestamo");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span>");
+                    break;
+                case TIPO_TRANSACCION_PRESTAMO:
+                    obj.put("transaccion", "Prestamo");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span>");
+                    break;
+                case TIPO_TRANSACCION_RETIRO:
+                    obj.put("transaccion", "Retiro");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span>");
+                    break;
+                case TIPO_TRANSACCION_TRASPASO:
+                    obj.put("transaccion", "Traspaso");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span> de " + rs.getString("da") + " a " + rs.getString("recibe"));
+                    break;
+                case TIPO_TRANSACCION_COMPRA:
+                    obj.put("transaccion", "Traspaso");
+                    obj.put("detalle", "En fecha " + rs.getString("fecha") + ", el monto de <span class='numero_decimal2'>" + rs.getDouble("monto") + "</span>");
+                    break;
+//                default:
+//                    obj.put("transaccion", "");
+            }
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    public JSONObject TraspasoCredito(double monto, int idUsuario, int idUsuarioRecibe) throws SQLException, JSONException {
+        JSONObject json = new JSONObject();
+        if (monto < 0) {
+            json.put("resp", "MONTO_0");
+        }
+        double saldo = getCreditoDisponible(idUsuario);
+        if (saldo < monto) {
+            json.put("resp", "CREDITO_INSUFICIENTE");
+            json.put("credito", saldo);
+        }
+        Date fechaInsert = new Date();
+        setDatos(0, idUsuarioRecibe, monto, idUsuario, TIPO_TRANSACCION_TRASPASO, 0, fechaInsert);
+        insert();
+        json.put("balance", getBalanceUsuario(idUsuario));
+        json.put("transacciones", getTransaccionesUsuariosPerfil(idUsuario));
+        json.put("credito", getCreditoDisponible(idUsuario));
         return json;
     }
 

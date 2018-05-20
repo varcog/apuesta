@@ -152,3 +152,7 @@ body {
 .pointer {
     cursor: pointer;
 }
+
+.text-center-important {
+    text-align: center !important;
+}

@@ -101,6 +101,10 @@
                     <div class="box box-success">
                         <div class="box-header with-border">
                             <h3 class="box-title">Balance del Credito</h3>
+                            <span class="pull-right">
+                                <button class="btn bg-purple btn-flat"  onclick="modalTraspasoCredito();" style="margin-right: 5px;"><i class="fa fa-exchange" style="margin-right: 5px;"></i>Traspaso</button>
+                                <button class="btn bg-orange btn-flat"  onclick="modalApostar();"><i class="fa fa-diamond" style="margin-right: 5px;"></i>Apostar</button>
+                            </span>
                         </div>
                         <div class="box-body box-profile">      
                             <li class="list-group-item">
@@ -143,9 +147,11 @@
                     </div>
                     <!-- /.box -->
 
+                    <!--Prestamos-->
                     <div class="box box-success" id="pPrestamos">
                         <div class="box-header with-border">
                             <h3 class="box-title">Prestamos</h3>
+                            <button class="btn bg-navy btn-flat pull-right" onclick="modalPagarPrestamo();"><i class="fa  fa-credit-card" style="margin-right: 5px;"></i>Pagar</button>
                         </div>
                         <div class="box-body box-profile">                            
                             <li class="list-group-item">
@@ -163,28 +169,14 @@
                         <!-- /.box-body -->
                     </div>
 
-                    <!-- About Me Box -->
+                    <!-- Transacciones -->
                     <div class="box box-success">
                         <div class="box-header with-border">
                             <h3 class="box-title">Transacciones</h3>
                         </div>
                         <!-- /.box-header -->
-                        <div class="box-body">
-                            <strong><i class="fa fa-book margin-r-5"></i>Compra</strong>
-                            <p class="text-muted">
-                                Compro 1,332 de credito al usuario casa
-                            </p>
-                            <hr>
-                            <strong><i class="fa fa-book margin-r-5"></i>Apuesta</strong>
-                            <p class="text-muted">
-                                Gano la apuesta 500 a Brasil la fecha 10/10/2018
-                            </p>
-                            <hr>
-                            <strong><i class="fa fa-book margin-r-5"></i>Apuesta</strong>
-                            <p class="text-muted">
-                                Gano la apuesta 500 a Argentina la fecha 10/10/2018
-                            </p>
-                            <hr>
+                        <div class="box-body" id="transacciones">
+
                         </div>
                         <!-- /.box-body -->
                     </div>
@@ -196,90 +188,53 @@
         </div>
         <!-- /.content -->
 
-        <!-- Registrar - Modificar Usuario Modal-->
-        <div class="modal" tabindex="-1" role="dialog" id="usuarioModal" style="display: none;">
+        <!-- Transaccion Prestamo -->
+        <div class="modal" tabindex="-1" role="dialog" id="transaccionModal" style="display: none;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-center text-bold" id="usuarioModalLabel">Registrar Usuario</h5>
+                        <h5 class="modal-title text-center text-bold" id="transaccionModalLabel"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="formRegistrarMenu">
-                            <input type="hidden" name="id" id="u_id" value=""/>
-                            <input type="hidden" id="u_accion" value=""/>
-                            <fieldset>
-                                <legend>Datos de Acceso</legend>
-                                <div class="form-group">
-                                    <label for="u_usuario">Usuario</label>
-                                    <input type="text" class="form-control" id="u_usuario" />
-                                </div>
-                                <div class="form-group usuario_creacion">
-                                    <label for="u_contrasena">Contraseña</label>
-                                    <input type="password" class="form-control" id="u_contrasena" />
-                                </div>
-                                <div class="form-group usuario_creacion">
-                                    <label for="u_contrasena_rep">Repetir Contraseña</label>
-                                    <input type="password" class="form-control" id="u_contrasena_rep" />
-                                </div>
-                                <div class="form-group usuario_modificacion">
-                                    <label for="u_perfil">Perfil</label>
-                                    <select class="form-control" id="u_perfil" ></select>
-                                </div>
-                            </fieldset>
-                            <fieldset>
-                                <legend>Datos de Usuario</legend>
-                                <div class="form-group">
-                                    <label for="u_ci">CI</label>
-                                    <input type="text" class="form-control" id="u_ci" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="u_nombres">Nombres</label>
-                                    <input type="text" class="form-control" id="u_nombres" />
-                                </div>
-                                <div class="form-group">
-                                    <label for="u_apellidos">Apellidos</label>
-                                    <input type="text" class="form-control" id="u_apellidos" />
-                                </div>
-                                <div class="form-group usuario_modificacion">
-                                    <label for="u_fecha_nacimiento">Fecha Nacimiento</label>
-                                    <input type="text" class="form-control" id="u_fecha_nacimiento" />
-                                </div>
-                                <div class="form-group usuario_modificacion">
-                                    <label>Sexo</label>
-                                    <select class="form-control" id="u_sexo" >
-                                        <option value="M">Masculino</option>
-                                        <option value="F">Femenino</option>
-                                    </select>
-                                </div>
-                            </fieldset>
+                        <form id="formPagar">
+                            <div class="form-group">
+                                <label id="tSaldoDisponible"></label>
+                            </div>
+                            <div class="form-group">
+                                <label for="tMonto">Monto:</label>
+                                <input type="text" class="form-control numero_decimal2" id="tMonto" />
+                            </div>
+                            <div class="form-group">
+                                <label for="tUsuario">Usuario:</label>
+                                <select type="text" class="form-control" id="tUsuario"></select>
+                            </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" id="boton_usuario" onclick="guardarUsuario()">Crear Menu</button>
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                    <div class="modal-footer text-center-important">
+                        <button type="button" class="btn btn-success" id="botonTransaccion"></button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!--eliminar Model-->
-        <div class="modal fade" id="eliminarModal" tabindex="-2" role="dialog" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+        <!--Confirmar Model-->
+        <div class="modal fade" id="confirmarModal" tabindex="-2" role="dialog" aria-labelledby="confirmarModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-center text-bold" id="eliminarModalLabel">Eliminar</h5>
+                        <h5 class="modal-title text-center text-bold" id="confirmarModalLabel"></h5>
                         <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p id="eliminarModalText"></p>
+                        <p id="confirmarModalText"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" id="elminarBotonModal">ELIMINAR</button>
+                        <button type="button" class="btn btn-success" id="confirmarBotonModal">Aceptar</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal">CANCELAR</button>
                     </div>
                 </div>
