@@ -245,7 +245,7 @@ public class Billetera {
                 + "    FROM public.\"Billetera\"\n"
                 + "    WHERE \"idUsuarioRecibe\" = ?\n"
                 + ") - (\n"
-                + "	SELECT \"Billetera\".\"monto\"\n"
+                + "	SELECT SUM(\"Billetera\".\"monto\")\n"
                 + "    FROM public.\"Billetera\"\n"
                 + "    WHERE \"idUsuarioDa\" = ?\n"
                 + "\n"
