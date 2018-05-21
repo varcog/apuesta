@@ -109,7 +109,7 @@
             </div>
         </div>
         
-        <!--alert modal-->
+        <!--crear Partido-->
         <div class="modal fade" id="popCreacionPartido" tabindex="-3" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -166,5 +166,52 @@
                 </div>
             </div>
         </div>
+        <!--Ver Apuestas-->
+        <div class="modal fade" id="popPorcentajeApuestas" tabindex="-3" role="dialog" aria-labelledby="popPorcentajeApuestas" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="alertModalLabel">Apuestas</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <table class="table table-hover">
+                                <thead id="cuerpoApuestasPartido">
+                                    <tr>                                        
+                                        <th class="eq1">Equipo 1</th>
+                                        <th>Empate</th>
+                                        <th class="eq2">Equipo 2</th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="text" name="apuEq1" data-idPartido="0" data-idTipoApuesta="0" value="0"  onchange='cambiarPorcApuesta2(this);'/></td>
+                                        <td><input type="text" name="apuEmp" data-idPartido="0" data-idTipoApuesta="0" value="0"  onchange='cambiarPorcApuesta2(this);'/></td>
+                                        <td><input type="text" name="apuEq2" data-idPartido="0" data-idTipoApuesta="0" value="0"  onchange='cambiarPorcApuesta2(this);'/></td>                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>                                        
+                                        <th class="eq1">Equipo 1</th>
+                                        <th class="eq2">Equipo 2</th>                                        
+                                        <th>Porcentaje</th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="cuerpoApuestas">
+                                    
+                                </tbody>
+                            </table>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>        
     </body>
 </html>

@@ -11,17 +11,17 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.ApuestaPartido;
 import modelo.Equipos;
 import modelo.Estadio;
 import modelo.Grupo;
 import modelo.Partidos;
+import modelo.TipoApuesta;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,6 +69,12 @@ public class creacionPartidosController extends HttpServlet {
                     break;                             
                 case "eliminar":
                     html = eliminar(request, con);
+                    break;                             
+                case "verApuestas":
+                    html = verApuestas(request, con);
+                    break;                             
+                case "cambiarPorcApuesta":
+                    html = cambiarPorcApuesta(request, con);
                     break;                             
             }
             con.commit();
@@ -152,6 +158,30 @@ public class creacionPartidosController extends HttpServlet {
         Partidos p = new Partidos(con);
         p.setId(id);
         p.delete();
+        return true+"";
+    }
+
+    private String verApuestas(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        JSONObject obj = new JSONObject();
+        obj.put("partido", new TipoApuesta(con).todosPartido(id));
+        obj.put("goles", new TipoApuesta(con).todosGoles(id));
+        return obj.toString();
+    }
+
+    private String cambiarPorcApuesta(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int idPartido = Integer.parseInt(request.getParameter("idPartido"));
+        int idTipoApuesta = Integer.parseInt(request.getParameter("idTipoApuesta"));
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        
+        ApuestaPartido ap = new ApuestaPartido(con).buscar(idTipoApuesta, idPartido);        
+        if(ap==null){
+            ap = new ApuestaPartido(0, idTipoApuesta, idPartido, monto, con);
+            ap.insert();
+        }else{
+            ap.setMultiplicador(monto);
+            ap.update();
+        }        
         return true+"";
     }
 }

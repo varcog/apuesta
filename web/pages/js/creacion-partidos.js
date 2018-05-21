@@ -50,7 +50,7 @@ function armarPartidos(partido) {
     cuerpo+="<i class='fa fa-futbol-o bg-blue'></i>";    
     cuerpo+="<div class='timeline-item'>";
     cuerpo+="<span class='time'><i class='fa fa-clock-o'></i>"+partido.hora+"</span>";
-    cuerpo+="<h3 class='timeline-header'><a href='#'>"+partido.nombre1+"<span style='margin-left:5px;' class='flag-icon "+partido.icono1+"'></span></a> VS <a href='#'>"+partido.nombre2+"<span style='margin-left:5px;' class='flag-icon "+partido.icono2+"'></span></a></h3>";
+    cuerpo+="<h3 class='timeline-header'><a href='#' class='eq1'>"+partido.nombre1+"<span style='margin-left:5px;' class='flag-icon "+partido.icono1+"'></span></a> VS <a href='#' class='eq2'>"+partido.nombre2+"<span style='margin-left:5px;' class='flag-icon "+partido.icono2+"'></span></a></h3>";
     cuerpo+="<div class='timeline-body'>";
     cuerpo+="<h2>"+partido.nombreGrupo+"</h2>";    
     cuerpo+="<h4>"+partido.nombreEstadio+"</h4>";        
@@ -58,6 +58,7 @@ function armarPartidos(partido) {
     cuerpo+="</div>";
     cuerpo+="<div class='timeline-footer'>";    
     cuerpo+="<a class='btn btn-danger btn-xs' style='margin-left:5px;' onclick='eliminar("+partido.id+",this);'>Eliminar</a>";
+    cuerpo+="<a class='btn btn-warning btn-xs' style='margin-left:5px;' onclick='verApuestas("+partido.id+",this);'>Ver porcentaje de Apuestas</a>";
     cuerpo+="</div>";
     cuerpo+="</div>";
     cuerpo+="</li>";
@@ -146,5 +147,63 @@ function eliminar(id,ele) {
         if(resp==="true"){
             $(ele).parent().parent().parent().remove();
         }
+    });
+}
+
+function verApuestas(id,ele) {
+    var eq1=$(ele).parent().parent().find(".eq1").text();
+    var eq2=$(ele).parent().parent().find(".eq2").text();
+    $("#cuerpoApuestas").parent().find(".eq1").text(eq1);
+    $("#cuerpoApuestas").parent().find(".eq2").text(eq2);
+    $("#cuerpoApuestasPartido").find(".eq1").text(eq1);
+    $("#cuerpoApuestasPartido").find(".eq2").text(eq2);
+    openModal("#popPorcentajeApuestas");
+    $.post(url, {evento: "verApuestas",id:id}, function (resp) {
+        var json = $.parseJSON(resp);
+        var cuerpo = "";        
+        $.each(json.goles,function(i,obj){
+            cuerpo+="<tr>";
+            cuerpo+="<td>"+obj.equipo1+"</td>";
+            cuerpo+="<td>"+obj.equipo2+"</td>";
+            cuerpo+="<td><input type='text' value='"+obj.porcentaje+"' onchange='cambiarPorcApuesta("+id+","+obj.id+",this);'/></td>";
+            cuerpo+="</tr>";
+        });
+        $.each(json.partido,function(i,obj){
+            switch(obj.id){
+                case 1:
+                    $("input[name=apuEq1]").val(obj.porcentaje);
+                    $("input[name=apuEq1]").data("idPartido",id);
+                    $("input[name=apuEq1]").data("idTipoApuesta",1);
+                    break;
+                case 2:
+                    $("input[name=apuEmp]").val(obj.porcentaje);
+                    $("input[name=apuEmp]").data("idPartido",id);
+                    $("input[name=apuEmp]").data("idTipoApuesta",2);
+                    break;
+                case 3:
+                    $("input[name=apuEq2]").val(obj.porcentaje);
+                    $("input[name=apuEq2]").data("idPartido",id);
+                    $("input[name=apuEq2]").data("idTipoApuesta",3);
+                    break;
+            }            
+        });
+        $("#cuerpoApuestas").html(cuerpo);
+    });
+}
+
+function cambiarPorcApuesta(idPartido, idTipoApuesta, ele) {
+    var monto = $(ele).val();
+    $.post(url, {evento: "cambiarPorcApuesta",idPartido:idPartido,idTipoApuesta:idTipoApuesta,monto:monto}, function (resp) {
+        var json = $.parseJSON(resp);
+        
+    });
+}
+function cambiarPorcApuesta2(ele) {
+    var idPartido = $(ele).data("idPartido");
+    var idTipoApuesta = $(ele).data("idTipoApuesta");
+    var monto = $(ele).val();
+    $.post(url, {evento: "cambiarPorcApuesta",idPartido:idPartido,idTipoApuesta:idTipoApuesta,monto:monto}, function (resp) {
+        var json = $.parseJSON(resp);
+        
     });
 }

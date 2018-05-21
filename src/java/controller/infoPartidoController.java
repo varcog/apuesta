@@ -2,7 +2,6 @@ package controller;
 
 import conexion.Conexion;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -11,16 +10,18 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Partidos;
+import modelo.TipoApuesta;
 import modelo.Usuario;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author equipo_2
  */
 @MultipartConfig
-@WebServlet(name = "fixtureController", urlPatterns = {"/fixtureController"})
-public class fixtureController extends HttpServlet {
+@WebServlet(name = "infoPartidoController", urlPatterns = {"/infoPartidoController"})
+public class infoPartidoController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,7 +33,7 @@ public class fixtureController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedEncodingException {
+            throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
         Usuario usuario = ((Usuario) request.getSession().getAttribute("usr"));
@@ -49,20 +50,17 @@ public class fixtureController extends HttpServlet {
         try {
             String html = "";
             String evento = request.getParameter("evento");
-            switch (evento) {                                 
+            switch (evento) {
                 case "cargar":
                     html = cargar(request, con);
-                    break;                                      
+                    break;                             
             }
             con.commit();
             response.getWriter().write(html);
-        } catch (SQLException ex) {
+        } catch (SQLException | JSONException ex) {
             con.error(this, ex);
             response.getWriter().write("false");
-        } catch (JSONException ex) {
-            con.error(this, ex);
-            response.getWriter().write("false");
-        }
+        } 
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -102,12 +100,12 @@ public class fixtureController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }// </editor-fold>    
 
-    private String cargar(HttpServletRequest request, Conexion con) throws SQLException, JSONException {        
-        return new Partidos(con).fixture().toString();        
-    }
-    
-
-    
+    private String cargar(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int idPartido = Integer.parseInt(request.getParameter("idPartido"));
+        JSONObject obj = new JSONObject();
+        obj.put("partido", new Partidos(con).buscarCompleto(idPartido));
+        return obj.toString();
+    }   
 }

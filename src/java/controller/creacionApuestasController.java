@@ -1,26 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package controller;
 
 import conexion.Conexion;
+import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import modelo.Partidos;
+import javax.servlet.http.Part;
+import modelo.Estadio;
+import modelo.Parametros;
+import modelo.TipoApuesta;
 import modelo.Usuario;
 import org.json.JSONException;
+import util.SisEventos;
 
 /**
  *
  * @author equipo_2
  */
 @MultipartConfig
-@WebServlet(name = "fixtureController", urlPatterns = {"/fixtureController"})
-public class fixtureController extends HttpServlet {
+@WebServlet(name = "creacionApuestasController", urlPatterns = {"/creacionApuestasController"})
+public class creacionApuestasController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,7 +42,7 @@ public class fixtureController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, UnsupportedEncodingException {
+            throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
         Usuario usuario = ((Usuario) request.getSession().getAttribute("usr"));
@@ -49,20 +59,26 @@ public class fixtureController extends HttpServlet {
         try {
             String html = "";
             String evento = request.getParameter("evento");
-            switch (evento) {                                 
+            switch (evento) {
                 case "cargar":
                     html = cargar(request, con);
-                    break;                                      
+                    break;                
+                case "popEditarApuestas":
+                    html = popEditarApuestas(request, con);
+                    break;                
+                case "guardarDatos":
+                    html = guardarDatos(request, con);
+                    break;                
+                case "eliminar":
+                    html = eliminar(request, con);
+                    break;                
             }
             con.commit();
             response.getWriter().write(html);
-        } catch (SQLException ex) {
+        } catch (SQLException | JSONException ex) {
             con.error(this, ex);
             response.getWriter().write("false");
-        } catch (JSONException ex) {
-            con.error(this, ex);
-            response.getWriter().write("false");
-        }
+        } 
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -102,12 +118,36 @@ public class fixtureController extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }// </editor-fold>    
 
-    private String cargar(HttpServletRequest request, Conexion con) throws SQLException, JSONException {        
-        return new Partidos(con).fixture().toString();        
+    private String cargar(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        return new TipoApuesta(con).todos().toString();
     }
-    
 
-    
+    private String popEditarApuestas(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        return new TipoApuesta(con).buscar(id).toJSONObject().toString();
+    }
+
+    private String guardarDatos(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        int tipoApuesta = Integer.parseInt(request.getParameter("tipoApuesta"));
+        int equipo1 = Integer.parseInt(request.getParameter("equipo1"));
+        int equipo2 = Integer.parseInt(request.getParameter("equipo2"));
+        
+        TipoApuesta ta = new TipoApuesta(0, tipoApuesta, equipo1, equipo2, con);
+        if(id>0){
+            ta.setId(id);
+            ta.update();
+        }else{
+            id=ta.insert();
+        }
+        return new TipoApuesta(con).buscar(id).toJSONObject().toString();
+    }
+
+    private String eliminar(HttpServletRequest request, Conexion con) throws SQLException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        new TipoApuesta(con).delete(id);
+        return true+"";
+    }
 }

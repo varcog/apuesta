@@ -120,6 +120,7 @@ public class ApuestaPartido {
         ps.close();
         return json;
     }
+    
 
     public JSONObject buscarJSONObject(int id) throws SQLException, JSONException {
         String consulta = "SELECT\n"
@@ -148,6 +149,24 @@ public class ApuestaPartido {
                 + "    FROM public.\"ApuestaPartido\"\n"
                 + "    WHERE \"id\" = ?;";
         PreparedStatement ps = con.statametObject(consulta, id);
+        ResultSet rs = ps.executeQuery();
+        ApuestaPartido obj = null;
+        if (rs.next()) {
+            obj = new ApuestaPartido(con);
+            obj.setId(rs.getInt("id"));
+            obj.setIdTipoApuesta(rs.getInt("idTipoApuesta"));
+            obj.setIdPartido(rs.getInt("idPartido"));
+            obj.setMultiplicador(rs.getDouble("multiplicador"));
+        }
+        rs.close();
+        ps.close();
+        return obj;
+    }
+    public ApuestaPartido buscar(int idTipoApuesta, int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "    FROM public.\"ApuestaPartido\"\n"
+                + "    WHERE \"idTipoApuesta\" = ? AND \"idPartido\" = ?;";
+        PreparedStatement ps = con.statametObject(consulta, idTipoApuesta, idPartido);
         ResultSet rs = ps.executeQuery();
         ApuestaPartido obj = null;
         if (rs.next()) {

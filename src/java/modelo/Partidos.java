@@ -301,6 +301,7 @@ public class Partidos {
                             "\"public\".\"Grupo\".nombre as grupo,\n" +
                             "\"public\".\"Grupo\".id as idGrupo,\n" +
                             "to_char(\"public\".\"Partidos\".fecha,'DD/MM/YYYY HH24:MI') as fecha,\n" +
+                            "\"public\".\"Partidos\".id as idPartido,\n" +
                             "eq1.nombre as eq1,\n" +
                             "eq1.icono as icono1,\n" +
                             "eq2.nombre as eq2,\n" +
@@ -318,6 +319,7 @@ public class Partidos {
         JSONObject obj;
         while (rs.next()) {
             obj = new JSONObject();
+            obj.put("idPartido",rs.getInt("idPartido"));
             obj.put("grupo",rs.getString("grupo"));
             obj.put("idGrupo",rs.getInt("idGrupo"));
             obj.put("fecha",rs.getString("fecha"));
