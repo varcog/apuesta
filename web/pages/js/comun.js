@@ -387,7 +387,7 @@ function openAlert(mensaje, titulo) {
         html += '</div>';
         $("body").append(html);
     }
-    $("#alertModalText").text(mensaje);
+    $("#alertModalText").html(mensaje);
     $("#alertModalLabel").text(titulo);
     openModal(ID_ALERT_MODAL);
 }

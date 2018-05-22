@@ -4,6 +4,7 @@ import conexion.Conexion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.json.JSONArray;
@@ -339,7 +340,7 @@ public class Billetera {
         return json;
     }
 
-    public JSONArray detalleBalanceTipo(int tipo) throws SQLException {
+    public JSONArray detalleBalanceTipo(int idUsuario, int tipo) throws SQLException {
         String consulta = "";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
@@ -528,11 +529,13 @@ public class Billetera {
         JSONObject json = new JSONObject();
         if (monto < 0) {
             json.put("resp", "MONTO_0");
+            return json;
         }
         double saldo = getCreditoDisponible(idUsuario);
         if (saldo < monto) {
             json.put("resp", "CREDITO_INSUFICIENTE");
             json.put("credito", saldo);
+            return json;
         }
         Date fechaInsert = new Date();
         setDatos(0, idUsuarioRecibe, monto, idUsuario, TIPO_TRANSACCION_TRASPASO, 0, fechaInsert);
@@ -540,6 +543,46 @@ public class Billetera {
         json.put("balance", getBalanceUsuario(idUsuario));
         json.put("transacciones", getTransaccionesUsuariosPerfil(idUsuario));
         json.put("credito", getCreditoDisponible(idUsuario));
+        return json;
+    }
+
+    public JSONObject venderCreditoEfectivo(double monto, int idUsuarioRecibeCredito, int idUsuarioVendeCredito) throws SQLException, JSONException, ParseException {
+        JSONObject json = new JSONObject();
+        if (monto < 0) {
+            json.put("resp", "MONTO_0");
+            return json;
+        }
+        Date fechaInsert = new Date();
+        int idCasa = new Usuario(con).getIdCasa();
+        setDatos(0, idUsuarioRecibeCredito, monto, idCasa, TIPO_TRANSACCION_COMPRA, 0, fechaInsert);
+        insert();
+        PagoEfectivo pe = new PagoEfectivo(0, 0, getId(), idUsuarioVendeCredito, monto, idUsuarioRecibeCredito, fechaInsert, PagoEfectivo.TIPO_COMPRA, con);
+        pe.insert();
+//        json.put("prestatario", getPrestatario(idUsuario));
+        json.put("montoUsado", monto);
+        return json;
+    }
+
+    public JSONObject retirarCreditoEfectivo(double monto, int idUsuarioRetira, int idUsuarioDaDinero) throws SQLException, JSONException, ParseException {
+        JSONObject json = new JSONObject();
+        if (monto < 0) {
+            json.put("resp", "MONTO_0");
+            return json;
+        }
+        double saldo = getCreditoDisponible(idUsuarioRetira);
+        if (saldo < monto) {
+            json.put("resp", "CREDITO_INSUFICIENTE");
+            json.put("credito", saldo);
+            return json;
+        }
+        Date fechaInsert = new Date();
+        int idCasa = new Usuario(con).getIdCasa();
+        setDatos(0, idCasa, monto, idUsuarioRetira, TIPO_TRANSACCION_RETIRO, 0, fechaInsert);
+        insert();
+        PagoEfectivo pe = new PagoEfectivo(0, 0, getId(), idUsuarioRetira, monto, idUsuarioDaDinero, fechaInsert, PagoEfectivo.TIPO_RETIRO, con);
+        pe.insert();
+//        json.put("prestatario", getPrestatario(idUsuario));
+        json.put("montoDevuelto", monto);
         return json;
     }
 

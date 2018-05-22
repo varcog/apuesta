@@ -48,6 +48,8 @@ public class EscribirPostgres {
             pw.println(CGetYSet(nombreTabla, lista));
             pw.println("\n");
             pw.println("    ////////////////////////////////////////////////////////////////////////////\n");
+            pw.println(CSetDatos(nombreTabla, lista));
+            pw.println("\n");
             pw.println(CInsertar(nombreTabla, lista, tablespace));
             pw.println("\n");
             pw.println(CUpdate(nombreTabla, lista, tablespace));
@@ -80,6 +82,44 @@ public class EscribirPostgres {
                 e2.printStackTrace();
             }
         }
+    }
+    
+    private static String CSetDatos(String nombre_clase, List<CamposTabla> lista) throws SQLException {
+
+        String ccampos = "public void setDatos( ";
+
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getTipo().equals("integer")) {
+                ccampos += "int ";
+            }
+            if (lista.get(i).getTipo().equals("boolean")) {
+                ccampos += "boolean ";
+            }
+            if (lista.get(i).getTipo().contains("character")) {
+                ccampos += "String ";
+            }
+            if (lista.get(i).getTipo().contains("numeric")) {
+                ccampos += "Double ";
+            }
+            if (lista.get(i).getTipo().equals("date")) {
+                ccampos += "Date ";
+            }
+            if (lista.get(i).getTipo().contains("timestamp")) {
+                ccampos += "Date ";
+            }
+            ccampos += lista.get(i).getNombre();
+
+            if (i != lista.size() - 1) {
+                ccampos += ", ";
+            }
+
+        }
+        ccampos += ")\n{\n";
+
+        ccampos += CConstructorLlenoCampos(nombre_clase, lista);
+
+        ccampos += "}\n";
+        return ccampos;
     }
 
     private static String CInsertar(String nombre_clase, List<CamposTabla> lista, String tablespace) throws SQLException {

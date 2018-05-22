@@ -72,7 +72,7 @@
             </div>            
         </div>        
 
-        <!--Pagar Modal-->
+        <!--Prestar Modal-->
         <div class="modal" tabindex="-1" role="dialog" id="prestarModal" style="display: none;">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -103,7 +103,35 @@
             </div>
         </div>
 
-        <!--eliminar Model-->
+        <!-- Pagar Prestamo -->
+        <div class="modal" tabindex="-1" role="dialog" id="pagarModal" style="display: none;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="pagarModalLabel">Pagar Prestamo</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formPagar">
+                            <div class="form-group">
+                                <label id="tPrestamo"></label>
+                            </div>
+                            <div class="form-group">
+                                <label for="tMonto">Monto:</label>
+                                <input type="text" class="form-control numero_decimal2" id="tMonto" />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer text-center-important">
+                        <button type="button" class="btn btn-success" onclick="pagarPrestamo();">Pagar Prestamo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--confirmar Model-->
         <div class="modal fade" id="confirmarModal" tabindex="-2" role="dialog" aria-labelledby="confirmarModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -161,24 +189,24 @@
                     </div>
                     <div class="modal-body">
                         <table id="tabla" class="table table-bordered table-hover tabla-general">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Monto</th>
-                                        <th>Tipo</th>
-                                        <th>A quien Pago</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="cuerpo">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Monto</th>
+                                    <th>Tipo</th>
+                                    <th>A quien Pago</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo">
 
-                                </tbody>                                
-                                <tfoot>
-                                    
-                                </tfoot>
-                            </table>
+                            </tbody>                                
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
                     </div>
                     <div class="modal-footer">
-                        
+
                     </div>
                 </div>
             </div>

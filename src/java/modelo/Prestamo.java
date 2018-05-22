@@ -310,30 +310,91 @@ public class Prestamo {
         return json;
     }
 
-    public JSONObject pagarPrestamoCredito(double monto, int idUsuario) throws SQLException, JSONException {
+    public double getDeuda(int idUsuario) throws SQLException, ParseException {
+        String consulta = "SELECT\n"
+                + "    SUM(\"Prestamo\".\"debe\") AS debe,\n"
+                + "    SUM(\"Prestamo\".\"haber\") AS haber\n"
+                + "    FROM public.\"Prestamo\"\n"
+                + "    WHERE \"Prestamo\".\"idUsuario\" = ?\n";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        double deuda = 0;
+        if (rs.next()) {
+            deuda = rs.getDouble("haber") - rs.getDouble("debe");
+            deuda = SisEventos.acomodarDosDecimalesD(deuda);
+            deuda = deuda < 0 ? SisEventos.acomodarDosDecimalesD(deuda * -1) : 0;
+        }
+        rs.close();
+        ps.close();
+        return deuda;
+    }
+
+    public JSONObject pagarPrestamoCredito(double monto, int idUsuario) throws SQLException, JSONException, ParseException {
         JSONObject json = new JSONObject();
-        if (monto < 0) {
+        if (monto <= 0) {
             json.put("resp", "MONTO_0");
+            return json;
         }
         Billetera b = new Billetera(con);
         double saldo = b.getCreditoDisponible(idUsuario);
         if (saldo < monto) {
             json.put("resp", "CREDITO_INSUFICIENTE");
             json.put("credito", saldo);
+            return json;
         }
+        double deuda = getDeuda(idUsuario);
+        if (deuda <= 0) {
+            json.put("resp", "DEUDA_0");
+            return json;
+        }
+        monto = SisEventos.acomodarDosDecimalesD(monto);
+        double pago = deuda < monto ? deuda : monto;
+        pago = SisEventos.acomodarDosDecimalesD(pago);
         Date fechaInsert = new Date();
-        b.setFecha(fechaInsert);
-        b.setTipoTransaccion(Billetera.TIPO_TRANSACCION_PAGO_PRESTAMO);
-        b.setIdUsuarioDa(idUsuario);
-        b.setMonto(monto);
-        b.setIdUsuarioRecibe(new Usuario(con).getIdCasa());
+        b.setDatos(0, new Usuario(con).getIdCasa(), pago, idUsuario, Billetera.TIPO_TRANSACCION_PAGO_PRESTAMO, 0, fechaInsert);
         b.insert();
-        setDatos(0, idUsuario, 0.0, monto, b.getId(), fechaInsert);
+        setDatos(0, idUsuario, 0.0, pago, b.getId(), fechaInsert);
         insert();
         json.put("balance", b.getBalanceUsuario(idUsuario));
         json.put("prestamos", getPrestamoUsuarioPerfil(idUsuario));
         json.put("transacciones", b.getTransaccionesUsuariosPerfil(idUsuario));
         json.put("credito", b.getCreditoDisponible(idUsuario));
+        json.put("creditoUsado", pago);
+        return json;
+    }
+
+    public JSONObject pagarPrestamoEfectivo(double monto, int idUsuarioDa, int idUsuarioRecibo) throws SQLException, JSONException, ParseException {
+        JSONObject json = new JSONObject();
+        if (monto < 0) {
+            json.put("resp", "MONTO_0");
+            return json;
+        }
+        double deuda = getDeuda(idUsuarioDa);
+        if (deuda <= 0) {
+            json.put("resp", "DEUDA_0");
+            return json;
+        }
+        monto = SisEventos.acomodarDosDecimalesD(monto);
+        double pago = deuda < monto ? deuda : monto;
+        pago = SisEventos.acomodarDosDecimalesD(pago);
+        Date fechaInsert = new Date();
+        setDatos(0, idUsuarioDa, 0.0, pago, 0, fechaInsert);
+        insert();
+        PagoEfectivo pe = new PagoEfectivo(0, getId(), 0, idUsuarioDa, pago, idUsuarioRecibo, fechaInsert, PagoEfectivo.TIPO_PAGO_PRESTAMO, con);
+        pe.insert();
+        json.put("prestatario", getPrestatario(idUsuarioDa));
+        json.put("montoUsado", pago);
+        return json;
+    }
+
+    public JSONObject prestar(int relacionador, double monto) throws SQLException, JSONException, ParseException {
+        int idCasa = new Usuario(con).getIdCasa();
+        Date hoy = new Date();
+        Billetera b = new Billetera(0, relacionador, monto, idCasa, Billetera.TIPO_TRANSACCION_PRESTAMO, 0, hoy, con);
+        b.insert();
+        setDatos(0, relacionador, monto, 0.0, b.getId(), hoy);
+        insert();
+        JSONObject json = getPrestatario(relacionador);
         return json;
     }
 }

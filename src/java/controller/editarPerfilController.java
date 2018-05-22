@@ -148,7 +148,7 @@ public class editarPerfilController extends HttpServlet {
         return nombre;
     }
 
-    private String okPagarPrestamo(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
+    private String okPagarPrestamo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
         double monto = Double.parseDouble(request.getParameter("monto"));
         return new Prestamo(con).pagarPrestamoCredito(monto, con.getUsuario().getId()).toString();
     }

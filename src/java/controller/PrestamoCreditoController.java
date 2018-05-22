@@ -46,11 +46,8 @@ public class PrestamoCreditoController extends HttpServlet {
                 case "prestar":
                     html = prestar(request, con);
                     break;
-                case "pagarEfectivo":
-                    html = pagarEfectivo(request, con);
-                    break;
-                case "pagarBilletera":
-                    html = pagarBilletera(request, con);
+                case "okPagarPrestamo":
+                    html = okPagarPrestamo(request, con);
                     break;
             }
             con.commit();
@@ -111,34 +108,14 @@ public class PrestamoCreditoController extends HttpServlet {
     private String prestar(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
         int relacionador = Integer.parseInt(request.getParameter("relacionador"));
         double monto = Double.parseDouble(request.getParameter("monto"));
-        int idCasa = new Usuario(con).getIdCasa();
-        Date hoy = new Date();
-        Billetera b = new Billetera(0, relacionador, monto, idCasa, Billetera.TIPO_TRANSACCION_PRESTAMO, 0, hoy, con);
-        b.insert();
-        Prestamo p = new Prestamo(0, relacionador, monto, 0.0, b.getId(), hoy, con);
-        p.insert();
-        JSONObject json = p.getPrestatario(relacionador);
+        JSONObject json = new Prestamo(con).prestar(relacionador, monto);
         return json == null ? "null" : json.toString();
     }
 
-    private String pagarEfectivo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
+    private String okPagarPrestamo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
         double monto = Double.parseDouble(request.getParameter("monto"));
-        int relacionador = Integer.parseInt(request.getParameter("relacionador"));
-        int entrega = Integer.parseInt(request.getParameter("entrega"));
-        String nombre = null;
-        SisEventos.decodeUTF8(nombre);
-        SisEventos.decodeUTF8(request.getParameter(""));
-        return null;
-    }
-
-    private String pagarBilletera(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException {
-        double monto = Double.parseDouble(request.getParameter("monto"));
-        int relacionador = Integer.parseInt(request.getParameter("relacionador"));
-        int entrega = Integer.parseInt(request.getParameter("entrega"));
-        String nombre = null;
-        SisEventos.decodeUTF8(nombre);
-        SisEventos.decodeUTF8(request.getParameter(""));
-        return null;
+        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+        return new Prestamo(con).pagarPrestamoEfectivo(monto, idUsuario, con.getUsuario().getId()).toString();
     }
 
 }
