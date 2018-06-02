@@ -116,6 +116,11 @@ public class TipoEventoPartido {
         String consulta = "delete from public.\"TipoEventoPartido\" where \"id\"= ?;";
         con.ejecutarSentencia(consulta, id);
     }
+    public boolean delete(int id) throws SQLException {
+        String consulta = "delete from public.\"TipoEventoPartido\" where \"id\"= ?;";
+        con.ejecutarSentencia(consulta, id);
+        return true;
+    }
 
     public JSONArray todos() throws SQLException, JSONException {
         String consulta = "SELECT\n"

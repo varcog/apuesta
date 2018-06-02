@@ -59,11 +59,17 @@ function armarPartidos(partido) {
     cuerpo+="<div class='timeline-footer'>";    
     cuerpo+="<a class='btn btn-danger btn-xs' style='margin-left:5px;' onclick='eliminar("+partido.id+",this);'>Eliminar</a>";
     cuerpo+="<a class='btn btn-warning btn-xs' style='margin-left:5px;' onclick='verApuestas("+partido.id+",this);'>Ver porcentaje de Apuestas</a>";
+    cuerpo+="<a class='btn btn-success btn-xs' style='margin-left:5px;' onclick='relatarPartido("+partido.id+",this);'>Relatar Partido</a>";
     cuerpo+="</div>";
     cuerpo+="</div>";
     cuerpo+="</li>";
     return cuerpo;
 }
+
+function relatarPartido(idPartido,btn) {    
+    window.parent.cambiarMenu("pages/relatarPartido.html?idPartido="+idPartido);    
+}
+
 function buscar(e) {    
     var b = $("input[name=buscador]").val();
     if(b.length>0){

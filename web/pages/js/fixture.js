@@ -33,6 +33,7 @@ function cargar() {
                 cuerpo+="<th>Equipo 2</th>";                
                 cuerpo+="<th>Fecha</th>";                
                 cuerpo+="<th>Apostar</th>";                
+                cuerpo+="<th>Ver Partido</th>";                
                 cuerpo+="</tr>";                
             }
             cuerpo+="<tr>";
@@ -40,6 +41,7 @@ function cargar() {
             cuerpo+="<td><span class='flag-icon "+obj.icono2+"'></span>"+obj.eq2+" - "+obj.goles2+"</td>";
             cuerpo+="<td>"+obj.fecha+"</td>";
             cuerpo+="<td><button class='btn btn-success' onclick='popApostar("+obj.idPartido+");'>Apostar</button></td>";
+            cuerpo+="<td><button class='btn btn-success' onclick='verPartido("+obj.idPartido+",this);'>Ver</button></td>";
             cuerpo+="</tr>";
             grupo=obj.grupo;
         });
@@ -50,4 +52,8 @@ function cargar() {
 
 function popApostar(idPartido) {
     window.parent.cambiarMenu("pages/info-partido.html?idPartido="+idPartido);    
+}
+
+function verPartido(idPartido,btn) {    
+    window.parent.cambiarMenu("pages/verPartido.html?idPartido="+idPartido);    
 }

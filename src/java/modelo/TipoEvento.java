@@ -85,7 +85,7 @@ public class TipoEvento {
         String consulta = "SELECT\n"
                 + "    \"TipoEvento\".\"id\",\n"
                 + "    \"TipoEvento\".\"evento\"\n"
-                + "    FROM public.\"TipoEvento\";";
+                + "    FROM public.\"TipoEvento\" ORDER BY id;";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
