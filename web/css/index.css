@@ -1,8 +1,8 @@
 /*@media (min-width: 768px)*/
 
 html, body {
-    height: 100% !important;
-    width: 100% !important;
+    height: 100vh !important;
+    width: 100vw !important;
 }
 
 /*.content {

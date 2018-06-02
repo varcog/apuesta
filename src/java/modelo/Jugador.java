@@ -168,7 +168,7 @@ public class Jugador {
                             "\"public\".\"Jugador\"\n" +
                             "INNER JOIN \"public\".\"Posicion\" ON \"public\".\"Jugador\".\"idPosicion\" = \"public\".\"Posicion\".\"id\"\n" +
                             "WHERE\n" +
-                            "\"public\".\"Jugador\".\"idEquipo\" = ?;";
+                            "\"public\".\"Jugador\".\"idEquipo\" = ? ORDER BY \"public\".\"Posicion\".\"nombre\";";
         PreparedStatement ps = con.statamet(consulta);
         ps.setInt(1, idEquipo);
         ResultSet rs = ps.executeQuery();
