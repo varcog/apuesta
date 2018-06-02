@@ -254,12 +254,13 @@ public class TipoApuesta {
         return json;                    
     }
     private double getPorcentaje(int idTipoApuesta, int idPartido) throws SQLException{
-        String consulta = "SELECT multiplicador\n" +
-                            "FROM\n" +
-                            "\"public\".\"ApuestaPartido\"\n" +
-                            "WHERE\n" +
-                            "\"public\".\"ApuestaPartido\".\"idTipoApuesta\" = ? AND\n" +
-                            "\"public\".\"ApuestaPartido\".\"idPartido\" = ?";
+        String consulta = "SELECT \"ApuestaPartido\".multiplicador\n" +
+                        "FROM \"public\".\"ApuestaPartido\"\n" +
+                        "where \"ApuestaPartido\".\"id\" = (\n" +
+                        "SELECT max(id) as id\n" +
+                        "FROM \"public\".\"ApuestaPartido\"\n" +
+                        "WHERE \"ApuestaPartido\".\"idTipoApuesta\" = ?\n" +
+                        "AND \"ApuestaPartido\".\"idPartido\" = ?)";
         PreparedStatement ps = con.statamet(consulta);
         ps.setInt(1, idTipoApuesta);
         ps.setInt(2, idPartido);

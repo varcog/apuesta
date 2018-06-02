@@ -173,15 +173,9 @@ public class creacionPartidosController extends HttpServlet {
         int idPartido = Integer.parseInt(request.getParameter("idPartido"));
         int idTipoApuesta = Integer.parseInt(request.getParameter("idTipoApuesta"));
         double monto = Double.parseDouble(request.getParameter("monto"));
-        
-        ApuestaPartido ap = new ApuestaPartido(con).buscar(idTipoApuesta, idPartido);        
-        if(ap==null){
-            ap = new ApuestaPartido(0, idTipoApuesta, idPartido, monto, con);
-            ap.insert();
-        }else{
-            ap.setMultiplicador(monto);
-            ap.update();
-        }        
+                
+        ApuestaPartido ap = new ApuestaPartido(0, idTipoApuesta, idPartido, monto, con);
+        ap.insert();
         return true+"";
     }
 }
