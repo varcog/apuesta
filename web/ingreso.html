@@ -41,6 +41,7 @@
                     </a>
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">                           
+                            <!--cuenta de usuario-->
                             <li class="dropdown user user-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <img src="dist/img/user2-160x160.jpg" class="user-image usr_img" alt="User Image">
@@ -56,11 +57,15 @@
                                     </li>                                    
                                     <li class="user-footer">                                               
                                         <div class="pull-right">
-                                            <a href="SalirController" class="btn btn-flat btn-danger">Salir</a>
+                                            <a href="SalirController" class="btn btn-flat btn-salir">Salir</a>
                                         </div>
                                     </li>
                                 </ul>
                             </li>                         
+                            <!--Carrito de Apuestas-->
+                            <li>
+                                <a href="#" data-toggle="control-sidebar"><i class="fa fa-credit-card"></i></a>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -106,14 +111,15 @@
             </footer>         
             <!--MENU LATERAL DERECHO-->
             <aside class="control-sidebar control-sidebar-dark">                
+                <div style="background: #171c1f;color: #fff;padding: 10px 15px;text-align: center;">Apuestas</div>
                 <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-                    <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-                    <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+                    <li class="active"><a href="#control-sidebar-pendiente-tab" data-toggle="tab"><i class="fa fa-shopping-cart"></i><span> Pendientes</span></a></li>
+                    <li><a href="#control-sidebar-historial-tab" data-toggle="tab"><i class="fa fa-book"></i><span> Historial</span></a></li>
                 </ul>                
                 <div class="tab-content">                    
-                    <div class="tab-pane" id="control-sidebar-home-tab">
-                        <h3 class="control-sidebar-heading">Recent Activity</h3>
-                        <ul class="control-sidebar-menu">
+                    <div class="tab-pane active" id="control-sidebar-pendiente-tab">
+                        <h3 class="control-sidebar-heading">Apostar</h3>
+<!--                        <ul class="control-sidebar-menu">
                             <li>
                                 <a href="javascript:void(0)">
                                     <i class="menu-icon fa fa-birthday-cake bg-red"></i>
@@ -209,14 +215,13 @@
                                     </div>
                                 </a>
                             </li>
-                        </ul>
+                        </ul>-->
                     </div>
-                    <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>                    
-                    <div class="tab-pane" id="control-sidebar-settings-tab">
+                    <div class="tab-pane" id="control-sidebar-historial-tab">
                         <form method="post">
-                            <h3 class="control-sidebar-heading">General Settings</h3>
+                            <h3 class="control-sidebar-heading">Historial de Apuestas</h3>
 
-                            <div class="form-group">
+<!--                            <div class="form-group">
                                 <label class="control-sidebar-subheading">
                                     Report panel usage
                                     <input type="checkbox" class="pull-right" checked>
@@ -264,7 +269,7 @@
                                     Delete chat history
                                     <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
                                 </label>
-                            </div>                            
+                            </div>                            -->
                         </form>
                     </div>                    
                 </div>

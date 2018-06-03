@@ -10,7 +10,7 @@ body{
 }
 html, body {
     height: 100vh !important;
-    width: 100vw !important;    
+    width: 100vw !important;
 }
 
 /*.content {
@@ -37,6 +37,16 @@ html, body {
     }
 }
 
+.btn-salir {
+    background: #d73925 !important;
+    color: #fff;
+}
+.btn-salir:hover {
+    border: 1px solid #d73925;
+    color: #d73925;
+    font-weight: bolder;
+    background: #fff !important;
+}
 
 #menu a {
     cursor: pointer;
@@ -65,4 +75,3 @@ html, body {
     background: white !important;
     border: 1px solid green !important;
 }
-

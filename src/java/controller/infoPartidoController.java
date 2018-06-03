@@ -10,28 +10,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Partidos;
-import modelo.TipoApuesta;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- *
- * @author equipo_2
- */
 @MultipartConfig
 @WebServlet(name = "infoPartidoController", urlPatterns = {"/infoPartidoController"})
 public class infoPartidoController extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
