@@ -340,6 +340,7 @@ public class Partidos {
     public JSONArray relato(int idPartido) throws SQLException, JSONException {
         String consulta = "SELECT\n" +
                         "to_char(\"public\".\"TipoEventoPartido\".fecha, 'HH24:MI:SS') as hora,\n" +
+                        "to_char(\"public\".\"TipoEventoPartido\".fecha, 'DD/MM/YYYY HH24:MI:SS') as fecha,\n" +
                         "\"public\".\"TipoEventoPartido\".id,\n" +        
                         "\"public\".\"Jugador\".nombres,\n" +
                         "\"public\".\"Jugador\".apellidos,\n" +
@@ -364,6 +365,7 @@ public class Partidos {
             obj = new JSONObject();
             obj.put("id", rs.getInt("id"));
             obj.put("hora", rs.getString("hora"));
+            obj.put("fecha", rs.getString("fecha"));
             obj.put("nombres", rs.getString("nombres"));
             obj.put("apellidos", rs.getString("apellidos"));
             obj.put("equipo", rs.getString("equipo"));
@@ -380,6 +382,7 @@ public class Partidos {
     public JSONArray relato(int idPartido, String ultimaFecha) throws SQLException, JSONException {
         String consulta = "SELECT\n" +
                         "to_char(\"public\".\"TipoEventoPartido\".fecha, 'HH24:MI:SS') as hora,\n" +
+                        "to_char(\"public\".\"TipoEventoPartido\".fecha, 'DD/MM/YYYY HH24:MI:SS') as fecha,\n" +
                         "\"public\".\"TipoEventoPartido\".id,\n" +        
                         "\"public\".\"Jugador\".nombres,\n" +
                         "\"public\".\"Jugador\".apellidos,\n" +
@@ -394,10 +397,11 @@ public class Partidos {
                         "INNER JOIN \"public\".\"Jugador\" ON \"public\".\"TipoEventoPartido\".\"idJugador\" = \"public\".\"Jugador\".\"id\"\n" +
                         "INNER JOIN \"public\".\"Equipos\" ON \"public\".\"Jugador\".\"idEquipo\" = \"public\".\"Equipos\".\"id\"\n" +
                         "WHERE\n" +
-                        "\"public\".\"TipoEventoPartido\".\"fecha\" > to_date(?,'DD/MM/YYYY HH:MI:SS'),\n"+
+                        "\"public\".\"TipoEventoPartido\".\"fecha\" > to_timestamp(?,'DD/MM/YYYY HH24:MI:SS:MS')\n"+
                         "AND\n" +
                         "\"public\".\"TipoEventoPartido\".\"idPartido\" = ? ORDER BY \"public\".\"TipoEventoPartido\".fecha DESC";
         PreparedStatement ps = con.statamet(consulta);
+        ultimaFecha+=":999";
         ps.setString(1, ultimaFecha);
         ps.setInt(2, idPartido);
         ResultSet rs = ps.executeQuery();
@@ -407,6 +411,7 @@ public class Partidos {
             obj = new JSONObject();
             obj.put("id", rs.getInt("id"));
             obj.put("hora", rs.getString("hora"));
+            obj.put("fecha", rs.getString("fecha"));
             obj.put("nombres", rs.getString("nombres"));
             obj.put("apellidos", rs.getString("apellidos"));
             obj.put("equipo", rs.getString("equipo"));

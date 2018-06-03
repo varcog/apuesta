@@ -152,6 +152,7 @@ public class relatarPartidoController extends HttpServlet {
     private String traerFaltantes(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         String ultimaHora = request.getParameter("ultimaHora");
         int idPartido = Integer.parseInt(request.getParameter("idPartido"));
-        return new Partidos(con).relato(idPartido).toString();
+        if(ultimaHora==null) return new Partidos(con).relato(idPartido).toString();
+        else return new Partidos(con).relato(idPartido,ultimaHora).toString();
     }
 }

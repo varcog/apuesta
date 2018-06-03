@@ -14,24 +14,27 @@ function cargar() {
         $.each(json.relato,function(i,obj){
             cuerpo += armarEvento(obj);
         });
-        $("#cuerpo").html(cuerpo);        
+        $("#cuerpo").html(cuerpo);    
+        setTimeout(traerFaltantes, 10000);
         ocultarCargando();
     });
 }
 
 function traerFaltantes() {
+    cont=0;
     $.post(url, {evento: "traerFaltantes", ultimaHora:ultimaHora, idPartido:$idPArtido}, function (resp) {
         var json = $.parseJSON(resp);
         var cuerpo = "";
-        $.each(json.relato,function(i,obj){
+        $.each(json,function(i,obj){
             cuerpo += armarEvento(obj);
         });
-        $("#cuerpo").prepend(cuerpo);        
+        $("#cuerpo").prepend(cuerpo);       
+        setTimeout(traerFaltantes, 10000);
     });
 }
 
 function armarEvento(obj) {
-    if(cont===0) ultimaHora=obj.hora;
+    if(cont===0) ultimaHora=obj.fecha;
     
     cont++;
     var cuerpo = "<li>";
@@ -55,7 +58,7 @@ function armarEvento(obj) {
     cuerpo+="<h4>"+(obj.nombres||"")+" "+(obj.apellidos||"")+"</h4>";        
     cuerpo+="<img alt='' src='../img/jugadores/"+obj.foto+"' style='width:240px;'/>";
     cuerpo+="</div>";  
-     cuerpo+="<div class='timeline-footer'>";    
+    cuerpo+="<div class='timeline-footer'>";    
     cuerpo+="<a class='btn btn-danger btn-xs' style='margin-left:5px;' onclick='eliminar("+obj.id+",this);'>Eliminar</a>";    
     cuerpo+="</div>";
     cuerpo+="</div>";
