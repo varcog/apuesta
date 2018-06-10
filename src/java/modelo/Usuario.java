@@ -337,6 +337,20 @@ public class Usuario {
             return null;
         }
     }
+    public Usuario Buscar(String usr) throws SQLException {        
+        String consulta = "select * from public.\"Usuario\" where \"usuario\" = (?) and \"estado\"=" + ESTADO_APROBADO;
+        PreparedStatement ps = con.statamet(consulta);
+        ps.setString(1, usr);        
+        ResultSet rs = ps.executeQuery();
+        List<Usuario> lista = Cargar(rs);
+        rs.close();
+        ps.close();        
+        if (lista.size() > 0) {
+            return lista.get(0);
+        } else {
+            return null;
+        }
+    }
 
     public List<Usuario> Cargar(ResultSet rs) throws SQLException {
         List<Usuario> lista = new ArrayList<Usuario>();

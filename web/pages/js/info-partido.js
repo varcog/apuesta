@@ -1,13 +1,17 @@
 var url = "../infoPartidoController";
-
+var idPartido;
 $(document).ready(cargar);
 
 function cargar() {
-    var idPartido = $.get("idPartido");
+    idPartido = $.get("idPartido");
     $.post(url, {evento: "cargar",idPartido:idPartido}, function (resp) {
         var json = $.parseJSON(resp);
         $(".tableroF1").text(json.partido.fecha);
         $(".tableroF2").text(json.partido.hora);
+        
+        var cuerpo = "<option value='"+json.partido.idEquipo1+"'>"+json.partido.nombre1+"</option>";
+        cuerpo += "<option value='"+json.partido.idEquipo2+"'>"+json.partido.nombre2+"</option>";
+        $("select[name=equipo]").html(cuerpo);
         $(".equipo1.info-nombre").text(json.partido.nombre1);
         $(".equipo1.info-bandera").addClass(json.partido.icono1);
         $(".equipo1.info-marcador").text(0);
@@ -89,7 +93,30 @@ function cargar() {
 function popApostar(idPartido) {
     window.parent.cambiarMenu("pages/info-partido.html");    
 }
-
+function buscarRetador1(event) {
+    if(event.keyCode===13) buscarRetador();
+}
+function buscarRetador() {    
+    var usr = $("input[name=buscarRetador]").val();
+    $.post(url, {evento: "buscarRetador",usr:usr}, function (obj) {
+        var obj = $.parseJSON(obj);
+        if(obj){
+            $("#nombreRetado").text(obj.nombres+" "+obj.apellidos);
+            $("#fotoRetado").attr("src","../"+obj.foto);
+            $("input[name=idUsuarioRetado]").val(obj.id);
+            $("#retar").css("display","");
+        }else{
+            
+        }        
+    });    
+}
+function apostarCon() {
+    var idEquipo = $("select[name=equipo]").val();
+    var id=$("input[name=idUsuarioRetado]").val();
+    $.post(url, {evento: "apostarCon",id:id,idPartido:idPartido,idEquipo:idEquipo}, function (resp) {
+        
+    });
+}
 (function($) {  
     $.get = function(key)   {  
         key = key.replace(/[\[]/, '\\[');  
