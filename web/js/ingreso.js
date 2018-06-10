@@ -86,3 +86,12 @@ function actualizarCredito(credito) {
     $(".credito_actual").autoNumeric("set", (credito || 0));
     $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
 }
+
+
+function actualizarCreditos(credito, id) {
+    var id_act = parseInt($("input[name=idUsuario]").val());
+    if (id_act === id) {
+        $(".credito_actual").autoNumeric("set", (credito || 0));
+        $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
+    }
+}
