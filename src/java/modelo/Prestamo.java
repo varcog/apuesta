@@ -397,4 +397,51 @@ public class Prestamo {
         JSONObject json = getPrestatario(relacionador);
         return json;
     }
+
+    public JSONArray getDetallePrestamo(int idUsuario) throws SQLException, JSONException, ParseException {
+        String consulta = "SELECT\n"
+                + "	\"Prestamo\".\"idUsuario\",\n"
+                + "	--\"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre,\n"
+                + "	\"Prestamo\".\"fecha\",\n"
+                + "	\"Prestamo\".\"debe\",\n"
+                + "	\"Prestamo\".\"haber\",\n"
+                + "    \"Prestamo\".\"idBilletera\",\n"
+                + "    Custodio.\"nombres\" || ' ' || Custodio.\"apellidos\" AS custodio\n"
+                + "FROM public.\"Prestamo\"\n"
+                + "	-- INNER JOIN public.\"Usuario\" ON \"Usuario\".\"id\" = \"Prestamo\".\"idUsuario\"\n"
+                + "	 LEFT JOIN public.\"PagoEfectivo\" ON \"PagoEfectivo\".\"idPrestamo\" = \"Prestamo\".\"id\"\n"
+                + "     LEFT JOIN public.\"Usuario\" AS Custodio ON Custodio.\"id\" = \"PagoEfectivo\".\"idUsuarioRecibe\"\n"
+                + "WHERE \"Prestamo\".\"idUsuario\" = ?\n"
+                + "ORDER BY \"Prestamo\".\"fecha\"\n";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        double debeM, haberM;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("fecha", f.format(rs.getDate("fecha")));
+            debeM = rs.getDouble("debe");
+            haberM = rs.getDouble("haber");
+            if (debeM > 0) {
+                // Prestamo
+                obj.put("monto", debeM);
+                obj.put("tipo", "Recibio Prestamo");
+            } else {
+                // Pago de Prestamo
+                obj.put("monto", haberM);
+                obj.put("tipo", "Pago Prestamo");
+                if (rs.getInt("idBilletera") > 0) {
+                    obj.put("custodio", "Paga con Credito");
+                } else {
+                    obj.put("custodio", rs.getString("custodio"));
+                }
+            }
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
 }

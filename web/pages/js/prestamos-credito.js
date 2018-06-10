@@ -166,3 +166,23 @@ function okPagarPrestamo() {
 
     });
 }
+
+function popVerDetalle(idUsuario, ele) {
+    mostrarCargando();
+    $("#detallePrestamoModalLabel").text($(ele).closest("tr").find("td:eq(0)").text());
+    $.post(url, {evento: "popVerDetalle", idUsuario: idUsuario}, function (resp) {
+        var json = $.parseJSON(resp);
+        var html = "";
+        $.each(json, function (i, obj) {
+            html += "<tr>";
+            html += "<td>" + obj.fecha + "</td>";
+            html += "<td class='text-right'>" + new BigNumber("" + obj.monto).toFormat(2) + "</td>";
+            html += "<td>" + (obj.tipo || "") + "</td>";
+            html += "<td>" + (obj.custodio || "") + "</td>";
+            html += "</tr>";
+        });
+        $("#cuerpoDetalle").html(html);
+        openModal('#detallePrestamoModal');
+        ocultarCargando();
+    });
+}

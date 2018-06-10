@@ -27,7 +27,7 @@ $(document).ready(function () {
                 html += "</li>";
             });
             $("#menu").append(html);
-            $(".nombre_usuario").text((json.usuario || ""));
+            $(".nombre_usuario").text((json.usuario || "")).data("id", json.id);
             $(".usr_img").attr("src", json.foto);
             $(".cargo").text((json.perfil || ""));
             actualizarCredito(json.credito);
@@ -71,4 +71,12 @@ function okCambiarFotoPerfil(ele) {
 function actualizarCredito(credito) {
     $(".credito_actual").autoNumeric("set", (credito || 0));
     $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
+}
+
+function actualizarCreditos(credito, id) {
+    var id_act = $(".nombre_usuario").data("id");
+    if (id_act === id) {
+        $(".credito_actual").autoNumeric("set", (credito || 0));
+        $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
+    }
 }

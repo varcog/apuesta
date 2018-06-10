@@ -266,13 +266,13 @@ public class PagoEfectivo {
                 + "	SELECT SUM(\"PagoEfectivo\".\"monto\")\n"
                 + "    FROM public.\"PagoEfectivo\"\n"
                 + "    WHERE \"idUsuarioRecibe\" = ?\n"
-                + "      AND (\"Tipo\" = ? OR \"Tipo\" = ? OR \"Tipo\" = ?)\n"
+                + "      AND (\"tipo\" = ? OR \"tipo\" = ? OR \"tipo\" = ?)\n"
                 + ") AS \"recibe\",\n"
                 + "(\n"
                 + "	SELECT SUM(\"PagoEfectivo\".\"monto\")\n"
                 + "    FROM public.\"PagoEfectivo\"\n"
                 + "    WHERE \"idUsuarioDa\" = ?\n"
-                + "      AND (\"Tipo\" = ? OR \"Tipo\" = ?)\n"
+                + "      AND (\"tipo\" = ? OR \"tipo\" = ?)\n"
                 + "\n"
                 + ") AS \"da\";";
         PreparedStatement ps = con.statametObject(consulta, idUsuario, TIPO_PAGO_PRESTAMO, TIPO_TRASPASO, TIPO_COMPRA, idUsuario, TIPO_RETIRO, TIPO_TRASPASO);

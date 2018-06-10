@@ -581,8 +581,8 @@ public class Billetera {
         insert();
         PagoEfectivo pe = new PagoEfectivo(0, 0, getId(), idUsuarioRetira, monto, idUsuarioDaDinero, fechaInsert, PagoEfectivo.TIPO_RETIRO, con);
         pe.insert();
-//        json.put("prestatario", getPrestatario(idUsuario));
         json.put("montoDevuelto", monto);
+        json.put("credito", getCreditoDisponible(idUsuarioRetira));
         return json;
     }
 

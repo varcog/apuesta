@@ -45,9 +45,9 @@ function cargarBalance(balance) {
     $("#bTotalPrestamo").text(aux.toFormat(2));
     aux = new BigNumber("" + balance.compra);
     total = total.plus(aux);
-    $("#bTotalCompras").text(aux.toFormat(2));
-    aux = new BigNumber("" + balance.recibe);
-    total = total.plus(aux);
+//    $("#bTotalCompras").text(aux.toFormat(2));
+//    aux = new BigNumber("" + balance.recibe);
+//    total = total.plus(aux);
     $("#bTotalRecibido").text(aux.toFormat(2));
     aux = new BigNumber("" + balance.da);
     total = total.minus(aux);
@@ -83,7 +83,7 @@ function cargarPrestamos(prestamos) {
         if (total.isNegative) {
             total = total.negated();
         }
-        $("#pTotalDeuda").text(total.toFormat(2));
+        $("#pTotalDeuda").text(total.toFormat(2)).data("monto", parseFloat(total.toFixed(2)));
     } else {
         $("#pPrestamos").remove();
     }
@@ -146,30 +146,42 @@ function guardarDatos() {
 }
 
 function modalPagarPrestamo() {
-    var credito = $("#bTotalSaldo").data("monto");
+    var credito = parseFloat($("#bTotalSaldo").data("monto"));
     if (credito > 0) {
-        $("#transaccionModalLabel").text("Pagar Prestamo con crédito");
-        $("#botonTransaccion").text("Pagar Prestamo");
-        $("#botonTransaccion").off("click");
-        $("#botonTransaccion").click(pagarPrestamo);
-        $("#tUsuario").parent().css("display", "none");
-        $("#tMonto").val(0);
-        $("#tSaldoDisponible").html("Credito Disponiple: <strong>" + credito + "</strong>");
-        openModal("#transaccionModal");
+        var deuda = parseFloat($("#pTotalDeuda").data("monto"));
+        if (deuda > 0) {
+            $("#transaccionModalLabel").text("Pagar Prestamo con crédito");
+            $("#botonTransaccion").text("Pagar Prestamo");
+            $("#botonTransaccion").off("click");
+            $("#botonTransaccion").click(pagarPrestamo);
+            $("#tUsuario").parent().css("display", "none");
+            $("#tDeudaPrestamo").parent().css("display", "");
+            $("#tMonto").val(0);
+            $("#tSaldoDisponible").html("Credito Disponiple: <strong>" + $("#bTotalSaldo").text() + "</strong>");
+            $("#tDeudaPrestamo").html("Deuda Prestamo: <strong>" + $("#pTotalDeuda").text() + "</strong>");
+            openModal("#transaccionModal");
+        } else {
+            openAlert("Usted no tiene deudas", "Credito insuficiente");
+        }
     } else {
         openAlert("No tiene Credito Suficiente para pagar la deuda del Prestamo", "Credito insuficiente");
     }
 }
 
 function pagarPrestamo() {
-    var monto = $("#tMonto").val();
+    var monto = parseFloat($("#tMonto").val());
     if (monto <= 0) {
         openAlert("El monto a pagar debe ser mayor a 0", "Pagar Prestamo");
         return;
     }
-    var credito = $("#bTotalSaldo").data("monto");
+    var credito = parseFloat($("#bTotalSaldo").data("monto"));
     if (monto > credito) {
         openAlert("El monto a pagar no debe ser mayor al crédito disponible (" + new BigNumber("" + credito).toFormat(2) + ")", "Crédito Insuficiente");
+        return;
+    }
+    var deuda = parseFloat($("#pTotalDeuda").data("monto"));
+    if (monto > deuda) {
+        openAlert("El monto a pagar no debe ser mayor a la deuda (" + new BigNumber("" + deuda).toFormat(2) + ")", "Monto Deuda");
         return;
     }
     $("#confirmarModalLabel").html("Confirmar Pago de Prestamo");
@@ -214,6 +226,7 @@ function modalTraspasoCredito() {
         $("#botonTransaccion").off("click");
         $("#botonTransaccion").click(TraspasoCredito);
         $("#tUsuario").parent().css("display", "");
+        $("#tDeudaPrestamo").parent().css("display", "none");
         $("#tMonto").val(0);
         $("#tSaldoDisponible").html("Credito Disponiple: <strong>" + credito + "</strong>");
         openModal("#transaccionModal");
@@ -243,7 +256,7 @@ function TraspasoCredito() {
 function okTraspasoCredito() {
     mostrarCargando();
     var monto = $("#tMonto").val();
-    $.post(url, {evento: "okTraspasoCredito", monto: monto, idUsuarioRecibe : $("#tUsuario").val()}, function (resp) {
+    $.post(url, {evento: "okTraspasoCredito", monto: monto, idUsuarioRecibe: $("#tUsuario").val()}, function (resp) {
         var json = $.parseJSON(resp);
         if (json.resp === "MONTO_0") {
             openAlert("El monto debe ser mayor a 0", "Traspaso de Crédito");

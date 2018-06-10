@@ -620,4 +620,70 @@ public class Usuario {
         return json;
     }
 
+    public JSONArray todosConCredito() throws SQLException, JSONException {
+        String consulta = "SELECT\n"
+                + "\"public\".\"Usuario\".id,\n"
+                + "\"public\".\"Usuario\".ci,\n"
+                + "\"public\".\"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre,\n"
+                + "\"public\".\"Usuario\".usuario\n"
+                + "FROM\n"
+                + "\"public\".\"Usuario\"\n"
+                + "ORDER BY \"Usuario\".\"nombres\",\n"
+                + "         \"Usuario\".\"apellidos\"\n";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        Billetera b = new Billetera(con);
+        double credito;
+        while (rs.next()) {
+            credito = b.getCreditoDisponible(rs.getInt("id"));
+            if (credito > 0) {
+                obj = new JSONObject();
+                obj.put("id", rs.getInt("id"));
+                obj.put("ci", rs.getString("ci"));
+                obj.put("nombre", rs.getString("nombre"));
+                obj.put("usuario", rs.getString("usuario"));
+                obj.put("credito", credito);
+                json.put(obj);
+            }
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    public JSONArray todosConEfectivo() throws SQLException, JSONException {
+        String consulta = "SELECT\n"
+                + "\"public\".\"Usuario\".id,\n"
+                + "\"public\".\"Usuario\".ci,\n"
+                + "\"public\".\"Usuario\".\"nombres\" || ' ' || \"Usuario\".\"apellidos\" AS nombre,\n"
+                + "\"public\".\"Usuario\".usuario\n"
+                + "FROM\n"
+                + "\"public\".\"Usuario\"\n"
+                + "ORDER BY \"Usuario\".\"nombres\",\n"
+                + "         \"Usuario\".\"apellidos\"\n";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        PagoEfectivo b = new PagoEfectivo(con);
+        double efectivo;
+        while (rs.next()) {
+            efectivo = b.getEfectivoDisponible(rs.getInt("id"));
+            if (efectivo > 0) {
+                obj = new JSONObject();
+                obj.put("id", rs.getInt("id"));
+                obj.put("ci", rs.getString("ci"));
+                obj.put("nombre", rs.getString("nombre"));
+                obj.put("usuario", rs.getString("usuario"));
+                obj.put("efectivo", efectivo);
+                json.put(obj);
+            }
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
 }

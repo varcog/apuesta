@@ -2,24 +2,22 @@ package controller;
 
 import conexion.Conexion;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Date;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.Billetera;
-import modelo.Menu;
 import modelo.Prestamo;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
-import util.SisEventos;
 
-@WebServlet(name = "PrestamoCreditoController", urlPatterns = {"/PrestamoCreditoController"})
-public class PrestamoCreditoController extends HttpServlet {
+@WebServlet(name = "RetirarDineroController", urlPatterns = {"/RetirarDineroController"})
+public class RetirarDineroController extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,14 +41,8 @@ public class PrestamoCreditoController extends HttpServlet {
                 case "init":
                     html = init(request, con);
                     break;
-                case "prestar":
-                    html = prestar(request, con);
-                    break;
-                case "okPagarPrestamo":
-                    html = okPagarPrestamo(request, con);
-                    break;
-                case "popVerDetalle":
-                    html = popVerDetalle(request, con);
+                case "okRetirarDinero":
+                    html = okRetirarDinero(request, con);
                     break;
             }
             con.commit();
@@ -102,28 +94,14 @@ public class PrestamoCreditoController extends HttpServlet {
 
     private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
         JSONObject json = new JSONObject();
-        json.put("prestamos", new Prestamo(con).todosPrestatarios());
-        json.put("relacionadores", new Usuario(con).todosRelacionadores());
+        json.put("apostadores", new Usuario(con).todosConCredito());
         return json.toString();
-
     }
-
-    private String prestar(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
-        int relacionador = Integer.parseInt(request.getParameter("relacionador"));
-        double monto = Double.parseDouble(request.getParameter("monto"));
-        JSONObject json = new Prestamo(con).prestar(relacionador, monto);
-        return json == null ? "null" : json.toString();
-    }
-
-    private String okPagarPrestamo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
+    
+    private String okRetirarDinero(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
         double monto = Double.parseDouble(request.getParameter("monto"));
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-        return new Prestamo(con).pagarPrestamoEfectivo(monto, idUsuario, con.getUsuario().getId()).toString();
-    }
-
-    private String popVerDetalle(HttpServletRequest request, Conexion con) throws SQLException, JSONException, IOException, ServletException, ParseException {
-        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-        return new Prestamo(con).getDetallePrestamo(idUsuario).toString();
+        return new Billetera(con).retirarCreditoEfectivo(monto, idUsuario, con.getUsuario().getId()).toString();
     }
 
 }

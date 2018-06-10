@@ -123,6 +123,7 @@ public class IngresoController extends HttpServlet {
         }
         Billetera b  = new Billetera(con);
         json.put("credito", b.getCreditoDisponible(usuario.getId()));
+        json.put("id", usuario.getId());
         return json.toString();
     }
 
