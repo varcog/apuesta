@@ -8,6 +8,20 @@ $(document).ready(function () {
         else {
             $(".elmenu").remove();
             var json = $.parseJSON(resp);
+            var cuerpo = "";
+            var cant = 0;
+            $.each(json.notificaciones,function(i,obj){
+                if(obj.estadoVisto===0){ 
+                    cant++;
+                    cuerpo += "<li class='bg-warning' title='"+obj.descripcion+"'><a href='#'><i class='fa fa-users text-aqua'></i>"+obj.descripcion+"</a></li>";
+                }
+                else {
+                    cuerpo += "<li title='"+obj.descripcion+"'><a href='#'><i class='fa fa-users text-aqua'></i>"+obj.descripcion+"</a></li>";
+                }
+            });
+            $("#navNovedades").html(cuerpo);
+            $("#cantNot").text(cant);
+            
             var html = "";
             $.each(json.menu, function (menu, subMenus) {
                 html += "<li class='treeview'>";
@@ -27,12 +41,12 @@ $(document).ready(function () {
                 html += "</li>";
             });
             $("#menu").append(html);
-            $(".nombre_usuario").text((json.usuario || "")).data("id", json.id);
+            $(".nombre_usuario").text((json.usuario || ""));
+            $("input[name=idUsuario]").val(json.idUsuario);
             $(".usr_img").attr("src", json.foto);
             $(".cargo").text((json.perfil || ""));
             actualizarCredito(json.credito);
-//            $(".credito_actual").autoNumeric("set", (json.credito || 0));
-//            $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
+            openSocket();
         }
     });
 });

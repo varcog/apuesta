@@ -14,6 +14,7 @@ import javax.servlet.http.Part;
 import modelo.Billetera;
 import modelo.Perfil;
 import modelo.Menu;
+import modelo.Notificaciones;
 import modelo.Parametros;
 import modelo.Usuario;
 import org.json.JSONException;
@@ -115,6 +116,7 @@ public class IngresoController extends HttpServlet {
         JSONObject json = new JSONObject();
         json.put("menu", menu.bucarMenuYSubMenuXPerfilVisible(usuario.getIdPerfil()));
         Usuario u = con.getUsuario();
+        json.put("idUsuario", u.getId());
         json.put("usuario", u.getNombreCompleto());
         json.put("foto", u.getFoto());
         Perfil c = new Perfil(con).buscar(u.getIdPerfil());
@@ -123,7 +125,7 @@ public class IngresoController extends HttpServlet {
         }
         Billetera b  = new Billetera(con);
         json.put("credito", b.getCreditoDisponible(usuario.getId()));
-        json.put("id", usuario.getId());
+        json.put("notificaciones", new Notificaciones(con).buscarJSONArray(con.getUsuario().getId()));
         return json.toString();
     }
 

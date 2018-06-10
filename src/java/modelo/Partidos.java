@@ -57,6 +57,10 @@ public class Partidos {
     public Date getFecha() {
         return fecha;
     }
+    public String getFechaS() {
+        SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+        return fecha == null ? "" : formato.format(fecha);
+    }
 
     public void setFecha(Date fecha) {
         this.fecha = fecha;

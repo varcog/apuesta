@@ -23,7 +23,7 @@ function init() {
         if(cont!==1){
             cuerpo+="</div>";
         }
-        $("#cuerpo").html(cuerpo);
+        $("#cuerpo").html(cuerpo);        
         ocultarCargando();
     });
 }
