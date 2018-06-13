@@ -4,7 +4,6 @@ import conexion.Conexion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,6 +95,7 @@ public class TipoApuesta {
         String consulta = "delete from public.\"TipoApuesta\" where \"id\"= ?;";
         con.ejecutarSentencia(consulta, id);
     }
+
     public void delete(int id) throws SQLException {
         String consulta = "delete from public.\"TipoApuesta\" where \"id\"= ?;";
         con.ejecutarSentencia(consulta, id);
@@ -166,7 +166,7 @@ public class TipoApuesta {
         return obj;
     }
 
-    public JSONObject toJSONObject() throws JSONException {    
+    public JSONObject toJSONObject() throws JSONException {
         JSONObject obj = new JSONObject();
         obj.put("id", id);
         obj.put("tipo", tipo);
@@ -175,19 +175,16 @@ public class TipoApuesta {
         return obj;
     }
 
-    
-
     /* ********************************************************************** */
     // Negocio
-    
-    public JSONArray todosGoles(int idPartido) throws SQLException, JSONException{
-        String consulta = "SELECT *\n" +
-                        "FROM\n" +
-                        "\"public\".\"TipoApuesta\"\n" +
-                        "WHERE\n" +
-                        "\"public\".\"TipoApuesta\".tipo = 2\n" +
-                        "ORDER BY\n" +
-                        "\"public\".\"TipoApuesta\".\"id\" ASC";
+    public JSONArray todosGoles(int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "FROM\n"
+                + "\"public\".\"TipoApuesta\"\n"
+                + "WHERE\n"
+                + "\"public\".\"TipoApuesta\".tipo = 2\n"
+                + "ORDER BY\n"
+                + "\"public\".\"TipoApuesta\".\"id\" ASC";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
@@ -202,17 +199,18 @@ public class TipoApuesta {
             json.put(obj);
         }
         rs.close();
-        ps.close();        
-        return json;                    
+        ps.close();
+        return json;
     }
-    public JSONArray todosPartido(int idPartido) throws SQLException, JSONException{
-        String consulta = "SELECT *\n" +
-                        "FROM\n" +
-                        "\"public\".\"TipoApuesta\"\n" +
-                        "WHERE\n" +
-                        "\"public\".\"TipoApuesta\".tipo = 1\n" +
-                        "ORDER BY\n" +
-                        "\"public\".\"TipoApuesta\".\"id\" ASC";
+
+    public JSONArray todosPartido(int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "FROM\n"
+                + "\"public\".\"TipoApuesta\"\n"
+                + "WHERE\n"
+                + "\"public\".\"TipoApuesta\".tipo = 1\n"
+                + "ORDER BY\n"
+                + "\"public\".\"TipoApuesta\".\"id\" ASC";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
@@ -227,15 +225,16 @@ public class TipoApuesta {
             json.put(obj);
         }
         rs.close();
-        ps.close();        
-        return json;                    
+        ps.close();
+        return json;
     }
-    public JSONArray todos(int idPartido) throws SQLException, JSONException{
-        String consulta = "SELECT *\n" +
-                        "FROM\n" +
-                        "\"public\".\"TipoApuesta\"\n" +                        
-                        "ORDER BY\n" +
-                        "\"public\".\"TipoApuesta\".\"id\" ASC";
+
+    public JSONArray todos(int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "FROM\n"
+                + "\"public\".\"TipoApuesta\"\n"
+                + "ORDER BY\n"
+                + "\"public\".\"TipoApuesta\".\"id\" ASC";
         PreparedStatement ps = con.statamet(consulta);
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
@@ -250,27 +249,35 @@ public class TipoApuesta {
             json.put(obj);
         }
         rs.close();
-        ps.close();        
-        return json;                    
+        ps.close();
+        return json;
     }
-    private double getPorcentaje(int idTipoApuesta, int idPartido) throws SQLException{
-        String consulta = "SELECT \"ApuestaPartido\".multiplicador\n" +
-                        "FROM \"public\".\"ApuestaPartido\"\n" +
-                        "where \"ApuestaPartido\".\"id\" = (\n" +
-                        "SELECT max(id) as id\n" +
-                        "FROM \"public\".\"ApuestaPartido\"\n" +
-                        "WHERE \"ApuestaPartido\".\"idTipoApuesta\" = ?\n" +
-                        "AND \"ApuestaPartido\".\"idPartido\" = ?)";
+
+    private double getPorcentaje(int idTipoApuesta, int idPartido) throws SQLException {
+        String consulta = "SELECT \"ApuestaPartido\".multiplicador\n"
+                + "FROM \"public\".\"ApuestaPartido\"\n"
+                + "where \"ApuestaPartido\".\"id\" = (\n"
+                + "SELECT max(id) as id\n"
+                + "FROM \"public\".\"ApuestaPartido\"\n"
+                + "WHERE \"ApuestaPartido\".\"idTipoApuesta\" = ?\n"
+                + "AND \"ApuestaPartido\".\"idPartido\" = ?)";
         PreparedStatement ps = con.statamet(consulta);
         ps.setInt(1, idTipoApuesta);
         ps.setInt(2, idPartido);
         ResultSet rs = ps.executeQuery();
-        double res=0;
-        if (rs.next()) {            
-            res=rs.getDouble("multiplicador");
+        double res = 0;
+        if (rs.next()) {
+            res = rs.getDouble("multiplicador");
         }
         rs.close();
-        ps.close();        
+        ps.close();
         return res;
+    }
+
+    public JSONObject getApuestas(int idPartido) throws SQLException, JSONException {
+        JSONObject json = new JSONObject();
+        json.put("partido", todosPartido(idPartido));
+        json.put("goles", todosGoles(idPartido));
+        return json;
     }
 }

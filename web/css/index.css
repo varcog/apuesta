@@ -75,3 +75,47 @@ html, body {
     background: white !important;
     border: 1px solid green !important;
 }
+
+#control-sidebar-pendiente-tab > * {
+    margin: 0;
+}
+
+#apuPendientes > * {
+    margin-bottom: 5px;
+}
+
+.control-sidebar {
+    height: 100%;
+}
+
+.control-sidebar .tab-content{
+    overflow: auto;
+    height: calc(100% - 41px - 36px);
+}
+
+#apuPendientes .box .box-title {
+    width: calc(100% - 22px);
+    font-size: 12px;
+}
+
+#apuPendientes .box .box-header {
+    padding: 5px 10px;
+    border-bottom-color: #00a65a !important;
+}
+
+#apuPendientes .box .box-tools.pull-right {
+    top: 2.5px;
+}
+
+#apuPendientes .box .box-body {
+    color: #5b6265;
+    font-size: 11px;
+}
+#apuPendientes .box .monto {
+    width: 110px;
+}
+#apuPendientes .box .info-box-text {
+    font-size: 11px;
+}
+
+

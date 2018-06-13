@@ -10,18 +10,18 @@ $(document).ready(function () {
             var json = $.parseJSON(resp);
             var cuerpo = "";
             var cant = 0;
-            $.each(json.notificaciones,function(i,obj){
-                if(obj.estadoVisto===0){ 
+            $.each(json.notificaciones, function (i, obj) {
+                if (obj.estadoVisto === 0) {
                     cant++;
-                    cuerpo += "<li class='bg-warning' title='"+obj.descripcion+"'><a href='#'><i class='fa fa-users text-aqua'></i>"+obj.descripcion+"</a></li>";
+                    cuerpo += "<li class='bg-warning' title='" + obj.descripcion + "'><a href='#'><i class='fa fa-users text-aqua'></i>" + obj.descripcion + "</a></li>";
                 }
                 else {
-                    cuerpo += "<li title='"+obj.descripcion+"'><a href='#'><i class='fa fa-users text-aqua'></i>"+obj.descripcion+"</a></li>";
+                    cuerpo += "<li title='" + obj.descripcion + "'><a href='#'><i class='fa fa-users text-aqua'></i>" + obj.descripcion + "</a></li>";
                 }
             });
             $("#navNovedades").html(cuerpo);
             $("#cantNot").text(cant);
-            
+
             var html = "";
             $.each(json.menu, function (menu, subMenus) {
                 html += "<li class='treeview'>";
@@ -87,11 +87,62 @@ function actualizarCredito(credito) {
     $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
 }
 
-
 function actualizarCreditos(credito, id) {
     var id_act = parseInt($("input[name=idUsuario]").val());
     if (id_act === id) {
         $(".credito_actual").autoNumeric("set", (credito || 0));
         $(".credito_actual").attr("data-original-title", "Credito = " + $(".credito_actual").text());
     }
+}
+
+function agregarApuesta(json) {
+    var html = "";
+    html += "<div class='box box-success'>";
+    html += "  <div class='box-header with-border'>";
+    html += "    <h3 class='box-title'>" + json.titulo + "</h3>";
+    html += "    <div class='box-tools pull-right'>";
+    html += "      <button type='button' class='btn btn-box-tool' data-widget='remove'><i class='fa fa-times'></i></button>";
+    html += "    </div>";
+    html += "  </div>";
+    html += "  <div class='box-body'>";
+    html += "    <span class='info-box-text'>" + json.subtitulo + "</span>";
+    if (json.vs)
+        html += "    <span class='info-box-text'>" + json.vs + "</span>";
+    html += "    <span class='info-box-text'>Porcentaje: <strong class='porcentaje'>" + json.porcentaje + "</strong></span>";
+    html += "    <span class='info-box-text'>Monto: <input type='text' class='monto' name='monto' onkeyup='calcularGanancia(this);' data-idPartido='" + json.idPartido + "' data-idTipoApuesta='" + json.idTipoApuesta + "'/></span>";
+    html += "    <span class='info-box-text'>Ganancia: <strong class='ganancia'>" + "" + "</strong></span>";
+    html += "  </div>";
+    html += "</div>";
+    $("#apuPendientes").append(html);
+    var sidebar = $(".control-sidebar");
+    if (!sidebar.hasClass('control-sidebar-open')
+            && !$('body').hasClass('control-sidebar-open')) {
+        //Open the sidebar
+        $("#panelLateral").click();
+    }
+    $("#tabPendientes").click();
+}
+
+
+function calcularGanancia(ele) {
+    var $ele = $(ele).closest(".box-body");
+    var monto = parseFloat($(ele).val());
+    var porcentaje = parseFloat($ele.find(".porcentaje").text());
+    var monto = monto * porcentaje;
+    if (isNaN(monto))
+        $ele.find(".ganancia").text("");
+    else
+        $ele.find(".ganancia").text(monto);
+}
+
+function apostar() {
+}
+
+function okApostar() {
+    mostrarCargando();
+    $.post(url, {evento: ""}, function (resp) {
+        var json = $.parseJSON(resp);
+
+        ocultarCargando();
+    });
 }
