@@ -169,28 +169,29 @@ public class ApuestaAmigo {
         ps.close();
         return json;
     }
+
     public JSONArray todos(int idUsuario) throws SQLException, JSONException {
-        String consulta = "SELECT\n" +
-                        "\"public\".\"ApuestaAmigo\".\"id\",\n" +
-                        "\"public\".\"ApuestaAmigo\".monto,\n" +
-                        "us1.nombres ||' '||us1.apellidos AS retador,\n" +
-                        "us.nombres || ' ' || us.apellidos AS retado,\n" +
-                        "eq.nombre as quipoRetador,\n" +
-                        "eq.icono as iconoRetador,\n" +
-                        "eq1.nombre as quipoRetado,\n" +
-                        "eq1.icono as iconoRetado,\n" +
-                        "to_char(ptd.fecha,'DD/MM/YYYY HH24:MI:SS') as fechaPartido\n" +
-                        "FROM\n" +
-                        "\"public\".\"ApuestaAmigo\"\n" +
-                        "INNER JOIN \"public\".\"Usuario\"  us ON \"public\".\"ApuestaAmigo\".\"idUsuarioRetado\" = us.\"id\"\n" +
-                        "INNER JOIN \"public\".\"Usuario\"  us1 ON \"public\".\"ApuestaAmigo\".\"idUsuarioRetador\" = us1.\"id\"\n" +
-                        "INNER JOIN \"public\".\"Equipos\"  eq ON \"public\".\"ApuestaAmigo\".\"idEquipoRetador\" = eq.\"id\"\n" +
-                        "LEFT JOIN \"public\".\"Equipos\"  eq1 ON \"public\".\"ApuestaAmigo\".\"idEquipoRetado\" = eq1.\"id\"\n" +
-                        "INNER JOIN \"public\".\"Partidos\"  ptd ON \"public\".\"ApuestaAmigo\".\"idPartido\" = ptd.\"id\"\n" +
-                        "\n" +
-                        "WHERE\n" +
-                        "\"public\".\"ApuestaAmigo\".\"idUsuarioRetador\" = ? OR\n" +
-                        "\"public\".\"ApuestaAmigo\".\"idUsuarioRetado\" = ?;";
+        String consulta = "SELECT\n"
+                + "\"public\".\"ApuestaAmigo\".\"id\",\n"
+                + "\"public\".\"ApuestaAmigo\".monto,\n"
+                + "us1.nombres ||' '||us1.apellidos AS retador,\n"
+                + "us.nombres || ' ' || us.apellidos AS retado,\n"
+                + "eq.nombre as quipoRetador,\n"
+                + "eq.icono as iconoRetador,\n"
+                + "eq1.nombre as quipoRetado,\n"
+                + "eq1.icono as iconoRetado,\n"
+                + "to_char(ptd.fecha,'DD/MM/YYYY HH24:MI:SS') as fechaPartido\n"
+                + "FROM\n"
+                + "\"public\".\"ApuestaAmigo\"\n"
+                + "INNER JOIN \"public\".\"Usuario\"  us ON \"public\".\"ApuestaAmigo\".\"idUsuarioRetado\" = us.\"id\"\n"
+                + "INNER JOIN \"public\".\"Usuario\"  us1 ON \"public\".\"ApuestaAmigo\".\"idUsuarioRetador\" = us1.\"id\"\n"
+                + "INNER JOIN \"public\".\"Equipos\"  eq ON \"public\".\"ApuestaAmigo\".\"idEquipoRetador\" = eq.\"id\"\n"
+                + "LEFT JOIN \"public\".\"Equipos\"  eq1 ON \"public\".\"ApuestaAmigo\".\"idEquipoRetado\" = eq1.\"id\"\n"
+                + "INNER JOIN \"public\".\"Partidos\"  ptd ON \"public\".\"ApuestaAmigo\".\"idPartido\" = ptd.\"id\"\n"
+                + "\n"
+                + "WHERE\n"
+                + "\"public\".\"ApuestaAmigo\".\"idUsuarioRetador\" = ? OR\n"
+                + "\"public\".\"ApuestaAmigo\".\"idUsuarioRetado\" = ?;";
         PreparedStatement ps = con.statamet(consulta);
         ps.setInt(1, idUsuario);
         ps.setInt(2, idUsuario);
@@ -203,11 +204,11 @@ public class ApuestaAmigo {
             obj.put("monto", rs.getDouble("monto"));
             obj.put("retador", rs.getString("retador"));
             obj.put("equipoRetador", rs.getString("equipoRetador"));
-            obj.put("iconoRetador", rs.getString("iconoRetador"));                
+            obj.put("iconoRetador", rs.getString("iconoRetador"));
             obj.put("retado", rs.getString("retado"));
             obj.put("equipoRetado", rs.getString("equipoRetado"));
-            obj.put("iconoRetado", rs.getString("iconoRetado"));                
-            obj.put("fechaPartido", rs.getString("fechaPartido"));                
+            obj.put("iconoRetado", rs.getString("iconoRetado"));
+            obj.put("fechaPartido", rs.getString("fechaPartido"));
             json.put(obj);
         }
         rs.close();

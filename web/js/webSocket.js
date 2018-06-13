@@ -6,7 +6,7 @@ function openSocket() {
         return;
     }    
     var idUsuario = $("input[name=idUsuario]").val();
-    webSocket = new WebSocket("ws://172.168.0.13:8080/apuesta/wsNotificacion/" + idUsuario);
+    webSocket = new WebSocket("ws://172.168.0.12:8080/Apuesta/wsNotificacion/" + idUsuario);
 
     webSocket.onopen = function (event) {
         if (event.data === undefined)

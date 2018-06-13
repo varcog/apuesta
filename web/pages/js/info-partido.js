@@ -3,6 +3,7 @@ var idPartido;
 $(document).ready(cargar);
 
 function cargar() {
+    $("input[name=montoRetar]").solo_numeros();
     idPartido = $.get("idPartido");
     $.post(url, {evento: "cargar", idPartido: idPartido}, function (resp) {
         var json = $.parseJSON(resp);
@@ -26,9 +27,9 @@ function cargar() {
         $.each(json.apuestas.partido, function (i, obj) {
             switch (obj.id) {
                 case 1:
-                    $(".apuEquipo1").data("idTipoApuesta", 1);
-                    $(".apuEquipo1").data("idApuestaPartido", obj.idApuestaPartido);
-                    $(".apuEquipo1").data("idPartido", idPartido);
+                    $(".apuEquipo1").data("idtipoapuesta", 1);
+                    $(".apuEquipo1").data("idapuestapartido", obj.idApuestaPartido);
+                    $(".apuEquipo1").data("idpartido", idPartido);
                     $(".apuEquipo1").data("titulo", json.partido.nombre1);
                     $(".apuEquipo1").data("subtitulo", "Resuldato Final");
                     $(".apuEquipo1").data("vs", json.partido.nombre1 + " vs " + json.partido.nombre2);
@@ -37,9 +38,9 @@ function cargar() {
                     $(".apuEquipo1").find(".porcentaje").text(obj.porcentaje);
                     break;
                 case 2:
-                    $(".apuEmpate").data("idTipoApuesta", 2);
-                    $(".apuEmpate").data("idApuestaPartido", obj.idApuestaPartido);
-                    $(".apuEmpate").data("idPartido", idPartido);
+                    $(".apuEmpate").data("idtipoapuesta", 2);
+                    $(".apuEmpate").data("idapuestapartido", obj.idApuestaPartido);
+                    $(".apuEmpate").data("idpartido", idPartido);
                     $(".apuEmpate").data("titulo", "Empate");
                     $(".apuEmpate").data("subtitulo", "Resuldato Final");
                     $(".apuEmpate").data("vs", json.partido.nombre1 + " vs " + json.partido.nombre2);
@@ -47,9 +48,9 @@ function cargar() {
                     $(".apuEmpate").find(".porcentaje").text(obj.porcentaje);
                     break;
                 case 3:
-                    $(".apuEquipo2").data("idTipoApuesta", 3);
-                    $(".apuEquipo2").data("idApuestaPartido", obj.idApuestaPartido);
-                    $(".apuEquipo2").data("idPartido", idPartido);
+                    $(".apuEquipo2").data("idtipoapuesta", 3);
+                    $(".apuEquipo2").data("idapuestapartido", obj.idApuestaPartido);
+                    $(".apuEquipo2").data("idpartido", idPartido);
                     $(".apuEquipo2").data("titulo", json.partido.nombre2);
                     $(".apuEquipo2").data("subtitulo", "Resuldato Final");
                     $(".apuEquipo2").data("vs", json.partido.nombre1 + " vs " + json.partido.nombre2);
@@ -64,28 +65,30 @@ function cargar() {
         var titulo;
         var subtitulo = "Goles en el Partido";
         $.each(json.apuestas.goles, function (i, obj) {
-            titulo = json.partido.nombre1 + " " + obj.equipo1 + " - " + obj.equipo2 + " " + json.partido.nombre2;
-            cuerpo += "<div class='col-md-4 col-sm-6 col-xs-12' style='cursor: pointer;'>";
-            cuerpo += "  <div class='info-box' onclick='apostar(this);' data-idPartido='" + idPartido + "' data-idTipoApuesta='" + obj.id + "' data-titulo='" + titulo + "' data-subtitulo='" + subtitulo + "' data-idApuestaPartido='" + obj.idApuestaPartido + "'>";
-            cuerpo += "	<span class='info-box-icon bg-green' style='height: 90px;width: 70px;font-size: 30px;'><i class='porcentaje'>" + obj.porcentaje + "</i></span>";
-            cuerpo += "	<div class='info-box-content' style='margin-left: 70px; padding: 5px 5px;'>";
-            cuerpo += "	  <div style='display: flex;'>";
-            cuerpo += "		<div style='width: 50%;text-align: center;'>";
-            cuerpo += "			<span class='info-box-number' style=''>" + obj.equipo1 + "</span>";
-            cuerpo += "			<span class='info-box-text'>" + json.partido.nombre1 + "</span>";
-            cuerpo += "		</div>";
-            cuerpo += "		<div style='width: 50%;text-align: center;'>";
-            cuerpo += "			<span class='info-box-number'>" + obj.equipo2 + "</span>";
-            cuerpo += "			<span class='info-box-text'>" + json.partido.nombre2 + "</span>";
-            cuerpo += "		</div>";
-            cuerpo += "	  </div>";
-            cuerpo += "	  <div class='progress' style='margin: 5px -5px 5px -5px;'>";
-            cuerpo += "		<div class='progress-bar bg-green' style='width: 100%;'></div>";
-            cuerpo += "	  </div>";
-            cuerpo += "	  <span class='progress-description'></span>"; // Cantidad de Apuestas
-            cuerpo += "	</div>";
-            cuerpo += "  </div>";
-            cuerpo += "</div>";
+            if (obj.porcentaje && obj.porcentaje > 0) {
+                titulo = json.partido.nombre1 + " " + obj.equipo1 + " - " + obj.equipo2 + " " + json.partido.nombre2;
+                cuerpo += "<div class='col-md-4 col-sm-6 col-xs-12' style='cursor: pointer;'>";
+                cuerpo += "  <div class='info-box' onclick='apostar(this);' data-idpartido='" + idPartido + "' data-idtipoapuesta='" + obj.id + "' data-titulo='" + titulo + "' data-subtitulo='" + subtitulo + "' data-idapuestapartido='" + obj.idApuestaPartido + "'>";
+                cuerpo += "	<span class='info-box-icon bg-green' style='height: 90px;width: 70px;font-size: 30px;'><i class='porcentaje'>" + obj.porcentaje + "</i></span>";
+                cuerpo += "	<div class='info-box-content' style='margin-left: 70px; padding: 5px 5px;'>";
+                cuerpo += "	  <div style='display: flex;'>";
+                cuerpo += "		<div style='width: 50%;text-align: center;'>";
+                cuerpo += "			<span class='info-box-number' style=''>" + obj.equipo1 + "</span>";
+                cuerpo += "			<span class='info-box-text'>" + json.partido.nombre1 + "</span>";
+                cuerpo += "		</div>";
+                cuerpo += "		<div style='width: 50%;text-align: center;'>";
+                cuerpo += "			<span class='info-box-number'>" + obj.equipo2 + "</span>";
+                cuerpo += "			<span class='info-box-text'>" + json.partido.nombre2 + "</span>";
+                cuerpo += "		</div>";
+                cuerpo += "	  </div>";
+                cuerpo += "	  <div class='progress' style='margin: 5px -5px 5px -5px;'>";
+                cuerpo += "		<div class='progress-bar bg-green' style='width: 100%;'></div>";
+                cuerpo += "	  </div>";
+                cuerpo += "	  <span class='progress-description'></span>"; // Cantidad de Apuestas
+                cuerpo += "	</div>";
+                cuerpo += "  </div>";
+                cuerpo += "</div>";
+            }
         });
         $("#cuerpoApuGoles").html(cuerpo);
     });
@@ -114,10 +117,33 @@ function buscarRetador() {
     });
 }
 function apostarCon() {
+    mostrarCargando();
     var idEquipo = $("select[name=equipo]").val();
     var id = $("input[name=idUsuarioRetado]").val();
-    $.post(url, {evento: "apostarCon", id: id, idPartido: idPartido, idEquipo: idEquipo}, function (resp) {
-
+    var monto = $("input[name=montoRetar]").val();
+    $.post(url, {evento: "apostarCon", id: id, idPartido: idPartido, idEquipo: idEquipo, monto: monto}, function (resp) {
+        if (resp === "PARTIDO_PASADO") {
+            openAlert("Ya No se puede Apostar en este Partido", "Apuesta");
+        } else {
+            try {
+                var json = $.parseJSON(resp);
+                if (json.resp === "CREDITO_INSUFICIENTE") {
+                    openAlert("No tiene credito suficiente para realizar esta apuesta <strong>" + new BigNumber("" + json.credito).toFormat(2) + "</strong>", "Apuesta");
+                } else if (json.resp) {
+                    window.parent.actualizarCredito(json.credito);
+                    $("#nombreRetado").text("");
+                    $("#fotoRetado").removeAttr("src");
+                    $("input[name=idUsuarioRetado]").val(0);
+                    $("#retar").css("display", "none");
+                    openAlert("Apuesta En espera de Aprobacion ", "Apuesta con Amigo");
+                } else {
+                    openAlert("Intentelo Nuevamente", "Apuesta");
+                }
+            } catch (e) {
+                openAlert("Intentelo Nuevamente", "Apuesta");
+            }
+        }
+        ocultarCargando();
     });
 }
 (function ($) {
@@ -143,8 +169,8 @@ function apostar(ele) {
         vs: $ele.data("vs"),
         subtitulo: $ele.data("subtitulo"),
         porcentaje: $ele.find(".porcentaje").text(),
-        idTipoApuesta: $ele.data("idTipoApuesta"),
-        idApuestaPartido: $ele.data("idApuestaPartido"),
+        idTipoApuesta: $ele.data("idtipoapuesta"),
+        idApuestaPartido: $ele.data("idapuestapartido"),
         idPartido: idPartido
     };
     window.parent.agregarApuesta(json);

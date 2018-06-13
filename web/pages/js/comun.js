@@ -391,3 +391,21 @@ function openAlert(mensaje, titulo) {
     $("#alertModalLabel").text(titulo);
     openModal(ID_ALERT_MODAL);
 }
+
+
+function ordenar_elementos(contenedor) {
+    var lista = $(contenedor).children();
+    lista.detach();
+    lista.sort(function (a, b) {
+        if (parseInt($(a).data("orden")) > parseInt($(b).data("orden"))) {
+            return 1;
+        }
+        if (parseInt($(a).data("orden")) < parseInt($(b).data("orden"))) {
+            return -1;
+        }
+        return 0;
+    });
+    for (var i = 0; i < lista.length; i++) {
+        $(contenedor).append(lista.eq(i));
+    }
+}

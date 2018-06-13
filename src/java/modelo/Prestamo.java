@@ -351,7 +351,7 @@ public class Prestamo {
         double pago = deuda < monto ? deuda : monto;
         pago = SisEventos.acomodarDosDecimalesD(pago);
         Date fechaInsert = new Date();
-        b.setDatos(0, new Usuario(con).getIdCasa(), pago, idUsuario, Billetera.TIPO_TRANSACCION_PAGO_PRESTAMO, 0, fechaInsert);
+        b.setDatos(0, new Usuario(con).getIdCasa(), pago, idUsuario, Billetera.TIPO_TRANSACCION_PAGO_PRESTAMO, 0, 0, fechaInsert);
         b.insert();
         setDatos(0, idUsuario, 0.0, pago, b.getId(), fechaInsert);
         insert();
@@ -390,7 +390,7 @@ public class Prestamo {
     public JSONObject prestar(int relacionador, double monto) throws SQLException, JSONException, ParseException {
         int idCasa = new Usuario(con).getIdCasa();
         Date hoy = new Date();
-        Billetera b = new Billetera(0, relacionador, monto, idCasa, Billetera.TIPO_TRANSACCION_PRESTAMO, 0, hoy, con);
+        Billetera b = new Billetera(0, relacionador, monto, idCasa, Billetera.TIPO_TRANSACCION_PRESTAMO, 0, 0, hoy, con);
         b.insert();
         setDatos(0, relacionador, monto, 0.0, b.getId(), hoy);
         insert();

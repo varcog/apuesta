@@ -225,7 +225,7 @@ public class Partidos {
                 + "INNER JOIN \"public\".\"Equipos\" eq ON eq.\"id\" = \"public\".\"Partidos\".\"idEquipo2\"\n"
                 + "INNER JOIN \"public\".\"Estadio\" ON \"public\".\"Partidos\".\"idEstadio\" = \"public\".\"Estadio\".\"id\"\n"
                 + "INNER JOIN \"public\".\"Grupo\" ON \"public\".\"Partidos\".\"idGrupo\" = \"public\".\"Grupo\".\"id\"\n"
-                + "WHERE \"public\".\"Partidos\".\"fecha\" >= CURRENT_TIMESTAMP\n"
+                //+ "WHERE \"public\".\"Partidos\".\"fecha\" >= CURRENT_TIMESTAMP\n"
                 + "ORDER BY\n"
                 + "\"public\".\"Partidos\".fecha ASC;";
         PreparedStatement ps = con.statamet(consulta);

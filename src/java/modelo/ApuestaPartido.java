@@ -217,4 +217,53 @@ public class ApuestaPartido {
         ps.close();
         return res;
     }
+
+    public JSONArray getHistorial(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT \"TipoApuesta\".\"id\" as idTipoApuesta,\n"
+                + "	   \"TipoApuesta\".\"tipo\",\n"
+                + "       \"ApuestaPartido\".\"multiplicador\" as porcentaje,\n"
+                + "       \"Billetera\".\"monto\",\n"
+                + "       Equipo1.\"id\" as idEquipo1,\n"
+                + "       Equipo1.\"nombre\" as equipo1,\n"
+                + "       Equipo2.\"id\" as idEquipo2,\n"
+                + "       Equipo2.\"nombre\" as equipo2,\n"
+                + "       to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
+                + "FROM public.\"Billetera\"\n"
+                + "     INNER JOIN public.\"ApuestaPartido\" ON \"ApuestaPartido\".\"id\" = \"Billetera\".\"idApuestaPartido\"\n"
+                + "     INNER JOIN public.\"Partidos\" ON \"Partidos\".\"id\" = \"ApuestaPartido\".\"idPartido\"\n"
+                + "     INNER JOIN public.\"TipoApuesta\" ON \"TipoApuesta\".\"id\" = \"ApuestaPartido\".\"idTipoApuesta\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo1 ON Equipo1.\"id\" = \"Partidos\".\"idEquipo1\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo2 ON Equipo2.\"id\" = \"Partidos\".\"idEquipo2\"\n"
+                + "WHERE \"Billetera\".\"tipoTransaccion\" = ?\n"
+                + "	  AND \"Billetera\".\"idUsuarioDa\" = ?\n"
+                + "ORDER BY \"Billetera\".\"fecha\"";
+        PreparedStatement ps = con.statametObject(consulta, Billetera.TIPO_TRANSACCION_APUESTA, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            switch (rs.getInt("idTipoApuesta")) {
+                case 1:
+                    obj.put("titulo", rs.getString("equipo1"));
+                    break;
+                case 2:
+                    obj.put("titulo", "Empate");
+                    break;
+                case 3:
+                    obj.put("titulo", rs.getString("equipo2"));
+                    break;
+                default:
+                    
+            }
+            obj.put("tipo", rs.getInt("tipo"));
+            obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
+            obj.put("porcentaje", rs.getDouble("porcentaje"));
+            obj.put("monto", rs.getDouble("monto"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
 }

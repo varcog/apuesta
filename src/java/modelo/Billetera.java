@@ -19,6 +19,7 @@ public class Billetera {
     private int idUsuarioDa;
     private int tipoTransaccion;
     private int idApuestaPartido;
+    private int idApuestaAmigo;
     private Date fecha;
     private Conexion con = null;
 
@@ -26,24 +27,26 @@ public class Billetera {
         this.con = con;
     }
 
-    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, Date fecha, Conexion con) {
+    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, int idApuestaAmigo, Date fecha, Conexion con) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
         this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.tipoTransaccion = tipoTransaccion;
         this.idApuestaPartido = idApuestaPartido;
+        this.idApuestaAmigo = idApuestaAmigo;
         this.fecha = fecha;
         this.con = con;
     }
 
-    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, Date fecha) {
+    public Billetera(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, int idApuestaAmigo, Date fecha) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
         this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.tipoTransaccion = tipoTransaccion;
         this.idApuestaPartido = idApuestaPartido;
+        this.idApuestaAmigo = idApuestaAmigo;
         this.fecha = fecha;
     }
 
@@ -95,6 +98,14 @@ public class Billetera {
         this.idApuestaPartido = idApuestaPartido;
     }
 
+    public int getIdApuestaAmigo() {
+        return idApuestaAmigo;
+    }
+
+    public void setIdApuestaAmigo(int idApuestaAmigo) {
+        this.idApuestaAmigo = idApuestaAmigo;
+    }
+
     public Date getFecha() {
         return fecha;
     }
@@ -114,17 +125,17 @@ public class Billetera {
     ////////////////////////////////////////////////////////////////////////////
     public int insert() throws SQLException {
         String consulta = "INSERT INTO public.\"Billetera\"(\n"
-                + "    \"idUsuarioRecibe\", \"monto\", \"idUsuarioDa\", \"tipoTransaccion\", \"idApuestaPartido\", \"fecha\")\n"
-                + "    VALUES (?, ?, ?, ?, ?, ?)\n";
-        this.id = con.ejecutarInsert(consulta, "id", idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuestaPartido > 0 ? idApuestaPartido : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()));
+                + "    \"idUsuarioRecibe\", \"monto\", \"idUsuarioDa\", \"tipoTransaccion\", \"idApuestaPartido\", \"idApuestaAmigo\", \"fecha\")\n"
+                + "    VALUES (?, ?, ?, ?, ?, ?, ?)\n";
+        this.id = con.ejecutarInsert(consulta, "id", idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuestaPartido > 0 ? idApuestaPartido : null, idApuestaAmigo > 0 ? idApuestaAmigo : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()));
         return this.id;
     }
 
     public void update() throws SQLException {
         String consulta = "UPDATE public.\"Billetera\"\n"
-                + "    SET \"idUsuarioRecibe\" = ?, \"monto\" = ?, \"idUsuarioDa\" = ?, \"tipoTransaccion\" = ?, \"idApuestaPartido\" = ?, \"fecha\" = ?\n"
+                + "    SET \"idUsuarioRecibe\" = ?, \"monto\" = ?, \"idUsuarioDa\" = ?, \"tipoTransaccion\" = ?, \"idApuestaPartido\" = ?, \"idApuestaAmigo\"= ?, \"fecha\" = ?\n"
                 + "    WHERE \"id\"=?";
-        con.ejecutarSentencia(consulta, idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuestaPartido > 0 ? idApuestaPartido : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), id);
+        con.ejecutarSentencia(consulta, idUsuarioRecibe > 0 ? idUsuarioRecibe : null, monto, idUsuarioDa > 0 ? idUsuarioDa : null, tipoTransaccion, idApuestaPartido > 0 ? idApuestaPartido : null, idApuestaAmigo > 0 ? idApuestaAmigo : null, fecha == null ? null : new java.sql.Timestamp(fecha.getTime()), id);
     }
 
     public void delete() throws SQLException {
@@ -140,6 +151,7 @@ public class Billetera {
                 + "    \"Billetera\".\"idUsuarioDa\",\n"
                 + "    \"Billetera\".\"tipoTransaccion\",\n"
                 + "    \"Billetera\".\"idApuestaPartido\",\n"
+                + "    \"Billetera\".\"idApuestaAmigo\",\n"
                 + "    to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
                 + "    FROM public.\"Billetera\";";
         PreparedStatement ps = con.statamet(consulta);
@@ -154,6 +166,7 @@ public class Billetera {
             obj.put("idUsuarioDa", rs.getInt("idUsuarioDa"));
             obj.put("tipoTransaccion", rs.getInt("tipoTransaccion"));
             obj.put("idApuestaPartido", rs.getInt("idApuestaPartido"));
+            obj.put("idApuestaAmigo", rs.getInt("idApuestaAmigo"));
             obj.put("fecha", rs.getString("fecha"));
             json.put(obj);
         }
@@ -170,6 +183,7 @@ public class Billetera {
                 + "    \"Billetera\".\"idUsuarioDa\",\n"
                 + "    \"Billetera\".\"tipoTransaccion\",\n"
                 + "    \"Billetera\".\"idApuestaPartido\",\n"
+                + "    \"Billetera\".\"idApuestaAmigo\",\n"
                 + "    to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
                 + "    FROM public.\"Billetera\"\n"
                 + "    WHERE \"id\" = ?;";
@@ -183,6 +197,7 @@ public class Billetera {
             obj.put("idUsuarioDa", rs.getInt("idUsuarioDa"));
             obj.put("tipoTransaccion", rs.getInt("tipoTransaccion"));
             obj.put("idApuestaPartido", rs.getInt("idApuestaPartido"));
+            obj.put("idApuestaAmigo", rs.getInt("idApuestaAmigo"));
             obj.put("fecha", rs.getString("fecha"));
         }
         rs.close();
@@ -205,6 +220,7 @@ public class Billetera {
             obj.setIdUsuarioDa(rs.getInt("idUsuarioDa"));
             obj.setTipoTransaccion(rs.getInt("tipoTransaccion"));
             obj.setIdApuestaPartido(rs.getInt("idApuestaPartido"));
+            obj.setIdApuestaAmigo(rs.getInt("idApuestaAmigo"));
             obj.setFecha(rs.getTimestamp("fecha"));
         }
         rs.close();
@@ -222,19 +238,21 @@ public class Billetera {
         obj.put("idUsuarioDa", idUsuarioDa);
         obj.put("tipoTransaccion", tipoTransaccion);
         obj.put("idApuestaPartido", idApuestaPartido);
+        obj.put("idApuestaAmigo", idApuestaAmigo);
         obj.put("fecha", fecha == null ? "" : f1.format(fecha));
         return obj;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // Negocio
-    public void setDatos(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, Date fecha) {
+    public void setDatos(int id, int idUsuarioRecibe, Double monto, int idUsuarioDa, int tipoTransaccion, int idApuestaPartido, int idApuestaAmigo, Date fecha) {
         this.id = id;
         this.idUsuarioRecibe = idUsuarioRecibe;
         this.monto = monto;
         this.idUsuarioDa = idUsuarioDa;
         this.tipoTransaccion = tipoTransaccion;
         this.idApuestaPartido = idApuestaPartido;
+        this.idApuestaAmigo = idApuestaAmigo;
         this.fecha = fecha;
     }
 
@@ -400,6 +418,7 @@ public class Billetera {
                 + "     \"Billetera\".\"idUsuarioDa\",\n"
                 + "     \"Billetera\".\"tipoTransaccion\",\n"
                 + "     \"Billetera\".\"idApuestaPartido\",\n"
+                + "     \"Billetera\".\"idApuestaAmigo\",\n"
                 + "     to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha,\n"
                 + "     \"recibe\".\"nombres\" || ' ' || \"recibe\".\"apellidos\"  AS recibe,\n"
                 + "	\"da\".\"nombres\" || ' ' || \"da\".\"apellidos\"  AS da\n"
@@ -463,6 +482,7 @@ public class Billetera {
                 + "     \"Billetera\".\"idUsuarioDa\",\n"
                 + "     \"Billetera\".\"tipoTransaccion\",\n"
                 + "     \"Billetera\".\"idApuestaPartido\",\n"
+                + "     \"Billetera\".\"idApuestaAmigo\",\n"
                 + "     to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha,\n"
                 + "     \"recibe\".\"nombres\" || ' ' || \"recibe\".\"apellidos\"  AS recibe,\n"
                 + "	\"da\".\"nombres\" || ' ' || \"da\".\"apellidos\"  AS da\n"
@@ -538,7 +558,7 @@ public class Billetera {
             return json;
         }
         Date fechaInsert = new Date();
-        setDatos(0, idUsuarioRecibe, monto, idUsuario, TIPO_TRANSACCION_TRASPASO, 0, fechaInsert);
+        setDatos(0, idUsuarioRecibe, monto, idUsuario, TIPO_TRANSACCION_TRASPASO, 0, 0, fechaInsert);
         insert();
         json.put("balance", getBalanceUsuario(idUsuario));
         json.put("transacciones", getTransaccionesUsuariosPerfil(idUsuario));
@@ -554,7 +574,7 @@ public class Billetera {
         }
         Date fechaInsert = new Date();
         int idCasa = new Usuario(con).getIdCasa();
-        setDatos(0, idUsuarioRecibeCredito, monto, idCasa, TIPO_TRANSACCION_COMPRA, 0, fechaInsert);
+        setDatos(0, idUsuarioRecibeCredito, monto, idCasa, TIPO_TRANSACCION_COMPRA, 0, 0, fechaInsert);
         insert();
         PagoEfectivo pe = new PagoEfectivo(0, 0, getId(), idUsuarioVendeCredito, monto, idUsuarioRecibeCredito, fechaInsert, PagoEfectivo.TIPO_COMPRA, con);
         pe.insert();
@@ -577,7 +597,7 @@ public class Billetera {
         }
         Date fechaInsert = new Date();
         int idCasa = new Usuario(con).getIdCasa();
-        setDatos(0, idCasa, monto, idUsuarioRetira, TIPO_TRANSACCION_RETIRO, 0, fechaInsert);
+        setDatos(0, idCasa, monto, idUsuarioRetira, TIPO_TRANSACCION_RETIRO, 0, 0, fechaInsert);
         insert();
         PagoEfectivo pe = new PagoEfectivo(0, 0, getId(), idUsuarioRetira, monto, idUsuarioDaDinero, fechaInsert, PagoEfectivo.TIPO_RETIRO, con);
         pe.insert();

@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -64,6 +61,12 @@ public class IngresoController extends HttpServlet {
                     break;
                 case "okApostar":
                     html = okApostar(request, con);
+                    break;
+                case "historialApuestas":
+                    html = historialApuestas(request, con);
+                    break;
+                case "ApuestaAmigo":
+                    html = ApuestaAmigo(request, con);
                     break;
             }
             con.commit();
@@ -162,18 +165,14 @@ public class IngresoController extends HttpServlet {
             int insert = 0;
             int idApuestaPartido, idPartido, idTipoApuesta;
             double monto, porcentaje;
-            TipoApuesta ta = new TipoApuesta(con);
             JSONArray eliminar = new JSONArray();
             JSONArray actualizar = new JSONArray();
             JSONObject objActualizar;
             Partidos partido = new Partidos(con);
             ApuestaPartido app = new ApuestaPartido(con);
-//            Map<String, String[]> listanga = request.getParameterMap();
-//            for (Map.Entry<String, String[]> entry : listanga.entrySet()) {
-//                String key = entry.getKey();
-//                String[] value = entry.getValue();
-//                System.out.println(key);
-//            }
+            Billetera b = new Billetera(con);
+            double credito = b.getCreditoDisponible(con.getUsuario().getId());
+            double monto_total = 0;
             for (int i = 0; i < length; i++) {
                 idApuestaPartido = Integer.parseInt(request.getParameter("lista[" + i + "][idApuestaPartido]"));
                 idPartido = Integer.parseInt(request.getParameter("lista[" + i + "][idPartido]"));
@@ -187,13 +186,14 @@ public class IngresoController extends HttpServlet {
                         if (app.buscarSet(idTipoApuesta, idPartido)) {
                             if (app.getMultiplicador() > 0) {
                                 if (app.getMultiplicador() == porcentaje) {
+                                    monto_total += monto;
                                     insert++;
                                 } else {
                                     objActualizar = new JSONObject();
                                     objActualizar.put("idTipoApuesta", idTipoApuesta);
                                     objActualizar.put("idPartido", idPartido);
                                     objActualizar.put("idApuestaPartido", app.getId());
-                                    objActualizar.put("multiplicador", app.getMultiplicador());
+                                    objActualizar.put("porcentaje", app.getMultiplicador());
                                     actualizar.put(objActualizar);
                                 }
                             } else {
@@ -207,18 +207,112 @@ public class IngresoController extends HttpServlet {
                     eliminar.put(idApuestaPartido);
                 }
             }
-            if (insert == length) {
+            credito = SisEventos.acomodarDosDecimalesD(credito);
+            monto_total = SisEventos.acomodarDosDecimalesD(monto_total);
+            if (credito < monto_total) {
+                JSONObject json = new JSONObject();
+                json.put("resp", "CREDITO_INSUFICIENTE");
+                json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+                return json.toString();
+            } else if (insert == length) {
                 // guardar
                 for (int i = 0; i < length; i++) {
-                    idApuestaPartido = Integer.parseInt(request.getParameter("listaApuesta[" + i + "][idApuestaPartido]"));
-//                    idPartido = Integer.parseInt(request.getParameter("listaApuesta[" + i + "][idPartido]"));
-//                    idTipoApuesta = Integer.parseInt(request.getParameter("listaApuesta[" + i + "][idTipoApuesta]"));
-                    monto = Double.parseDouble(request.getParameter("listaApuesta[" + i + "][monto]"));
-//                    porcentaje = Double.parseDouble(request.getParameter("listaApuesta[" + i + "][procentaje]"));
-                    Billetera b = new Billetera(0, new Usuario(con).getIdCasa(), monto, con.getUsuario().getId(), Billetera.TIPO_TRANSACCION_APUESTA, idApuestaPartido, new Date(), con);
+                    idApuestaPartido = Integer.parseInt(request.getParameter("lista[" + i + "][idApuestaPartido]"));
+                    monto = Double.parseDouble(request.getParameter("lista[" + i + "][monto]"));
+                    b.setDatos(0, new Usuario(con).getIdCasa(), monto, con.getUsuario().getId(), Billetera.TIPO_TRANSACCION_APUESTA, idApuestaPartido, 0, new Date());
                     b.insert();
                 }
-                return "true";
+                JSONObject json = new JSONObject();
+                json.put("resp", true);
+                json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+                return json.toString();
+            } else {
+                JSONObject json = new JSONObject();
+                if (eliminar.length() > 0 || actualizar.length() > 0) {
+                    json.put("eliminar", eliminar);
+                    json.put("actualizar", actualizar);
+                    return json.toString();
+                } else {
+                    return "LENGTH_0";
+                }
+            }
+        } else {
+            return "LENGTH_0";
+        }
+    }
+
+    private String historialApuestas(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
+        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+        return new ApuestaPartido(con).getHistorial(idUsuario).toString();
+    }
+
+    private String ApuestaAmigo(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
+        int length = Integer.parseInt(request.getParameter("length"));
+        if (length > 0) {
+            int insert = 0;
+            int idApuestaPartido, idPartido, idTipoApuesta;
+            double monto, porcentaje;
+            JSONArray eliminar = new JSONArray();
+            JSONArray actualizar = new JSONArray();
+            JSONObject objActualizar;
+            Partidos partido = new Partidos(con);
+            ApuestaPartido app = new ApuestaPartido(con);
+            Billetera b = new Billetera(con);
+            double credito = b.getCreditoDisponible(con.getUsuario().getId());
+            double monto_total = 0;
+            for (int i = 0; i < length; i++) {
+                idApuestaPartido = Integer.parseInt(request.getParameter("lista[" + i + "][idApuestaPartido]"));
+                idPartido = Integer.parseInt(request.getParameter("lista[" + i + "][idPartido]"));
+                idTipoApuesta = Integer.parseInt(request.getParameter("lista[" + i + "][idTipoApuesta]"));
+                monto = Double.parseDouble(request.getParameter("lista[" + i + "][monto]"));
+                porcentaje = Double.parseDouble(request.getParameter("lista[" + i + "][porcentaje]"));
+
+                if (partido.sePuedeApostar(idPartido)) {
+                    if (monto > 0) {
+                        // Verificar si no ha cambiado el monto
+                        if (app.buscarSet(idTipoApuesta, idPartido)) {
+                            if (app.getMultiplicador() > 0) {
+                                if (app.getMultiplicador() == porcentaje) {
+                                    monto_total += monto;
+                                    insert++;
+                                } else {
+                                    objActualizar = new JSONObject();
+                                    objActualizar.put("idTipoApuesta", idTipoApuesta);
+                                    objActualizar.put("idPartido", idPartido);
+                                    objActualizar.put("idApuestaPartido", app.getId());
+                                    objActualizar.put("porcentaje", app.getMultiplicador());
+                                    actualizar.put(objActualizar);
+                                }
+                            } else {
+                                eliminar.put(idApuestaPartido);
+                            }
+                        } else {
+                            eliminar.put(idApuestaPartido);
+                        }
+                    }
+                } else {
+                    eliminar.put(idApuestaPartido);
+                }
+            }
+            credito = SisEventos.acomodarDosDecimalesD(credito);
+            monto_total = SisEventos.acomodarDosDecimalesD(monto_total);
+            if (credito < monto_total) {
+                JSONObject json = new JSONObject();
+                json.put("resp", "CREDITO_INSUFICIENTE");
+                json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+                return json.toString();
+            } else if (insert == length) {
+                // guardar
+                for (int i = 0; i < length; i++) {
+                    idApuestaPartido = Integer.parseInt(request.getParameter("lista[" + i + "][idApuestaPartido]"));
+                    monto = Double.parseDouble(request.getParameter("lista[" + i + "][monto]"));
+                    b.setDatos(0, new Usuario(con).getIdCasa(), monto, con.getUsuario().getId(), Billetera.TIPO_TRANSACCION_APUESTA, idApuestaPartido, 0, new Date());
+                    b.insert();
+                }
+                JSONObject json = new JSONObject();
+                json.put("resp", true);
+                json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+                return json.toString();
             } else {
                 JSONObject json = new JSONObject();
                 if (eliminar.length() > 0 || actualizar.length() > 0) {

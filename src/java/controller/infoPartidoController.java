@@ -3,7 +3,10 @@ package controller;
 import conexion.Conexion;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -11,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import modelo.ApuestaAmigo;
+import modelo.Billetera;
 import modelo.Equipos;
 import modelo.Notificaciones;
 import modelo.Partidos;
@@ -18,6 +22,7 @@ import modelo.TipoApuesta;
 import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
+import util.SisEventos;
 import ws.wsNotificacion;
 
 @MultipartConfig
@@ -55,7 +60,7 @@ public class infoPartidoController extends HttpServlet {
             }
             con.commit();
             response.getWriter().write(html);
-        } catch (SQLException | JSONException ex) {
+        } catch (SQLException | JSONException | ParseException ex) {
             con.error(this, ex);
             response.getWriter().write("false");
         }
@@ -114,28 +119,48 @@ public class infoPartidoController extends HttpServlet {
         return new Usuario(con).Buscar(usr).toJSONObject().toString();
     }
 
-    private String apostarCon(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
-        int idRetado = Integer.parseInt(request.getParameter("id"));
-        int idPartido = Integer.parseInt(request.getParameter("idPartido"));
-        int idEquipo = Integer.parseInt(request.getParameter("idEquipo"));
-        ApuestaAmigo apu = new ApuestaAmigo(0, con.getUsuario().getId(), idRetado, 0.0, idPartido, idEquipo, 0, con);
-        apu.insert();
-        String retador = con.getUsuario().getNombres() + " " + con.getUsuario().getApellidos();
-        Partidos p = new Partidos(con).buscar(idPartido);
-        Equipos e = new Equipos(con).buscar(idEquipo);
-        String nombre1 = e.getNombre();
-        if (idEquipo == p.getIdEquipo1()) {
-            idEquipo = p.getIdEquipo2();
-        } else {
-            idEquipo = p.getIdEquipo1();
+    private String apostarCon(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
+        Billetera b = new Billetera(con);
+        double credito = b.getCreditoDisponible(con.getUsuario().getId());
+        double monto = Double.parseDouble(request.getParameter("monto"));
+        credito = SisEventos.acomodarDosDecimalesD(credito);
+        monto = SisEventos.acomodarDosDecimalesD(monto);
+        if (credito < monto) {
+            JSONObject json = new JSONObject();
+            json.put("resp", "CREDITO_INSUFICIENTE");
+            json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+            return json.toString();
         }
-        e = new Equipos(con).buscar(idEquipo);
-        String nombre2 = e.getNombre();
-        Notificaciones not = new Notificaciones(0, idRetado, con.getUsuario().getId(), "El usuario " + retador + " te apuesta a " + nombre1 + " en el partido contra " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
-        not.insert();
-        JSONObject obj = not.toJSONObject();
-        obj.put("foto", con.getUsuario().getFoto());
-        new wsNotificacion().notificar(obj);
-        return "true";
+        int idPartido = Integer.parseInt(request.getParameter("idPartido"));
+        if (new Partidos(con).sePuedeApostar(idPartido)) {
+            int idRetado = Integer.parseInt(request.getParameter("id"));
+            int idEquipo = Integer.parseInt(request.getParameter("idEquipo"));
+            ApuestaAmigo apu = new ApuestaAmigo(0, con.getUsuario().getId(), idRetado, monto, idPartido, idEquipo, 0, con);
+            apu.insert();
+            b.setDatos(0, new Usuario(con).getIdCasa(), monto, con.getUsuario().getId(), Billetera.TIPO_TRANSACCION_APUESTA, 0, apu.getId(), new Date());
+            b.insert();
+            String retador = con.getUsuario().getNombres() + " " + con.getUsuario().getApellidos();
+            Partidos p = new Partidos(con).buscar(idPartido);
+            Equipos e = new Equipos(con).buscar(idEquipo);
+            String nombre1 = e.getNombre();
+            if (idEquipo == p.getIdEquipo1()) {
+                idEquipo = p.getIdEquipo2();
+            } else {
+                idEquipo = p.getIdEquipo1();
+            }
+            e = new Equipos(con).buscar(idEquipo);
+            String nombre2 = e.getNombre();
+            Notificaciones not = new Notificaciones(0, idRetado, con.getUsuario().getId(), "El usuario " + retador + " te apuesta a " + nombre1 + " en el partido contra " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
+            not.insert();
+            JSONObject obj = not.toJSONObject();
+            obj.put("foto", con.getUsuario().getFoto());
+            new wsNotificacion().notificar(obj);
+            JSONObject json = new JSONObject();
+            json.put("resp", true);
+            json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+            return json.toString();
+        } else {
+            return "PARTIDO_PASADO";
+        }
     }
 }

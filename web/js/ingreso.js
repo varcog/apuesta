@@ -96,7 +96,7 @@ function actualizarCreditos(credito, id) {
 
 function agregarApuesta(json) {
     var html = "";
-    html += "<div class='box box-success'>";
+    html += "<div class='box box-success p_" + json.idPartido + " ta_" + json.idTipoApuesta + " ap_" + json.idApuestaPartido + "'>";
     html += "  <div class='box-header with-border'>";
     html += "    <h3 class='box-title'>" + json.titulo + "</h3>";
     html += "    <div class='box-tools pull-right'>";
@@ -133,6 +133,20 @@ function calcularGanancia(ele) {
         $ele.find(".ganancia").text("");
     else
         $ele.find(".ganancia").text(monto);
+    calcularTotalApuestas();
+}
+
+function recalcular() {
+    $("#apuPendientes .monto").each(function (i, ele) {
+        var $ele = $(ele).closest(".box-body");
+        var monto = parseFloat($(ele).val());
+        var porcentaje = parseFloat($ele.find(".porcentaje").text());
+        var monto = monto * porcentaje;
+        if (isNaN(monto))
+            $ele.find(".ganancia").text("");
+        else
+            $ele.find(".ganancia").text(monto);
+    });
     calcularTotalApuestas();
 }
 
@@ -173,19 +187,42 @@ function apostar() {
 function okApostar() {
     mostrarCargando();
     $.post(url, {evento: "okApostar", lista: listaApuesta, length: listaApuesta.length}, function (resp) {
-        if (resp === "true") {
-            openAlert("Apuesta Realizada", "Apuesta");
+        cerrarModal();
+        if (resp === "LENGTH_0") {
+            openAlert("los montos no son validos", "Apuesta");
         } else {
-            if (resp === "LENGTH_0") {
-                openAlert("los montos no son validos", "Apuesta");
-            } else {
-                try {
-                    var json = $.parseJSON(resp);
-                    openAlert("Actualice e intentelo Nuevamente", "Apuesta");
-                    // Actualizar
-                } catch (e) {
-                    openAlert("Actualice e intentelo Nuevamente", "Apuesta");
+            try {
+                var json = $.parseJSON(resp);
+                if (json.resp === "CREDITO_INSUFICIENTE") {
+                    openAlert("No tiene credito suficiente para realizar esta apuesta <strong>" + new BigNumber("" + json.credito).toFormat(2) + "</strong>", "Apuesta");
+                } else if (json.resp) {
+                    $("#apuPendientes").find(".box").remove();
+                    $("#apuTotal").text("Total : 0");
+                    actualizarCredito(json.credito);
+                    openAlert("Apuesta Realizada", "Apuesta");
+                } else {
+                    $.each(json.eliminar, function (i, obj) {
+                        $("#apuPendientes").find(".ap_" + obj).remove();
+                    });
+                    var $ele;
+                    $.each(json.actualizar, function (i, obj) {
+                        $ele = $("#apuPendientes").find(".p_" + obj.idPartido + ".ta" + obj.idTipoApuesta);
+                        $ele.find(".porcentaje").text(obj.porcentaje);
+                        $ele.find(".idapuestapartido").text(obj.idApuestaPartido);
+                        var monto = parseFloat($ele.find(".monto").val());
+                        var porcentaje = parseFloat($ele.find(".porcentaje").text());
+                        var monto = monto * porcentaje;
+                        if (isNaN(monto))
+                            $ele.find(".ganancia").text("");
+                        else
+                            $ele.find(".ganancia").text(monto);
+                    });
+                    calcularTotalApuestas();
+                    openAlert("Se a Actualizado la lista, revisela", "Apuesta");
                 }
+                // Actualizar
+            } catch (e) {
+                openAlert("Intentelo Nuevamente", "Apuesta");
             }
         }
         ocultarCargando();
