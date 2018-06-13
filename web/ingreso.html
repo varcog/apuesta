@@ -26,6 +26,7 @@
         <script src="plugins/autoNumeric/bignumber.min.js" type="text/javascript"></script>
         <script src="plugins/autoNumeric/formatoNumero.js" type="text/javascript"></script>
         <!-------------------->
+        <script src="pages/js/comun.js"></script>
         <script src="js/webSocket.js"></script>
         <script src="js/ingreso.js"></script>                
     </head>
@@ -55,7 +56,7 @@
                                         <!-- inner menu: contains the actual data -->
                                         <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 200px;">
                                             <ul class="menu" id="navNovedades" style="overflow: hidden; width: 100%; height: 200px;">
-                                                
+
                                             </ul>
                                             <div class="slimScrollBar" style="background: rgb(0, 0, 0); width: 3px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px;"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 0.2; z-index: 90; right: 1px;"></div></div>
                                     </li>
@@ -140,168 +141,117 @@
                     <div class="tab-pane active" id="control-sidebar-pendiente-tab">
                         <h3 class="control-sidebar-heading">Apostar</h3>
                         <div id="apuPendientes">
-                            
+
+                        </div>
+                        <div class="box box-success" style="border-bottom: 3px solid #00a65a; margin-bottom: 5px;">
+                            <div class="box-header with-border">
+                                <h3 class="box-title" id="apuTotal">Total: 0</h3>
+                            </div>
                         </div>
                         <div class="text-center">
-                            <button class="btn btn-success">Apostar</button>
+                            <button class="btn btn-success" onclick="apostar();">Apostar</button>
                         </div>
-<!--                        <ul class="control-sidebar-menu">
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-birthday-cake bg-red"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
-
-                                        <p>Will be 23 on April 24th</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-user bg-yellow"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Frodo Updated His Profile</h4>
-
-                                        <p>New phone +1(800)555-1234</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-envelope-o bg-light-blue"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Nora Joined Mailing List</h4>
-
-                                        <p>nora@example.com</p>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <i class="menu-icon fa fa-file-code-o bg-green"></i>
-
-                                    <div class="menu-info">
-                                        <h4 class="control-sidebar-subheading">Cron Job 254 Executed</h4>
-
-                                        <p>Execution time 5 seconds</p>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                        <h3 class="control-sidebar-heading">Tasks Progress</h3>
-                        <ul class="control-sidebar-menu">
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Custom Template Design
-                                        <span class="label label-danger pull-right">70%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Update Resume
-                                        <span class="label label-success pull-right">95%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-success" style="width: 95%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Laravel Integration
-                                        <span class="label label-warning pull-right">50%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-warning" style="width: 50%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0)">
-                                    <h4 class="control-sidebar-subheading">
-                                        Back End Framework
-                                        <span class="label label-primary pull-right">68%</span>
-                                    </h4>
-
-                                    <div class="progress progress-xxs">
-                                        <div class="progress-bar progress-bar-primary" style="width: 68%"></div>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>-->
                     </div>
                     <div class="tab-pane" id="control-sidebar-historial-tab">
                         <form method="post">
                             <h3 class="control-sidebar-heading">Historial de Apuestas</h3>
 
-<!--                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Report panel usage
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-
-                                <p>
-                                    Some information about this general settings option
-                                </p>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Allow mail redirect
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-
-                                <p>
-                                    Other sets of options are available
-                                </p>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Expose author name in posts
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-
-                                <p>
-                                    Allow the user to show his name in blog posts
-                                </p>
-                            </div>
-                            <h3 class="control-sidebar-heading">Chat Settings</h3>
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Show me as online
-                                    <input type="checkbox" class="pull-right" checked>
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Turn off notifications
-                                    <input type="checkbox" class="pull-right">
-                                </label>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-sidebar-subheading">
-                                    Delete chat history
-                                    <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-                                </label>
-                            </div>                            -->
+                            <!--                            <div class="form-group">
+                                                            <label class="control-sidebar-subheading">
+                                                                Report panel usage
+                                                                <input type="checkbox" class="pull-right" checked>
+                                                            </label>
+                            
+                                                            <p>
+                                                                Some information about this general settings option
+                                                            </p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-sidebar-subheading">
+                                                                Allow mail redirect
+                                                                <input type="checkbox" class="pull-right" checked>
+                                                            </label>
+                            
+                                                            <p>
+                                                                Other sets of options are available
+                                                            </p>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-sidebar-subheading">
+                                                                Expose author name in posts
+                                                                <input type="checkbox" class="pull-right" checked>
+                                                            </label>
+                            
+                                                            <p>
+                                                                Allow the user to show his name in blog posts
+                                                            </p>
+                                                        </div>
+                                                        <h3 class="control-sidebar-heading">Chat Settings</h3>
+                                                        <div class="form-group">
+                                                            <label class="control-sidebar-subheading">
+                                                                Show me as online
+                                                                <input type="checkbox" class="pull-right" checked>
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-sidebar-subheading">
+                                                                Turn off notifications
+                                                                <input type="checkbox" class="pull-right">
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-sidebar-subheading">
+                                                                Delete chat history
+                                                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
+                                                            </label>
+                                                        </div>                            -->
                         </form>
                     </div>                    
                 </div>
             </aside>
             <div class="control-sidebar-bg"></div>
-        </div>        
+        </div>  
+        <!-- Verificar Apuesta-->
+        <div class="modal" tabindex="-1" role="dialog" id="apuestaModal" style="display: none;">
+            <div class="modal-dialog" role="document" style="width: 95%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="apuestaModalLabel">Verificar Apuesta</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" id="cuerpoApuesta">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="botonMenu" onclick="okApostar()">Apostar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Alert Modal-->
+        <div class="modal fade" id="alertModal" tabindex="-3" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="alertModalLabel"></h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="alertModalText"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
 

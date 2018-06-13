@@ -16,13 +16,25 @@ function formato_decimal(selector, formato) {
     $(selector).autoNumeric('init', defa);
 }
 
-function formato_decimal2(selector) {
+function formato_decimal2(selector, formato) {
     selector = selector || ".numero_decimal2";
     var forma = {
         mDec: 2,
         aPad: true
     };
     formato_decimal(selector, forma);
+}
+
+function formato_decimal2_s(selector) {
+    selector = selector || ".numero_decimal2";
+    var defa = {
+        aSep: '',
+        dGroup: '0',
+        aDec: '.',
+        mDec: 2,
+        aPad: true
+    };
+    $(selector).autoNumeric('init', defa);
 }
 
 function formato_decimal_all() {

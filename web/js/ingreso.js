@@ -14,8 +14,7 @@ $(document).ready(function () {
                 if (obj.estadoVisto === 0) {
                     cant++;
                     cuerpo += "<li class='bg-warning' title='" + obj.descripcion + "'><a href='#'><i class='fa fa-users text-aqua'></i>" + obj.descripcion + "</a></li>";
-                }
-                else {
+                } else {
                     cuerpo += "<li title='" + obj.descripcion + "'><a href='#'><i class='fa fa-users text-aqua'></i>" + obj.descripcion + "</a></li>";
                 }
             });
@@ -101,7 +100,7 @@ function agregarApuesta(json) {
     html += "  <div class='box-header with-border'>";
     html += "    <h3 class='box-title'>" + json.titulo + "</h3>";
     html += "    <div class='box-tools pull-right'>";
-    html += "      <button type='button' class='btn btn-box-tool' data-widget='remove'><i class='fa fa-times'></i></button>";
+    html += "      <button type='button' class='btn btn-box-tool' onclick='eliminarApuesta(this);'><i class='fa fa-times'></i></button>";
     html += "    </div>";
     html += "  </div>";
     html += "  <div class='box-body'>";
@@ -109,11 +108,12 @@ function agregarApuesta(json) {
     if (json.vs)
         html += "    <span class='info-box-text'>" + json.vs + "</span>";
     html += "    <span class='info-box-text'>Porcentaje: <strong class='porcentaje'>" + json.porcentaje + "</strong></span>";
-    html += "    <span class='info-box-text'>Monto: <input type='text' class='monto' name='monto' onkeyup='calcularGanancia(this);' data-idPartido='" + json.idPartido + "' data-idTipoApuesta='" + json.idTipoApuesta + "'/></span>";
+    html += "    <span class='info-box-text'>Monto: <input type='text' class='monto' name='monto' onkeyup='calcularGanancia(this);' data-idpartido='" + json.idPartido + "' data-idtipoapuesta='" + json.idTipoApuesta + "' data-idapuestapartido='" + json.idApuestaPartido + "' data-porcentaje='" + json.porcentaje + "'/></span>";
     html += "    <span class='info-box-text'>Ganancia: <strong class='ganancia'>" + "" + "</strong></span>";
     html += "  </div>";
     html += "</div>";
     $("#apuPendientes").append(html);
+    formato_decimal2_s("#apuPendientes .monto");
     var sidebar = $(".control-sidebar");
     if (!sidebar.hasClass('control-sidebar-open')
             && !$('body').hasClass('control-sidebar-open')) {
@@ -133,16 +133,81 @@ function calcularGanancia(ele) {
         $ele.find(".ganancia").text("");
     else
         $ele.find(".ganancia").text(monto);
+    calcularTotalApuestas();
 }
 
+var listaApuesta;
 function apostar() {
+    listaApuesta = [];
+    var $monto, monto, clon, div;
+    $("#cuerpoApuesta").html("");
+    $("#apuPendientes").find(".box").each(function (i, ele) {
+        $monto = $(ele).find(".monto");
+        monto = parseFloat($monto.val());
+        if (monto > 0) {
+            listaApuesta.push({
+                idApuestaPartido: $monto.data("idapuestapartido"),
+                idPartido: $monto.data("idpartido"),
+                idTipoApuesta: $monto.data("idtipoapuesta"),
+                porcentaje: $monto.data("porcentaje"),
+                monto: monto
+            });
+            clon = $(ele).clone();
+            clon.find(".monto").attr("disabled", true);
+            div = $("<div class='col-md-3 col-sm-6 col-xs-12'></div>");
+            div.append(clon);
+            $("#cuerpoApuesta").append(div);
+        }
+    });
+    var credito = parseFloat($(".credito_actual_principal").autoNumeric("get"));
+    var total = parseFloat($("#apuTotal").text());
+    if (credito < total) {
+        openAlert("No tiene Credito Suficiente para realizar la apuesta", "Apostar");
+    } else if (listaApuesta.length === 0) {
+        openAlert("No tiene ninguna apuesta seleccionada o falta algun monto que rellenar", "Apostar");
+    } else {
+        openModal("#apuestaModal");
+    }
 }
 
 function okApostar() {
     mostrarCargando();
-    $.post(url, {evento: ""}, function (resp) {
-        var json = $.parseJSON(resp);
-
+    $.post(url, {evento: "okApostar", lista: listaApuesta, length: listaApuesta.length}, function (resp) {
+        if (resp === "true") {
+            openAlert("Apuesta Realizada", "Apuesta");
+        } else {
+            if (resp === "LENGTH_0") {
+                openAlert("los montos no son validos", "Apuesta");
+            } else {
+                try {
+                    var json = $.parseJSON(resp);
+                    openAlert("Actualice e intentelo Nuevamente", "Apuesta");
+                    // Actualizar
+                } catch (e) {
+                    openAlert("Actualice e intentelo Nuevamente", "Apuesta");
+                }
+            }
+        }
         ocultarCargando();
     });
+}
+
+function eliminarApuesta(element) {
+    var box = $(element).parents(".box").first();
+    box.slideUp(500, function () {
+        box.remove();
+        calcularTotalApuestas();
+    });
+}
+
+function calcularTotalApuestas() {
+    var monto;
+    var total = 0;
+    $("#apuPendientes").find(".box").each(function (i, ele) {
+        monto = parseFloat($(ele).find(".monto").val());
+        if (monto > 0) {
+            total += monto;
+        }
+    });
+    $("#apuTotal").text("Total: " + total.toFixed(2));
 }

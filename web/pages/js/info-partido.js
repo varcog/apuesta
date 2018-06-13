@@ -27,6 +27,7 @@ function cargar() {
             switch (obj.id) {
                 case 1:
                     $(".apuEquipo1").data("idTipoApuesta", 1);
+                    $(".apuEquipo1").data("idApuestaPartido", obj.idApuestaPartido);
                     $(".apuEquipo1").data("idPartido", idPartido);
                     $(".apuEquipo1").data("titulo", json.partido.nombre1);
                     $(".apuEquipo1").data("subtitulo", "Resuldato Final");
@@ -37,6 +38,7 @@ function cargar() {
                     break;
                 case 2:
                     $(".apuEmpate").data("idTipoApuesta", 2);
+                    $(".apuEmpate").data("idApuestaPartido", obj.idApuestaPartido);
                     $(".apuEmpate").data("idPartido", idPartido);
                     $(".apuEmpate").data("titulo", "Empate");
                     $(".apuEmpate").data("subtitulo", "Resuldato Final");
@@ -46,6 +48,7 @@ function cargar() {
                     break;
                 case 3:
                     $(".apuEquipo2").data("idTipoApuesta", 3);
+                    $(".apuEquipo2").data("idApuestaPartido", obj.idApuestaPartido);
                     $(".apuEquipo2").data("idPartido", idPartido);
                     $(".apuEquipo2").data("titulo", json.partido.nombre2);
                     $(".apuEquipo2").data("subtitulo", "Resuldato Final");
@@ -62,8 +65,8 @@ function cargar() {
         var subtitulo = "Goles en el Partido";
         $.each(json.apuestas.goles, function (i, obj) {
             titulo = json.partido.nombre1 + " " + obj.equipo1 + " - " + obj.equipo2 + " " + json.partido.nombre2;
-            cuerpo += "<div class='col-md-4 col-sm-6 col-xs-12'>";
-            cuerpo += "  <div class='info-box' onclick='apostar(this);' data-idPartido='" + idPartido + "' data-idTipoApuesta='" + obj.id + "' data-titulo='" + titulo + "' data-subtitulo='" + subtitulo + "'>";
+            cuerpo += "<div class='col-md-4 col-sm-6 col-xs-12' style='cursor: pointer;'>";
+            cuerpo += "  <div class='info-box' onclick='apostar(this);' data-idPartido='" + idPartido + "' data-idTipoApuesta='" + obj.id + "' data-titulo='" + titulo + "' data-subtitulo='" + subtitulo + "' data-idApuestaPartido='" + obj.idApuestaPartido + "'>";
             cuerpo += "	<span class='info-box-icon bg-green' style='height: 90px;width: 70px;font-size: 30px;'><i class='porcentaje'>" + obj.porcentaje + "</i></span>";
             cuerpo += "	<div class='info-box-content' style='margin-left: 70px; padding: 5px 5px;'>";
             cuerpo += "	  <div style='display: flex;'>";
@@ -141,6 +144,7 @@ function apostar(ele) {
         subtitulo: $ele.data("subtitulo"),
         porcentaje: $ele.find(".porcentaje").text(),
         idTipoApuesta: $ele.data("idTipoApuesta"),
+        idApuestaPartido: $ele.data("idApuestaPartido"),
         idPartido: idPartido
     };
     window.parent.agregarApuesta(json);

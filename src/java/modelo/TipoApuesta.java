@@ -253,7 +253,7 @@ public class TipoApuesta {
         return json;
     }
 
-    private double getPorcentaje(int idTipoApuesta, int idPartido) throws SQLException {
+    public double getPorcentaje(int idTipoApuesta, int idPartido) throws SQLException {
         String consulta = "SELECT \"ApuestaPartido\".multiplicador\n"
                 + "FROM \"public\".\"ApuestaPartido\"\n"
                 + "where \"ApuestaPartido\".\"id\" = (\n"
@@ -274,10 +274,84 @@ public class TipoApuesta {
         return res;
     }
 
+    public void getPorcentaje(int idTipoApuesta, int idPartido, JSONObject json) throws SQLException, JSONException {
+        String consulta = "SELECT \"ApuestaPartido\".id,\n"
+                + "  \"ApuestaPartido\".multiplicador\n"
+                + "FROM \"public\".\"ApuestaPartido\"\n"
+                + "where \"ApuestaPartido\".\"id\" = (\n"
+                + "SELECT max(id) as id\n"
+                + "FROM \"public\".\"ApuestaPartido\"\n"
+                + "WHERE \"ApuestaPartido\".\"idTipoApuesta\" = ?\n"
+                + "AND \"ApuestaPartido\".\"idPartido\" = ?)";
+        PreparedStatement ps = con.statamet(consulta);
+        ps.setInt(1, idTipoApuesta);
+        ps.setInt(2, idPartido);
+        ResultSet rs = ps.executeQuery();
+        double res = 0;
+        if (rs.next()) {
+            json.put("idApuestaPartido", rs.getInt("id"));
+            json.put("porcentaje", rs.getDouble("multiplicador"));
+        }
+        rs.close();
+        ps.close();
+    }
+
     public JSONObject getApuestas(int idPartido) throws SQLException, JSONException {
         JSONObject json = new JSONObject();
-        json.put("partido", todosPartido(idPartido));
-        json.put("goles", todosGoles(idPartido));
+        json.put("partido", todosPartidoInfo(idPartido));
+        json.put("goles", todosGolesInfo(idPartido));
+        return json;
+    }
+
+    public JSONArray todosGolesInfo(int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "FROM\n"
+                + "\"public\".\"TipoApuesta\"\n"
+                + "WHERE\n"
+                + "\"public\".\"TipoApuesta\".tipo = 2\n"
+                + "ORDER BY\n"
+                + "\"public\".\"TipoApuesta\".\"id\" ASC";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("tipo", rs.getInt("tipo"));
+            obj.put("equipo1", rs.getInt("equipo1"));
+            obj.put("equipo2", rs.getInt("equipo2"));
+            getPorcentaje(rs.getInt("id"), idPartido, obj);
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    public JSONArray todosPartidoInfo(int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "FROM\n"
+                + "\"public\".\"TipoApuesta\"\n"
+                + "WHERE\n"
+                + "\"public\".\"TipoApuesta\".tipo = 1\n"
+                + "ORDER BY\n"
+                + "\"public\".\"TipoApuesta\".\"id\" ASC";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("id", rs.getInt("id"));
+            obj.put("tipo", rs.getInt("tipo"));
+            obj.put("equipo1", rs.getInt("equipo1"));
+            obj.put("equipo2", rs.getInt("equipo2"));
+            getPorcentaje(rs.getInt("id"), idPartido, obj);
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
         return json;
     }
 }

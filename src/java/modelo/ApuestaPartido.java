@@ -120,7 +120,6 @@ public class ApuestaPartido {
         ps.close();
         return json;
     }
-    
 
     public JSONObject buscarJSONObject(int id) throws SQLException, JSONException {
         String consulta = "SELECT\n"
@@ -162,6 +161,7 @@ public class ApuestaPartido {
         ps.close();
         return obj;
     }
+
     public ApuestaPartido buscar(int idTipoApuesta, int idPartido) throws SQLException, JSONException {
         String consulta = "SELECT *\n"
                 + "    FROM public.\"ApuestaPartido\"\n"
@@ -195,4 +195,26 @@ public class ApuestaPartido {
 
     /* ********************************************************************** */
     // Negocio
+    public boolean buscarSet(int idTipoApuesta, int idPartido) throws SQLException, JSONException {
+        String consulta = "SELECT \"ApuestaPartido\".*\n"
+                + "FROM \"public\".\"ApuestaPartido\"\n"
+                + "where \"ApuestaPartido\".\"id\" = (\n"
+                + " SELECT max(id) as id\n"
+                + " FROM \"public\".\"ApuestaPartido\"\n"
+                + " WHERE \"ApuestaPartido\".\"idTipoApuesta\" = ?\n"
+                + " AND \"ApuestaPartido\".\"idPartido\" = ?)";
+        PreparedStatement ps = con.statametObject(consulta, idTipoApuesta, idPartido);
+        ResultSet rs = ps.executeQuery();
+        boolean res = false;
+        if (rs.next()) {
+            setId(rs.getInt("id"));
+            setIdTipoApuesta(rs.getInt("idTipoApuesta"));
+            setIdPartido(rs.getInt("idPartido"));
+            setMultiplicador(rs.getDouble("multiplicador"));
+            res = true;
+        }
+        rs.close();
+        ps.close();
+        return res;
+    }
 }
