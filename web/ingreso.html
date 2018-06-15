@@ -135,8 +135,8 @@
                 <div style="background: #171c1f;color: #fff;padding: 10px 15px;text-align: center;">Apuestas</div>
                 <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
                     <li class="active"><a href="#control-sidebar-pendiente-tab" data-toggle="tab" id="tabPendientes"><i class="fa fa-shopping-cart"></i><span> Pendientes</span></a></li>
-                    <li><a href="#control-sidebar-amigos-tab" data-toggle="tab"><i class="fa fa-user-plus"></i><span> Amigos</span></a></li>
-                    <li><a href="#control-sidebar-historial-tab" data-toggle="tab"><i class="fa fa-book"></i><span> Historial</span></a></li>
+                    <li><a href="#control-sidebar-amigos-tab" data-toggle="tab" onclick="onCargarPendienteAmigo();"><i class="fa fa-user-plus"></i><span> Amigos</span></a></li>
+                    <li><a href="#control-sidebar-historial-tab" data-toggle="tab" onclick="onCargarHistorial();"><i class="fa fa-book"></i><span> Historial</span></a></li>
                 </ul>                
                 <div class="tab-content">                    
                     <div class="tab-pane active" id="control-sidebar-pendiente-tab">
@@ -154,62 +154,16 @@
                         </div>
                     </div>
                     <div class="tab-pane" id="control-sidebar-amigos-tab">
-                        
+                        <h3 class="control-sidebar-heading">Aceptar Reto</h3>
+                        <div id="apuPendientesReto">
+
+                        </div>
+                        <h3 class="control-sidebar-heading">Pendientes Aprobacion</h3>
+                        <div id="apuPendientesAprobacion">
+
+                        </div>
                     </div>
                     <div class="tab-pane" id="control-sidebar-historial-tab">
-                        <form method="post">
-                            <h3 class="control-sidebar-heading">Historial de Apuestas</h3>
-
-                            <!--                            <div class="form-group">
-                                                            <label class="control-sidebar-subheading">
-                                                                Report panel usage
-                                                                <input type="checkbox" class="pull-right" checked>
-                                                            </label>
-                            
-                                                            <p>
-                                                                Some information about this general settings option
-                                                            </p>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="control-sidebar-subheading">
-                                                                Allow mail redirect
-                                                                <input type="checkbox" class="pull-right" checked>
-                                                            </label>
-                            
-                                                            <p>
-                                                                Other sets of options are available
-                                                            </p>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="control-sidebar-subheading">
-                                                                Expose author name in posts
-                                                                <input type="checkbox" class="pull-right" checked>
-                                                            </label>
-                            
-                                                            <p>
-                                                                Allow the user to show his name in blog posts
-                                                            </p>
-                                                        </div>
-                                                        <h3 class="control-sidebar-heading">Chat Settings</h3>
-                                                        <div class="form-group">
-                                                            <label class="control-sidebar-subheading">
-                                                                Show me as online
-                                                                <input type="checkbox" class="pull-right" checked>
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="control-sidebar-subheading">
-                                                                Turn off notifications
-                                                                <input type="checkbox" class="pull-right">
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="control-sidebar-subheading">
-                                                                Delete chat history
-                                                                <a href="javascript:void(0)" class="text-red pull-right"><i class="fa fa-trash-o"></i></a>
-                                                            </label>
-                                                        </div>                            -->
-                        </form>
                     </div>                    
                 </div>
             </aside>
@@ -252,6 +206,26 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--CONFIRMAR APUESTA AMIGO-->
+        <div class="modal fade" id="confirmarAAModal" tabindex="-2" role="dialog" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="confirmarAAModalLabel">Eliminar</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="confirmarAABotonModal">Eliminar</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>

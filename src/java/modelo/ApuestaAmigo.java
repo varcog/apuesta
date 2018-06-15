@@ -283,6 +283,28 @@ public class ApuestaAmigo {
 
     /* ********************************************************************** */
     // Negocio
+    public boolean buscarSet(int id) throws SQLException, JSONException {
+        String consulta = "SELECT *\n"
+                + "    FROM public.\"ApuestaAmigo\"\n"
+                + "    WHERE \"id\" = ?;";
+        PreparedStatement ps = con.statametObject(consulta, id);
+        ResultSet rs = ps.executeQuery();
+        boolean res = false;
+        if (rs.next()) {
+            setId(rs.getInt("id"));
+            setIdUsuarioRetador(rs.getInt("idUsuarioRetador"));
+            setIdUsuarioRetado(rs.getInt("idUsuarioRetado"));
+            setMonto(rs.getDouble("monto"));
+            setIdPartido(rs.getInt("idPartido"));
+            setIdEquipoRetador(rs.getInt("idEquipoRetador"));
+            setIdEquipoRetado(rs.getInt("idEquipoRetado"));
+            res = true;
+        }
+        rs.close();
+        ps.close();
+        return res;
+    }
+
     public JSONArray getHistorial(int idUsuario) throws SQLException, JSONException {
         String consulta = "SELECT \"Billetera\".\"monto\",\n"
                 + "	   \"ApuestaAmigo\".\"idUsuarioRetador\",\n"
@@ -330,6 +352,112 @@ public class ApuestaAmigo {
             obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
             obj.put("porcentaje", rs.getDouble("porcentaje"));
             obj.put("monto", rs.getDouble("monto"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    // Retador
+    public JSONObject getPendientes(int idUsuario) throws JSONException, SQLException {
+        JSONObject json = new JSONObject();
+        json.put("aprobacion", getPendientesAprobacion(idUsuario));
+        json.put("reto", getPendientesReto(idUsuario));
+        return json;
+    }
+
+    public JSONArray getPendientesAprobacion(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT \"Billetera\".\"monto\",\n"
+                + "	   \"ApuestaAmigo\".\"idUsuarioRetador\",\n"
+                + "        UsuarioRetador.\"nombres\" || ' ' || UsuarioRetador.\"apellidos\" AS usuarioRetador,\n"
+                + "        UsuarioRetado.\"nombres\" || ' ' || UsuarioRetado.\"apellidos\" AS usuarioRetado,\n"
+                + "        \"ApuestaAmigo\".\"id\" as idApuestaAmigo,\n"
+                + "        \"ApuestaAmigo\".\"idUsuarioRetado\",\n"
+                + "	   \"ApuestaAmigo\".\"idEquipoRetador\",\n"
+                + "        \"ApuestaAmigo\".\"idEquipoRetado\",\n"
+                + "        Equipo1.\"id\" as idEquipo1,\n"
+                + "        Equipo1.\"nombre\" as equipo1,\n"
+                + "        Equipo2.\"id\" as idEquipo2,\n"
+                + "        Equipo2.\"nombre\" as equipo2,\n"
+                + "        to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
+                + "FROM public.\"Billetera\"\n"
+                + "     INNER JOIN public.\"ApuestaAmigo\" ON \"ApuestaAmigo\".\"id\" = \"Billetera\".\"idApuestaAmigo\"\n"
+                + "     INNER JOIN public.\"Partidos\" ON \"Partidos\".\"id\" = \"ApuestaAmigo\".\"idPartido\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo1 ON Equipo1.\"id\" = \"Partidos\".\"idEquipo1\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo2 ON Equipo2.\"id\" = \"Partidos\".\"idEquipo2\"\n"
+                + "     INNER JOIN public.\"Usuario\" AS UsuarioRetador ON UsuarioRetador.\"id\" = \"ApuestaAmigo\".\"idUsuarioRetador\"\n"
+                + "     INNER JOIN public.\"Usuario\" AS UsuarioRetado ON UsuarioRetado.\"id\" = \"ApuestaAmigo\".\"idUsuarioRetado\"\n"
+                + "WHERE \"Billetera\".\"tipoTransaccion\" = ?\n"
+                + "	  AND \"Billetera\".\"idUsuarioDa\" = ?\n"
+                + "       AND \"ApuestaAmigo\".\"idEquipoRetado\" IS NULL\n"
+                + "ORDER BY \"Billetera\".\"fecha\"";
+        PreparedStatement ps = con.statametObject(consulta, Billetera.TIPO_TRANSACCION_APUESTA, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("tipo", "Apuesta con " + rs.getString("usuarioRetado"));
+            if (rs.getInt("idEquipoRetador") == rs.getInt("idEquipo1")) {
+                obj.put("titulo", rs.getString("equipo1"));
+            } else {
+                obj.put("titulo", rs.getString("equipo2"));
+            }
+            obj.put("idApuestaAmigo", rs.getInt("idApuestaAmigo"));
+            obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
+            obj.put("monto", rs.getDouble("monto"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+
+    public JSONArray getPendientesReto(int idUsuario) throws SQLException, JSONException {
+        String consulta = "SELECT \"Billetera\".\"monto\",\n"
+                + "	   \"ApuestaAmigo\".\"idUsuarioRetador\",\n"
+                + "        UsuarioRetador.\"nombres\" || ' ' || UsuarioRetador.\"apellidos\" AS usuarioRetador,\n"
+                + "        UsuarioRetado.\"nombres\" || ' ' || UsuarioRetado.\"apellidos\" AS usuarioRetado,\n"
+                + "        \"ApuestaAmigo\".\"id\" as idApuestaAmigo,\n"
+                + "        \"ApuestaAmigo\".\"idUsuarioRetado\",\n"
+                + "	   \"ApuestaAmigo\".\"idEquipoRetador\",\n"
+                + "        \"ApuestaAmigo\".\"idEquipoRetado\",\n"
+                + "        Equipo1.\"id\" as idEquipo1,\n"
+                + "        Equipo1.\"nombre\" as equipo1,\n"
+                + "        Equipo2.\"id\" as idEquipo2,\n"
+                + "        Equipo2.\"nombre\" as equipo2,\n"
+                + "        \"Billetera\".\"fecha\" as fechaDate,\n"
+                + "        to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
+                + "FROM public.\"ApuestaAmigo\"\n"
+                + "     INNER JOIN public.\"Partidos\" ON \"Partidos\".\"id\" = \"ApuestaAmigo\".\"idPartido\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo1 ON Equipo1.\"id\" = \"Partidos\".\"idEquipo1\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo2 ON Equipo2.\"id\" = \"Partidos\".\"idEquipo2\"\n"
+                + "     INNER JOIN public.\"Usuario\" AS UsuarioRetador ON UsuarioRetador.\"id\" = \"ApuestaAmigo\".\"idUsuarioRetador\"\n"
+                + "     INNER JOIN public.\"Usuario\" AS UsuarioRetado ON UsuarioRetado.\"id\" = \"ApuestaAmigo\".\"idUsuarioRetado\"\n"
+                + "     INNER JOIN public.\"Billetera\" ON \"ApuestaAmigo\".\"id\" = \"Billetera\".\"idApuestaAmigo\""
+                + "WHERE \"ApuestaAmigo\".\"idEquipoRetado\" IS NULL\n"
+                + "      AND \"ApuestaAmigo\".\"idUsuarioRetador\" = \"Billetera\".\"idUsuarioDa\"\n"
+                + "      AND \"ApuestaAmigo\".\"idUsuarioRetado\" = ?\n"
+                + "ORDER BY \"Billetera\".\"fecha\"";
+        PreparedStatement ps = con.statametObject(consulta, idUsuario);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("tipo", "Apuesta con " + rs.getString("usuarioRetador"));
+            if (rs.getInt("idEquipoRetado") == rs.getInt("idEquipo1")) {
+                obj.put("titulo", rs.getString("equipo1"));
+            } else {
+                obj.put("titulo", rs.getString("equipo2"));
+            }
+            obj.put("idApuestaAmigo", rs.getInt("idApuestaAmigo"));
+            obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
+            obj.put("monto", rs.getDouble("monto"));
+            obj.put("fecha", rs.getString("fecha"));
+            obj.put("orden", rs.getDate("fechaDate").getTime());
             json.put(obj);
         }
         rs.close();

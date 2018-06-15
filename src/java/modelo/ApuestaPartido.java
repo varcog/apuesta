@@ -221,6 +221,8 @@ public class ApuestaPartido {
     public JSONArray getHistorial(int idUsuario) throws SQLException, JSONException {
         String consulta = "SELECT \"TipoApuesta\".\"id\" as idTipoApuesta,\n"
                 + "	   \"TipoApuesta\".\"tipo\",\n"
+                + "	   \"TipoApuesta\".\"equipo1\" as taequipo1,\n"
+                + "	   \"TipoApuesta\".\"equipo2\" as taequipo2,\n"
                 + "       \"ApuestaPartido\".\"multiplicador\" as porcentaje,\n"
                 + "       \"Billetera\".\"monto\",\n"
                 + "       Equipo1.\"id\" as idEquipo1,\n"
@@ -246,19 +248,71 @@ public class ApuestaPartido {
             switch (rs.getInt("idTipoApuesta")) {
                 case 1:
                     obj.put("titulo", rs.getString("equipo1"));
+                    obj.put("tipo", "Resuldato Final");
                     break;
                 case 2:
                     obj.put("titulo", "Empate");
+                    obj.put("tipo", "Resuldato Final");
                     break;
                 case 3:
                     obj.put("titulo", rs.getString("equipo2"));
+                    obj.put("tipo", "Resuldato Final");
                     break;
                 default:
-                    
+                    obj.put("titulo", rs.getString("equipo1") + " " + rs.getInt("taequipo1") + " - " + rs.getInt("taequipo2") + " " + rs.getString("equipo2"));
+                    obj.put("tipo", "Goles en el Partido");
+            }
+            obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
+            obj.put("porcentaje", rs.getDouble("porcentaje"));
+            obj.put("monto", rs.getDouble("monto"));
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        consulta = "SELECT \"Billetera\".\"monto\",\n"
+                + "	   \"ApuestaAmigo\".\"idUsuarioRetador\",\n"
+                + "        UsuarioRetador.\"nombres\" || ' ' || UsuarioRetador.\"apellidos\" AS usuarioRetador,\n"
+                + "        UsuarioRetado.\"nombres\" || ' ' || UsuarioRetado.\"apellidos\" AS usuarioRetado,\n"
+                + "        \"ApuestaAmigo\".\"idUsuarioRetado\",\n"
+                + "	   \"ApuestaAmigo\".\"idEquipoRetador\",\n"
+                + "        \"ApuestaAmigo\".\"idEquipoRetado\",\n"
+                + "        Equipo1.\"id\" as idEquipo1,\n"
+                + "        Equipo1.\"nombre\" as equipo1,\n"
+                + "        Equipo2.\"id\" as idEquipo2,\n"
+                + "        Equipo2.\"nombre\" as equipo2,\n"
+                + "        to_char(\"Billetera\".\"fecha\", 'DD/MM/YYYY HH24:MI:SS') AS fecha\n"
+                + "FROM public.\"Billetera\"\n"
+                + "     INNER JOIN public.\"ApuestaAmigo\" ON \"ApuestaAmigo\".\"id\" = \"Billetera\".\"idApuestaAmigo\"\n"
+                + "     INNER JOIN public.\"Partidos\" ON \"Partidos\".\"id\" = \"ApuestaAmigo\".\"idPartido\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo1 ON Equipo1.\"id\" = \"Partidos\".\"idEquipo1\"\n"
+                + "     INNER JOIN public.\"Equipos\" AS Equipo2 ON Equipo2.\"id\" = \"Partidos\".\"idEquipo2\"\n"
+                + "     INNER JOIN public.\"Usuario\" AS UsuarioRetador ON UsuarioRetador.\"id\" = \"ApuestaAmigo\".\"idUsuarioRetador\"\n"
+                + "     INNER JOIN public.\"Usuario\" AS UsuarioRetado ON UsuarioRetado.\"id\" = \"ApuestaAmigo\".\"idUsuarioRetado\"\n"
+                + "WHERE \"Billetera\".\"tipoTransaccion\" = ?\n"
+                + "	  AND \"Billetera\".\"idUsuarioDa\" = ?\n"
+                + "       AND \"ApuestaAmigo\".\"idEquipoRetado\" IS NOT NULL\n"
+                + "ORDER BY \"Billetera\".\"fecha\"";
+        ps = con.statametObject(consulta, Billetera.TIPO_TRANSACCION_APUESTA, idUsuario);
+        rs = ps.executeQuery();
+        while (rs.next()) {
+            obj = new JSONObject();
+            if (idUsuario == rs.getInt("idUsuarioRetador")) {
+                obj.put("tipo", "Apuesta con " + rs.getString("usuarioRetado"));
+                if (rs.getInt("idEquipoRetador") == rs.getInt("idEquipo1")) {
+                    obj.put("titulo", rs.getString("equipo1"));
+                } else {
+                    obj.put("titulo", rs.getString("equipo2"));
+                }
+            } else {
+                obj.put("tipo", "Apuesta con " + rs.getString("usuarioRetador"));
+                if (rs.getInt("idEquipoRetado") == rs.getInt("idEquipo1")) {
+                    obj.put("titulo", rs.getString("equipo1"));
+                } else {
+                    obj.put("titulo", rs.getString("equipo2"));
+                }
             }
             obj.put("tipo", rs.getInt("tipo"));
             obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
-            obj.put("porcentaje", rs.getDouble("porcentaje"));
             obj.put("monto", rs.getDouble("monto"));
             json.put(obj);
         }

@@ -45,6 +45,7 @@ $(document).ready(function () {
             $(".usr_img").attr("src", json.foto);
             $(".cargo").text((json.perfil || ""));
             actualizarCredito(json.credito);
+            cargarHistorial(json.historialApuesta);
             openSocket();
         }
     });
@@ -247,4 +248,172 @@ function calcularTotalApuestas() {
         }
     });
     $("#apuTotal").text("Total: " + total.toFixed(2));
+}
+
+function cargarHistorial(json) {
+    var html = "";
+    $.each(json, function (i, h) {
+        html += "<div class='box box-default'>";
+        html += "  <div class='box-header with-border'>";
+        html += "    <h3 class='box-title'>" + h.titulo + "</h3>";
+        html += "    <div class='box-tools pull-right'>";
+        html += "      <button type='button' class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>";
+        html += "    </div>";
+        html += "  </div>";
+        html += "  <div class='box-body'>";
+        html += "    <span class='info-box-text'>" + h.tipo + "</span>";
+        html += "    <span class='info-box-text'>" + h.vs + "</span>";
+        if (h.porcentaje)
+            html += "    <span class='info-box-text'>Porcentaje: <strong class='porcentaje'>" + h.porcentaje + "</strong></span>";
+        html += "    <span class='info-box-text'>Monto: <strong class='monto'>" + h.monto + "</strong></span>";
+        html += "  </div>";
+        html += "</div>";
+    });
+    $("#control-sidebar-historial-tab").html(html);
+}
+
+function onCargarHistorial() {
+    mostrarCargando();
+    $("#control-sidebar-historial-tab").html("");
+    $.post(url, {evento: "historialApuestas"}, function (resp) {
+        var json = $.parseJSON(resp);
+        cargarHistorial(json);
+        ocultarCargando();
+    });
+}
+
+function onCargarPendienteAmigo() {
+    mostrarCargando();
+    $("#apuPendientesReto").html("");
+    $("#apuPendientesAprobacion").html("");
+    $.post(url, {evento: "historialPendienteAmigo"}, function (resp) {
+        var json = $.parseJSON(resp);
+        cargarPendienteAprobar(json.aprobacion);
+        cargarPendienteReto(json.reto);
+        ocultarCargando();
+    });
+}
+
+function cargarPendienteAprobar(json) {
+    var html = "";
+    $.each(json, function (i, h) {
+        html += "<div class='box box-default'>";
+        html += "  <div class='box-header with-border'>";
+        html += "    <h3 class='box-title'>" + h.titulo + "</h3>";
+        html += "    <div class='box-tools pull-right'>";
+        html += "      <button type='button' class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>";
+        html += "    </div>";
+        html += "  </div>";
+        html += "  <div class='box-body'>";
+        html += "    <span class='info-box-text'>" + h.tipo + "</span>";
+        html += "    <span class='info-box-text'>" + h.vs + "</span>";
+        html += "    <span class='info-box-text'>Monto: <strong class='monto'>" + h.monto + "</strong></span>";
+        html += "    <div class='text-center pie'>";
+        html += "       <button class='btn btn-danger' onclick='rechazarApuestaAmigo(" + h.idApuestaAmigo + ", this)'>Eliminar</button>";
+        html += "    </div>";
+        html += "  </div>";
+        html += "</div>";
+    });
+    $("#apuPendientesAprobacion").html(html);
+}
+
+function cargarPendienteReto(json) {
+    var html = "";
+    $.each(json, function (i, h) {
+        html += "<div class='box box-default'>";
+        html += "  <div class='box-header with-border'>";
+        html += "    <h3 class='box-title'>" + h.titulo + "</h3>";
+        html += "    <div class='box-tools pull-right'>";
+        html += "      <button type='button' class='btn btn-box-tool' data-widget='collapse'><i class='fa fa-minus'></i></button>";
+        html += "    </div>";
+        html += "  </div>";
+        html += "  <div class='box-body'>";
+        html += "    <span class='info-box-text'>" + h.tipo + "</span>";
+        html += "    <span class='info-box-text'>" + h.vs + "</span>";
+        html += "    <span class='info-box-text'>Monto: <strong class='monto'>" + h.monto + "</strong></span>";
+        html += "    <div class='text-center pie'>";
+        html += "       <button class='btn btn-success' onclick='aprobarApuestaAmigo(" + h.idApuestaAmigo + ", this)'>Aceptar</button>";
+        html += "       <button class='btn btn-danger' onclick='rechazarApuestaAmigo(" + h.idApuestaAmigo + ", this)'>Rechazar</button>";
+        html += "    </div>";
+        html += "  </div>";
+        html += "</div>";
+    });
+    $("#apuPendientesReto").html(html);
+}
+
+var idAA;
+var $eleAA;
+function aprobarApuestaAmigo(idApuestaAmigo, ele) {
+    idAA = idApuestaAmigo;
+    $eleAA = ele;
+    var msj = "<h5>¿Esta Seguro de Aceptar la siguiente Apuesta?</h5>";
+    $("#confirmarAABotonModal").find(".modal-body").html("");
+    $("#confirmarAABotonModal").find(".modal-body").append(msj);
+    var clon = $(ele).closest(".box").clone();
+    clon.find(".pie").remove();
+    clon.find(".btn-box-tool").remove();
+    clon.find(".box-body").css("display", "block");
+    clon.removeClass(".collapsed-box");
+    $("#confirmarAABotonModal").find(".modal-body").append(clon);
+    $("#confirmarAABotonModal").off("click");
+    $("#confirmarAABotonModal").text($(ele).text());
+    $("#confirmarAABotonModal").click(okAprobarApuestaAmigo);
+    openModal("#confirmarAAModal");
+}
+
+function okAprobarApuestaAmigo() {
+    mostrarCargando();
+    cerrarModal();
+    $.post(url, {evento: "okAprobarApuestaAmigo"}, function (resp) {
+        if (resp === "PARTIDO_PASADO") {
+            openAlert("Ya No se puede Apostar en este Partido", "Apuesta");
+        } else {
+            try {
+                var json = $.parseJSON(resp);
+                if (json.resp === "CREDITO_INSUFICIENTE") {
+                    openAlert("No tiene credito suficiente para realizar esta apuesta <strong>" + new BigNumber("" + json.credito).toFormat(2) + "</strong>", "Apuesta");
+                } else if (json.resp) {
+                    actualizarCredito(json.credito);
+                    openAlert("La Apuesta ha sido Aceptada", "Apuesta con Amigo");
+                } else {
+                    openAlert("Intentelo Nuevamente", "Apuesta");
+                }
+            } catch (e) {
+                openAlert("Intentelo Nuevamente", "Apuesta");
+            }
+        }
+        ocultarCargando();
+    });
+}
+
+function rechazarApuestaAmigo(idApuestaAmigo, ele) {
+    idAA = idApuestaAmigo;
+    $eleAA = ele;
+    var msj = "<h5>¿Esta Seguro de " + $(ele).text() + " la siguiente Apuesta?</h5>";
+    $("#confirmarAAModal").find(".modal-body").html("");
+    $("#confirmarAAModal").find(".modal-body").append(msj);
+    var clon = $(ele).closest(".box").clone();
+    clon.find(".pie").remove();
+    clon.find(".btn-box-tool").remove();
+    clon.find(".box-body").css("display", "block");
+    clon.removeClass(".collapsed-box");
+    $("#confirmarAAModal").find(".modal-body").append(clon);
+    $("#confirmarAABotonModal").text($(ele).text());
+    $("#confirmarAABotonModal").off("click");
+    $("#confirmarAABotonModal").click(okRechazarApuestaAmigo);
+    openModal("#confirmarAAModal");
+}
+
+function okRechazarApuestaAmigo() {
+    mostrarCargando();
+    cerrarModal();
+    $.post(url, {evento: "okRechazarApuestaAmigo", idApuestaAmigo: idAA}, function (resp) {
+        if (resp === "true") {
+            $($eleAA).closest(".box").remove();
+            openAlert("La apuesta a sido rechazada");
+        } else {
+            openAlert("Intentelo mas tarde");
+        }
+        ocultarCargando();
+    });
 }

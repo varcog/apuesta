@@ -606,4 +606,9 @@ public class Billetera {
         return json;
     }
 
+    public void deleteXApuestaAmigo(int idApuestaAmigo) throws SQLException {
+        String consulta = "delete from public.\"Billetera\" where \"idApuestaAmigo\"= ?;";
+        con.ejecutarSentencia(consulta, idApuestaAmigo);
+    }
+
 }
