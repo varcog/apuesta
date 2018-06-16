@@ -91,6 +91,7 @@ function cargar() {
             }
         });
         $("#cuerpoApuGoles").html(cuerpo);
+        cargarRelato();
     });
     ocultarCargando();
 }
@@ -175,3 +176,70 @@ function apostar(ele) {
     };
     window.parent.agregarApuesta(json);
 }
+
+//<editor-fold defaultstate="collapsed" desc="Relato">
+var urlRelato = "../relatarPartidoController";
+var $idPArtido;
+var ultimaHora;
+var cont = 0;
+function cargarRelato() {
+    $idPArtido = $.get("idPartido");
+    $.post(urlRelato, {evento: "cargarRelato", idPartido:$idPArtido}, function (resp) {
+        var json = $.parseJSON(resp);        
+        var cuerpo = "";
+        $.each(json.relato,function(i,obj){
+            cuerpo += armarEventoRelato(obj);
+        });
+        $("#cuerpo-relato").html(cuerpo);    
+        setTimeout(traerFaltantesrelato, 10000);
+        ocultarCargando();
+    });
+}
+
+function traerFaltantesrelato() {
+    cont=0;
+    $.post(urlRelato, {evento: "traerFaltantes", ultimaHora:ultimaHora, idPartido:$idPArtido}, function (resp) {
+        var json = $.parseJSON(resp);
+        var cuerpo = "";
+        $.each(json,function(i,obj){
+            cuerpo += armarEventoRelato(obj);
+        });
+        $("#cuerpo-relato").prepend(cuerpo);       
+        setTimeout(traerFaltantesrelato, 10000);
+    });
+}
+
+function armarEventoRelato(obj) {
+    if(cont===0) ultimaHora=obj.fecha;
+    
+    cont++;
+    var cuerpo = "<li>";
+    switch(obj.idEvento){
+        case 1 : cuerpo+="<i class='fa fa-futbol-o bg-green'></i>"; break;
+        case 2 : cuerpo+="<i class='fa fa-line-chart bg-green'></i>"; break;
+        case 3 : cuerpo+="<i class='fa fa-long-arrow-right bg-green'></i>"; break;
+        case 4 : cuerpo+="<i class='fa fa-area-chart bg-green'></i>"; break;
+        case 5 : cuerpo+="<i class='fa fa-square bg-yellow'></i>"; break;
+        case 6 : cuerpo+="<i class='fa fa-square bg-red'></i>"; break;
+        case 7 : cuerpo+="<i class='fa fa-plus bg-red'></i>"; break;
+    }
+    if(obj.idEvento>8){
+        cuerpo+="<i class='fa fa-tv bg-red'></i>";
+    }
+    
+    cuerpo+="<div class='timeline-item'>";
+    cuerpo+="<span class='time'><i class='fa fa-clock-o'></i>"+obj.hora+"</span>";
+    cuerpo+="<h3 class='timeline-header'>"+obj.evento+" para "+obj.equipo+"<span style='margin-left:5px;' class='flag-icon "+obj.iconoEquipo+"'></span></h3>";
+    cuerpo+="<div class='timeline-body'>";    
+    cuerpo+="<h4>"+(obj.nombres||"")+" "+(obj.apellidos||"")+"</h4>";        
+    cuerpo+="<img alt='' src='../img/jugadores/"+obj.foto+"' style='width:240px;'/>";
+    cuerpo+="</div>";  
+    cuerpo+="<div class='timeline-footer'>";    
+    cuerpo+="<a class='btn btn-danger btn-xs' style='margin-left:5px;' onclick='eliminar("+obj.id+",this);'>Eliminar</a>";    
+    cuerpo+="</div>";
+    cuerpo+="</div>";
+    cuerpo+="</li>";
+    return cuerpo;
+
+}
+//</editor-fold>

@@ -323,7 +323,52 @@ public class Partidos {
         ps.close();
         return obj;
     }
-
+    
+    public JSONArray partidos() throws SQLException, JSONException {
+        String consulta = "SELECT\n"
+                + "\"public\".\"Grupo\".nombre as grupo,\n"
+                + "\"public\".\"Grupo\".id as idGrupo,\n"
+                + "to_char(\"public\".\"Partidos\".fecha,'DD/MM/YYYY HH24:MI') as fecha,\n"
+                + "to_char(\"public\".\"Partidos\".fecha,'DD/MM/YYYY') as soloFecha,\n"
+                + "to_char(\"public\".\"Partidos\".fecha,'HH24:MI') as soloHora,\n"
+                + "\"public\".\"Partidos\".id as idPartido,\n"
+                + "eq1.nombre as eq1,\n"
+                + "eq1.icono as icono1,\n"
+                + "eq2.nombre as eq2,\n"
+                + "eq2.icono as icono2\n"
+                + "FROM\n"
+                + "\"public\".\"Grupo\"\n"
+                + "INNER JOIN \"public\".\"Partidos\" ON \"public\".\"Partidos\".\"idGrupo\" = \"public\".\"Grupo\".\"id\" AND '' = ''\n"
+                + "INNER JOIN \"public\".\"Equipos\" eq1 ON \"public\".\"Partidos\".\"idEquipo1\" = eq1.\"id\"\n"
+                + "INNER JOIN \"public\".\"Equipos\" eq2 ON \"public\".\"Partidos\".\"idEquipo2\" = eq2.\"id\"\n"
+                + "WHERE \"public\".\"Partidos\".fecha >= current_date\n"
+                + "ORDER BY\n"
+                + "\"public\".\"Partidos\".fecha ASC";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        JSONArray json = new JSONArray();
+        JSONObject obj;
+        while (rs.next()) {
+            obj = new JSONObject();
+            obj.put("idPartido", rs.getInt("idPartido"));
+            obj.put("grupo", rs.getString("grupo"));
+            obj.put("idGrupo", rs.getInt("idGrupo"));
+            obj.put("fecha", rs.getString("fecha"));
+            obj.put("soloFecha", rs.getString("soloFecha"));
+            obj.put("soloHora", rs.getString("soloHora"));
+            obj.put("eq1", rs.getString("eq1"));
+            obj.put("eq2", rs.getString("eq2"));
+            obj.put("icono1", rs.getString("icono1"));
+            obj.put("icono2", rs.getString("icono2"));
+            obj.put("goles1", 0);
+            obj.put("goles2", 0);
+            json.put(obj);
+        }
+        rs.close();
+        ps.close();
+        return json;
+    }
+    
     public JSONArray fixture() throws SQLException, JSONException {
         String consulta = "SELECT\n"
                 + "\"public\".\"Grupo\".nombre as grupo,\n"
