@@ -377,7 +377,7 @@ public class IngresoController extends HttpServlet {
                 String nombre1 = e.getNombre();
                 e = new Equipos(con).buscar(aa.getIdEquipoRetado());
                 String nombre2 = e.getNombre();
-                Notificaciones not = new Notificaciones(0, aa.getIdEquipoRetador(), con.getUsuario().getId(), "El usuario " + retado + " acepta la apuesta del partido " + nombre1 + " vs " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
+                Notificaciones not = new Notificaciones(0, aa.getIdUsuarioRetador(), con.getUsuario().getId(), "El usuario " + retado + " acepta la apuesta del partido " + nombre1 + " vs " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
                 not.insert();
                 JSONObject obj = not.toJSONObject();
                 obj.put("foto", con.getUsuario().getFoto());
@@ -413,13 +413,16 @@ public class IngresoController extends HttpServlet {
             }
             e = new Equipos(con).buscar(idEquipo);
             String nombre2 = e.getNombre();
-            Notificaciones not = new Notificaciones(0, aa.getIdEquipoRetador(), con.getUsuario().getId(), "El usuario " + retado + " rechazo la puesta del partido " + nombre1 + " vs " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
+            Notificaciones not = new Notificaciones(0, aa.getIdUsuarioRetador(), con.getUsuario().getId(), "El usuario " + retado + " rechazo la puesta del partido " + nombre1 + " vs " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
             not.insert();
             JSONObject obj = not.toJSONObject();
             obj.put("foto", con.getUsuario().getFoto());
             new wsNotificacion().notificar(obj);
         }
-        return "true";
+        JSONObject json = new JSONObject();
+        json.put("resp", true);
+        json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
+        return json.toString();
     }
 
 }

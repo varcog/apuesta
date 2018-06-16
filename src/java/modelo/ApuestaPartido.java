@@ -311,7 +311,6 @@ public class ApuestaPartido {
                     obj.put("titulo", rs.getString("equipo2"));
                 }
             }
-            obj.put("tipo", rs.getInt("tipo"));
             obj.put("vs", rs.getString("equipo1") + " vs " + rs.getString("equipo2"));
             obj.put("monto", rs.getDouble("monto"));
             json.put(obj);

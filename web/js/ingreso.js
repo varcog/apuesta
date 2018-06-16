@@ -347,14 +347,14 @@ function aprobarApuestaAmigo(idApuestaAmigo, ele) {
     idAA = idApuestaAmigo;
     $eleAA = ele;
     var msj = "<h5>¿Esta Seguro de Aceptar la siguiente Apuesta?</h5>";
-    $("#confirmarAABotonModal").find(".modal-body").html("");
-    $("#confirmarAABotonModal").find(".modal-body").append(msj);
+    $("#confirmarAAModal").find(".modal-body").html("");
+    $("#confirmarAAModal").find(".modal-body").append(msj);
     var clon = $(ele).closest(".box").clone();
     clon.find(".pie").remove();
     clon.find(".btn-box-tool").remove();
     clon.find(".box-body").css("display", "block");
     clon.removeClass(".collapsed-box");
-    $("#confirmarAABotonModal").find(".modal-body").append(clon);
+    $("#confirmarAAModal").find(".modal-body").append(clon);
     $("#confirmarAABotonModal").off("click");
     $("#confirmarAABotonModal").text($(ele).text());
     $("#confirmarAABotonModal").click(okAprobarApuestaAmigo);
@@ -364,7 +364,7 @@ function aprobarApuestaAmigo(idApuestaAmigo, ele) {
 function okAprobarApuestaAmigo() {
     mostrarCargando();
     cerrarModal();
-    $.post(url, {evento: "okAprobarApuestaAmigo"}, function (resp) {
+    $.post(url, {evento: "okAprobarApuestaAmigo", idApuestaAmigo: idAA}, function (resp) {
         if (resp === "PARTIDO_PASADO") {
             openAlert("Ya No se puede Apostar en este Partido", "Apuesta");
         } else {
@@ -374,6 +374,7 @@ function okAprobarApuestaAmigo() {
                     openAlert("No tiene credito suficiente para realizar esta apuesta <strong>" + new BigNumber("" + json.credito).toFormat(2) + "</strong>", "Apuesta");
                 } else if (json.resp) {
                     actualizarCredito(json.credito);
+                    $($eleAA).closest(".box").remove();
                     openAlert("La Apuesta ha sido Aceptada", "Apuesta con Amigo");
                 } else {
                     openAlert("Intentelo Nuevamente", "Apuesta");
@@ -408,12 +409,19 @@ function okRechazarApuestaAmigo() {
     mostrarCargando();
     cerrarModal();
     $.post(url, {evento: "okRechazarApuestaAmigo", idApuestaAmigo: idAA}, function (resp) {
-        if (resp === "true") {
-            $($eleAA).closest(".box").remove();
-            openAlert("La apuesta a sido rechazada");
-        } else {
+        try {
+            var json = $.parseJSON(resp);
+            if (json.resp) {
+                actualizarCredito(json.credito);
+                $($eleAA).closest(".box").remove();
+                openAlert("La apuesta a sido Eliminada");
+            } else {
+                openAlert("Intentelo mas tarde");
+            }
+        } catch (e) {
             openAlert("Intentelo mas tarde");
         }
+
         ocultarCargando();
     });
 }
