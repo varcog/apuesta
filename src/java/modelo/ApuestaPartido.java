@@ -356,18 +356,21 @@ public class ApuestaPartido {
                         if (golesE1 > golesE2) {
                             montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
                             b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                            b.insert();
                         }
                         break;
                     case TipoApuesta.ID_TIPO_EQUIPO2:
                         if (golesE1 == golesE2) {
                             montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
                             b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                            b.insert();
                         }
                         break;
                     case TipoApuesta.ID_TIPO_EMPATE:
                         if (golesE1 < golesE2) {
                             montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
                             b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                            b.insert();
                         }
                         break;
                 }
@@ -375,6 +378,7 @@ public class ApuestaPartido {
                 if (golesE1 == rs.getInt("apEquipo1") && golesE2 == rs.getInt("apEquipo2")) {
                     montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
                     b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                    b.insert();
                 }
             }
         }

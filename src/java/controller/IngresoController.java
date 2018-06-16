@@ -207,6 +207,7 @@ public class IngresoController extends HttpServlet {
                                     objActualizar.put("idTipoApuesta", idTipoApuesta);
                                     objActualizar.put("idPartido", idPartido);
                                     objActualizar.put("idApuestaPartido", app.getId());
+                                    objActualizar.put("idApuestaPartidoAnt", idApuestaPartido);
                                     objActualizar.put("porcentaje", app.getMultiplicador());
                                     actualizar.put(objActualizar);
                                 }

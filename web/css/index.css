@@ -91,7 +91,7 @@ html, body {
 
 .control-sidebar .tab-content{
     overflow: auto;
-    height: calc(100% - 41px - 36px);
+    height: calc(100% - 41px - 66px);
 }
 
 #apuPendientes .box .box-title,

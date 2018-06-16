@@ -500,10 +500,12 @@ public class ApuestaAmigo {
             if (ganador == rs.getInt("idEquipoRetador")) {
                 montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * 2);
                 b.setDatos(0, rs.getInt("idUsuarioRetador"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, 0, rs.getInt("idApuestaAmigo"), new Date());
+                b.insert();
             }
-            if (ganador == rs.getInt("idEquipoRetador")) {
+            if (ganador == rs.getInt("idEquipoRetado")) {
                 montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * 2);
-                b.setDatos(0, rs.getInt("idUsuarioRetador"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, 0, rs.getInt("idApuestaAmigo"), new Date());
+                b.setDatos(0, rs.getInt("idUsuarioRetado"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, 0, rs.getInt("idApuestaAmigo"), new Date());
+                b.insert();
             }
         }
         rs.close();
