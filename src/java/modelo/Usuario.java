@@ -685,7 +685,7 @@ public class Usuario {
         double efectivo;
         while (rs.next()) {
             efectivo = b.getEfectivoDisponible(rs.getInt("id"));
-            if (efectivo > 0) {
+//            if (efectivo > 0) {
                 obj = new JSONObject();
                 obj.put("id", rs.getInt("id"));
                 obj.put("ci", rs.getString("ci"));
@@ -693,7 +693,7 @@ public class Usuario {
                 obj.put("usuario", rs.getString("usuario"));
                 obj.put("efectivo", efectivo);
                 json.put(obj);
-            }
+//            }
         }
         rs.close();
         ps.close();

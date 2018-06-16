@@ -434,3 +434,11 @@ function okRechazarApuestaAmigo() {
         ocultarCargando();
     });
 }
+
+function getCredito(){
+    mostrarCargando();
+    $.post(url, {evento: "getCredito"}, function (resp) {
+        actualizarCredito(resp);
+        ocultarCargando();
+    });
+}

@@ -80,6 +80,9 @@ public class IngresoController extends HttpServlet {
                 case "okRechazarApuestaAmigo":
                     html = okRechazarApuestaAmigo(request, con);
                     break;
+                case "getCredito":
+                    html = getCredito(request, con);
+                    break;
             }
             con.commit();
             response.getWriter().write(html);
@@ -400,7 +403,7 @@ public class IngresoController extends HttpServlet {
         ApuestaAmigo aa = new ApuestaAmigo(con);
         Billetera b = new Billetera(con);
         if (aa.buscarSet(idApuestaAmigo)) {
-            if (aa.getIdEquipoRetado()> 0) {
+            if (aa.getIdEquipoRetado() > 0) {
                 return "APUESTA_ACEPTADA";
             } else {
                 b.deleteXApuestaAmigo(idApuestaAmigo);
@@ -428,6 +431,10 @@ public class IngresoController extends HttpServlet {
         json.put("resp", true);
         json.put("credito", b.getCreditoDisponible(con.getUsuario().getId()));
         return json.toString();
+    }
+
+    private String getCredito(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
+        return new Billetera(con).getCreditoDisponible(con.getUsuario().getId()) + "";
     }
 
 }
