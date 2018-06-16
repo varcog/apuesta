@@ -25,6 +25,7 @@ public class Conexion {
     public Conexion() {
         this.driver = "org.postgresql.Driver";
         this.host = "200.58.174.203";
+//        this.host = "localhost";
         this.puerto = 5432;
         this.baseDatos = "apuesta";
         this.usuarioBase = "apuesta";

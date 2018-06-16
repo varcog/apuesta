@@ -355,6 +355,7 @@ function aprobarApuestaAmigo(idApuestaAmigo, ele) {
     clon.find(".box-body").css("display", "block");
     clon.removeClass(".collapsed-box");
     $("#confirmarAAModal").find(".modal-body").append(clon);
+    $("#confirmarAAModalLabel").text("Aceptar Apuesta");
     $("#confirmarAABotonModal").off("click");
     $("#confirmarAABotonModal").text($(ele).text());
     $("#confirmarAABotonModal").click(okAprobarApuestaAmigo);
@@ -399,6 +400,7 @@ function rechazarApuestaAmigo(idApuestaAmigo, ele) {
     clon.find(".box-body").css("display", "block");
     clon.removeClass(".collapsed-box");
     $("#confirmarAAModal").find(".modal-body").append(clon);
+    $("#confirmarAAModalLabel").text($(ele).text() + " Apuesta");
     $("#confirmarAABotonModal").text($(ele).text());
     $("#confirmarAABotonModal").off("click");
     $("#confirmarAABotonModal").click(okRechazarApuestaAmigo);
@@ -410,13 +412,18 @@ function okRechazarApuestaAmigo() {
     cerrarModal();
     $.post(url, {evento: "okRechazarApuestaAmigo", idApuestaAmigo: idAA}, function (resp) {
         try {
-            var json = $.parseJSON(resp);
-            if (json.resp) {
-                actualizarCredito(json.credito);
+            if (resp === "APUESTA_ACEPTADA") {
                 $($eleAA).closest(".box").remove();
-                openAlert("La apuesta a sido Eliminada");
+                openAlert("No se puede Eliminar la Apuesta, ya ha sido Aceptada");
             } else {
-                openAlert("Intentelo mas tarde");
+                var json = $.parseJSON(resp);
+                if (json.resp) {
+                    actualizarCredito(json.credito);
+                    $($eleAA).closest(".box").remove();
+                    openAlert("La apuesta a sido Eliminada");
+                } else {
+                    openAlert("Intentelo mas tarde");
+                }
             }
         } catch (e) {
             openAlert("Intentelo mas tarde");

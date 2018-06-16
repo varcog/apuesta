@@ -399,25 +399,29 @@ public class IngresoController extends HttpServlet {
         ApuestaAmigo aa = new ApuestaAmigo(con);
         Billetera b = new Billetera(con);
         if (aa.buscarSet(idApuestaAmigo)) {
-            b.deleteXApuestaAmigo(idApuestaAmigo);
-            aa.delete();
-            String retado = con.getUsuario().getNombres() + " " + con.getUsuario().getApellidos();
-            Partidos p = new Partidos(con).buscar(aa.getIdPartido());
-            int idEquipo = aa.getIdEquipoRetador();
-            Equipos e = new Equipos(con).buscar(idEquipo);
-            String nombre1 = e.getNombre();
-            if (idEquipo == p.getIdEquipo1()) {
-                idEquipo = p.getIdEquipo2();
+            if (aa.getIdUsuarioRetado() > 0) {
+                return "APUESTA_ACEPTADA";
             } else {
-                idEquipo = p.getIdEquipo1();
+                b.deleteXApuestaAmigo(idApuestaAmigo);
+                aa.delete();
+                String retado = con.getUsuario().getNombres() + " " + con.getUsuario().getApellidos();
+                Partidos p = new Partidos(con).buscar(aa.getIdPartido());
+                int idEquipo = aa.getIdEquipoRetador();
+                Equipos e = new Equipos(con).buscar(idEquipo);
+                String nombre1 = e.getNombre();
+                if (idEquipo == p.getIdEquipo1()) {
+                    idEquipo = p.getIdEquipo2();
+                } else {
+                    idEquipo = p.getIdEquipo1();
+                }
+                e = new Equipos(con).buscar(idEquipo);
+                String nombre2 = e.getNombre();
+                Notificaciones not = new Notificaciones(0, aa.getIdUsuarioRetador(), con.getUsuario().getId(), "El usuario " + retado + " rechazo la puesta del partido " + nombre1 + " vs " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
+                not.insert();
+                JSONObject obj = not.toJSONObject();
+                obj.put("foto", con.getUsuario().getFoto());
+                new wsNotificacion().notificar(obj);
             }
-            e = new Equipos(con).buscar(idEquipo);
-            String nombre2 = e.getNombre();
-            Notificaciones not = new Notificaciones(0, aa.getIdUsuarioRetador(), con.getUsuario().getId(), "El usuario " + retado + " rechazo la puesta del partido " + nombre1 + " vs " + nombre2 + " de la fecha " + p.getFechaS(), 0, 0, new Date(), con);
-            not.insert();
-            JSONObject obj = not.toJSONObject();
-            obj.put("foto", con.getUsuario().getFoto());
-            new wsNotificacion().notificar(obj);
         }
         JSONObject json = new JSONObject();
         json.put("resp", true);

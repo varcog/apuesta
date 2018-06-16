@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import conexion.Conexion;
@@ -16,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.ApuestaAmigo;
 import modelo.ApuestaPartido;
 import modelo.Equipos;
 import modelo.Estadio;
@@ -26,22 +22,9 @@ import modelo.Usuario;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- *
- * @author equipo_2
- */
 @WebServlet(name = "creacionPartidosController", urlPatterns = {"/creacionPartidosController"})
 public class creacionPartidosController extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setCharacterEncoding("UTF-8");
@@ -63,19 +46,25 @@ public class creacionPartidosController extends HttpServlet {
             switch (evento) {
                 case "init":
                     html = init(request, con);
-                    break;                             
+                    break;
                 case "crearPartido":
                     html = crearPartido(request, con);
-                    break;                             
+                    break;
                 case "eliminar":
                     html = eliminar(request, con);
-                    break;                             
+                    break;
                 case "verApuestas":
                     html = verApuestas(request, con);
-                    break;                             
+                    break;
                 case "cambiarPorcApuesta":
                     html = cambiarPorcApuesta(request, con);
-                    break;                             
+                    break;
+                case "cerrarPartido":
+                    html = cerrarPartido(request, con);
+                    break;
+                case "okCerrarPartido":
+                    html = okCerrarPartido(request, con);
+                    break;
             }
             con.commit();
             response.getWriter().write(html);
@@ -130,7 +119,7 @@ public class creacionPartidosController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {                
+    private String init(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
         JSONObject obj = new JSONObject();
         obj.put("Equipos", new Equipos(con).todos());
         obj.put("Partidos", new Partidos(con).todos());
@@ -142,14 +131,14 @@ public class creacionPartidosController extends HttpServlet {
     private String crearPartido(HttpServletRequest request, Conexion con) throws ParseException, SQLException, JSONException {
         String fecha = request.getParameter("fecha");
         String hora = request.getParameter("hora");
-        int id1 = Integer.parseInt(request.getParameter("id1"));        
+        int id1 = Integer.parseInt(request.getParameter("id1"));
         int id2 = Integer.parseInt(request.getParameter("id2"));
         int idEstadio = Integer.parseInt(request.getParameter("idEstadio"));
         int idGrupo = Integer.parseInt(request.getParameter("idGrupo"));
         SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy kk:mm");
-        Date dfecha = formato.parse(fecha+" "+hora);
-        Partidos p = new Partidos(0, dfecha, id1, id2, con.getUsuario().getId(),idEstadio, idGrupo,con);
-        int id=p.insert();
+        Date dfecha = formato.parse(fecha + " " + hora);
+        Partidos p = new Partidos(0, dfecha, id1, id2, con.getUsuario().getId(), idEstadio, idGrupo, con);
+        int id = p.insert();
         return new Partidos(con).buscarCompleto(id).toString();
     }
 
@@ -158,7 +147,7 @@ public class creacionPartidosController extends HttpServlet {
         Partidos p = new Partidos(con);
         p.setId(id);
         p.delete();
-        return true+"";
+        return true + "";
     }
 
     private String verApuestas(HttpServletRequest request, Conexion con) throws SQLException, JSONException {
@@ -173,9 +162,29 @@ public class creacionPartidosController extends HttpServlet {
         int idPartido = Integer.parseInt(request.getParameter("idPartido"));
         int idTipoApuesta = Integer.parseInt(request.getParameter("idTipoApuesta"));
         double monto = Double.parseDouble(request.getParameter("monto"));
-                
+
         ApuestaPartido ap = new ApuestaPartido(0, idTipoApuesta, idPartido, monto, con);
         ap.insert();
-        return true+"";
+        return true + "";
+    }
+
+    private String cerrarPartido(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
+        int idPartido = Integer.parseInt(request.getParameter("idPartido"));
+        Partidos p = new Partidos(con).buscar(idPartido);
+        JSONObject json = new JSONObject();
+        json.put("estado", p.getEstado());
+        json.put("resultado", p.getResultado(idPartido));
+        return json.toString();
+    }
+
+    private String okCerrarPartido(HttpServletRequest request, Conexion con) throws SQLException, JSONException, ParseException {
+        int idPartido = Integer.parseInt(request.getParameter("idPartido"));
+        // Pagar Apuestas
+        Partidos p = new Partidos(con);
+        JSONObject resultado = p.getResultado(idPartido);
+        new ApuestaPartido(con).pagarApuesta(idPartido, resultado);
+        new ApuestaAmigo(con).pagarApuesta(idPartido, resultado);
+        p.cerrarPartido(idPartido);
+        return "true";
     }
 }

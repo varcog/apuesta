@@ -177,6 +177,13 @@ public class TipoApuesta {
 
     /* ********************************************************************** */
     // Negocio
+    public static final int TIPO_EQUIPO = 1;
+    public static final int TIPO_GOLES = 2;
+
+    public static final int ID_TIPO_EQUIPO1 = 1;
+    public static final int ID_TIPO_EQUIPO2 = 2;
+    public static final int ID_TIPO_EMPATE = 3;
+
     public JSONArray todosGoles(int idPartido) throws SQLException, JSONException {
         String consulta = "SELECT *\n"
                 + "FROM\n"

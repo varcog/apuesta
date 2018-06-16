@@ -108,7 +108,7 @@
                 <i class="fa fa-refresh fa-spin"></i>
             </div>
         </div>
-        
+
         <!--crear Partido-->
         <div class="modal fade" id="popCreacionPartido" tabindex="-3" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -135,9 +135,9 @@
                                 <div class="input-group">
                                     <input type="text" class="form-control timepicker" name="horaPartido">
 
-                                  <div class="input-group-addon">
-                                    <i class="fa fa-clock-o"></i>
-                                  </div>
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-clock-o"></i>
+                                    </div>
                                 </div>
                                 <!-- /.input group -->
                             </div>
@@ -205,13 +205,52 @@
                                     </tr>
                                 </thead>
                                 <tbody id="cuerpoApuestas">
-                                    
+
                                 </tbody>
                             </table>
                         </div>                        
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>     
+        <!--Alert Modal-->
+        <div class="modal fade" id="alertModal" tabindex="-3" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="alertModalLabel"></h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="alertModalText"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--CONFIRMAR CIERRE PARTIDO-->
+        <div class="modal fade" id="confirmarAAModal" tabindex="-2" role="dialog" aria-labelledby="eliminarModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center text-bold" id="confirmarAAModalLabel">Confirmar Cierre Partido</h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="confirmarAABotonModal">Cerrar Partido y Pagar Apuesta</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

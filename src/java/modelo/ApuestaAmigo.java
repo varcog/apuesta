@@ -4,10 +4,13 @@ import conexion.Conexion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import util.SisEventos;
 
 public class ApuestaAmigo {
 
@@ -463,5 +466,48 @@ public class ApuestaAmigo {
         rs.close();
         ps.close();
         return json;
+    }
+
+    public void pagarApuesta(int idPartido, JSONObject resultado) throws SQLException, JSONException, ParseException {
+        String consulta = "SELECT \"ApuestaAmigo\".\"idUsuarioRetador\",\n"
+                + "	   \"ApuestaAmigo\".\"idUsuarioRetado\",\n"
+                + "       \"ApuestaAmigo\".\"idEquipoRetador\",\n"
+                + "       \"ApuestaAmigo\".\"idEquipoRetado\",\n"
+                + "       \"ApuestaAmigo\".\"id\" as idApuestaAmigo,\n"
+                + "       \"ApuestaAmigo\".\"monto\"\n"
+                + "FROM public.\"ApuestaAmigo\"\n"
+                + "WHERE \"ApuestaAmigo\".\"idPartido\"  = " + idPartido + "\n"
+                + "      AND \"ApuestaAmigo\".\"idEquipoRetado\" IS NOT NULL";
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        Billetera b = new Billetera(con);
+        Partidos p = new Partidos(con);
+        p.buscarSet(idPartido);
+        int golesE1 = resultado.getJSONObject(p.getIdEquipo1() + "").getInt("goles");
+        int golesE2 = resultado.getJSONObject(p.getIdEquipo2() + "").getInt("goles");
+        int ganador;
+        if (golesE1 > golesE2) {
+            ganador = p.getIdEquipo1();
+        } else if (golesE1 < golesE2) {
+            ganador = p.getIdEquipo2();
+        } else {
+            // No hay ganancia en el Empate
+            return;
+        }
+        double montoG;
+        int idUsuarioCasa = new Usuario(con).getIdCasa();
+        while (rs.next()) {
+            if (ganador == rs.getInt("idEquipoRetador")) {
+                montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * 2);
+                b.setDatos(0, rs.getInt("idUsuarioRetador"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, 0, rs.getInt("idApuestaAmigo"), new Date());
+            }
+            if (ganador == rs.getInt("idEquipoRetador")) {
+                montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * 2);
+                b.setDatos(0, rs.getInt("idUsuarioRetador"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, 0, rs.getInt("idApuestaAmigo"), new Date());
+            }
+        }
+        rs.close();
+        ps.close();
+
     }
 }

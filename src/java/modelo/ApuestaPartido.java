@@ -4,10 +4,13 @@ import conexion.Conexion;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import util.SisEventos;
 
 public class ApuestaPartido {
 
@@ -318,5 +321,65 @@ public class ApuestaPartido {
         rs.close();
         ps.close();
         return json;
+    }
+
+    public void pagarApuesta(int idPartido, JSONObject resultado) throws SQLException, JSONException, ParseException {
+        String consulta = "SELECT \"ApuestaPartido\".\"multiplicador\" as porcentaje,\n"
+                + "	   \"ApuestaPartido\".\"id\" as idApuestaPartido,\n"
+                + "       \"Partidos\".\"idEquipo1\",\n"
+                + "       \"Partidos\".\"idEquipo2\",\n"
+                + "       \"TipoApuesta\".\"id\" as idTipoApuesta,\n"
+                + "       \"TipoApuesta\".\"tipo\",\n"
+                + "       \"TipoApuesta\".\"equipo1\" as apEquipo1,\n"
+                + "       \"TipoApuesta\".\"equipo2\" as apEquipo2,\n"
+                + "       \"Billetera\".\"idUsuarioDa\" as usuario,\n"
+                + "       \"Billetera\".\"monto\"\n"
+                + "FROM public.\"ApuestaPartido\"\n"
+                + "	 INNER JOIN public.\"TipoApuesta\" ON \"TipoApuesta\".\"id\" = \"ApuestaPartido\".\"idTipoApuesta\"\n"
+                + "     INNER JOIN public.\"Billetera\" ON \"Billetera\".\"idApuestaPartido\" = \"ApuestaPartido\".\"id\"\n"
+                + "     INNER JOIN public.\"Partidos\" ON \"Partidos\".\"id\" = \"ApuestaPartido\".\"idPartido\"\n"
+                + "WHERE \"ApuestaPartido\".\"idPartido\"  = " + idPartido + "\n"
+                + "	  AND \"Billetera\".\"tipoTransaccion\" = " + Billetera.TIPO_TRANSACCION_APUESTA;
+        PreparedStatement ps = con.statamet(consulta);
+        ResultSet rs = ps.executeQuery();
+        Billetera b = new Billetera(con);
+        int golesE1;
+        int golesE2;
+        double montoG;
+        int idUsuarioCasa = new Usuario(con).getIdCasa();
+        while (rs.next()) {
+            golesE1 = resultado.getJSONObject(rs.getInt("idEquipo1") + "").getInt("goles");
+            golesE2 = resultado.getJSONObject(rs.getInt("idEquipo2") + "").getInt("goles");
+            if (rs.getInt("tipo") == TipoApuesta.TIPO_EQUIPO) {
+                switch (rs.getInt("idTipoApuesta")) {
+                    case TipoApuesta.ID_TIPO_EQUIPO1:
+                        if (golesE1 > golesE2) {
+                            montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
+                            b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                        }
+                        break;
+                    case TipoApuesta.ID_TIPO_EQUIPO2:
+                        if (golesE1 == golesE2) {
+                            montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
+                            b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                        }
+                        break;
+                    case TipoApuesta.ID_TIPO_EMPATE:
+                        if (golesE1 < golesE2) {
+                            montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
+                            b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                        }
+                        break;
+                }
+            } else {
+                if (golesE1 == rs.getInt("apEquipo1") && golesE2 == rs.getInt("apEquipo2")) {
+                    montoG = SisEventos.acomodarDosDecimalesD(rs.getDouble("monto") * rs.getDouble("porcentaje"));
+                    b.setDatos(0, rs.getInt("usuario"), montoG, idUsuarioCasa, Billetera.TIPO_TRANSACCION_GANANCIA, rs.getInt("idApuestaPartido"), 0, new Date());
+                }
+            }
+        }
+        rs.close();
+        ps.close();
+
     }
 }
