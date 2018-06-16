@@ -43,11 +43,11 @@ function cargarBalance(balance) {
     var aux = new BigNumber("" + balance.prestamo);
     total = total.plus(aux);
     $("#bTotalPrestamo").text(aux.toFormat(2));
-    aux = new BigNumber("" + balance.compra);
-    total = total.plus(aux);
+//    aux = new BigNumber("" + balance.compra);
+  //  total = total.plus(aux);
 //    $("#bTotalCompras").text(aux.toFormat(2));
-//    aux = new BigNumber("" + balance.recibe);
-//    total = total.plus(aux);
+    aux = new BigNumber("" + balance.recibe);
+    total = total.plus(aux);
     $("#bTotalRecibido").text(aux.toFormat(2));
     aux = new BigNumber("" + balance.da);
     total = total.minus(aux);
