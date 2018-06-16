@@ -400,7 +400,7 @@ public class IngresoController extends HttpServlet {
         ApuestaAmigo aa = new ApuestaAmigo(con);
         Billetera b = new Billetera(con);
         if (aa.buscarSet(idApuestaAmigo)) {
-            if (aa.getIdUsuarioRetado() > 0) {
+            if (aa.getIdEquipoRetado()> 0) {
                 return "APUESTA_ACEPTADA";
             } else {
                 b.deleteXApuestaAmigo(idApuestaAmigo);
