@@ -39,10 +39,11 @@ function cargar() {
                 cuerpo+="<table class='table table-hover'>";
                 cuerpo+="<tbody>";                 
             }
-            cuerpo+="<tr onclick='popApostar("+obj.idPartido+");'>";
-            cuerpo+="<td><span class='flag-icon "+obj.icono1+"'></span>"+obj.eq1+" - "+obj.goles1+"</td>";
-            cuerpo+="<td>"+obj.soloHora+"</td>";
-            cuerpo+="<td><span class='flag-icon "+obj.icono2+"'></span>"+obj.eq2+" - "+obj.goles2+"</td>";            
+            if(obj.estado===0) cuerpo+="<tr class='bg-success' onclick='popApostar("+obj.idPartido+");'>";
+            else cuerpo+="<tr class='bg-danger'>";
+            cuerpo+="<td class='text-left'><span class='flag-icon "+obj.icono1+"'></span>"+obj.eq1+"</td>";
+            cuerpo+="<td class='text-center'>"+obj.soloHora+"</td>";
+            cuerpo+="<td class='text-right'>"+obj.eq2+"<span class='flag-icon "+obj.icono2+"'></span></td>";
             cuerpo+="</tr>";
             fecha=obj.soloFecha;
         });

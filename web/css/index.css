@@ -5,12 +5,13 @@ html{
     background-size: 100% 100%;
     overflow: hidden;
 }
+
 body{
     background: #d2d6de00;
 }
 html, body {
     height: 100vh !important;
-    width: 100vw !important;
+    width: 100vw !important;    
 }
 
 /*.content {
