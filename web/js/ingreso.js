@@ -203,11 +203,13 @@ function okApostar() {
                     openAlert("Apuesta Realizada", "Apuesta");
                 } else {
                     $.each(json.eliminar, function (i, obj) {
-                        $("#apuPendientes").find(".ap_" + obj).remove();
+                        $("#apuPendientes").find(".ap_" + obj).addClass("bg-red");
+//                        $("#apuPendientes").find(".ap_" + obj).remove();
                     });
                     var $ele;
                     $.each(json.actualizar, function (i, obj) {
-                        $ele = $("#apuPendientes").find(".p_" + obj.idPartido + ".ta" + obj.idTipoApuesta);
+//                        $ele = $("#apuPendientes").find(".p_" + obj.idPartido + ".ta" + obj.idTipoApuesta + ".ap" + obj.idApuestaPartidoAnt);
+                        $ele = $("#apuPendientes").find(".ap_" + obj.idApuestaPartidoAnt);
                         $ele.find(".porcentaje").text(obj.porcentaje);
                         $ele.find(".idapuestapartido").text(obj.idApuestaPartido);
                         var monto = parseFloat($ele.find(".monto").val());
@@ -219,7 +221,7 @@ function okApostar() {
                             $ele.find(".ganancia").text(monto);
                     });
                     calcularTotalApuestas();
-                    openAlert("Se a Actualizado la lista, revisela", "Apuesta");
+                    openAlert("Se actulizaron lo montos o el partido ya no esta disponible", "Apuesta");
                 }
                 // Actualizar
             } catch (e) {

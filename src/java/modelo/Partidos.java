@@ -376,8 +376,10 @@ public class Partidos {
                 + "to_char(\"public\".\"Partidos\".fecha,'DD/MM/YYYY HH24:MI') as fecha,\n"
                 + "\"public\".\"Partidos\".id as idPartido,\n"
                 + "\"public\".\"Partidos\".\"estado\",\n"
+                + "eq1.id as ideq1,\n"
                 + "eq1.nombre as eq1,\n"
                 + "eq1.icono as icono1,\n"
+                + "eq2.id as ideq2,\n"
                 + "eq2.nombre as eq2,\n"
                 + "eq2.icono as icono2\n"
                 + "FROM\n"
@@ -391,6 +393,7 @@ public class Partidos {
         ResultSet rs = ps.executeQuery();
         JSONArray json = new JSONArray();
         JSONObject obj;
+        JSONObject resultado;
         while (rs.next()) {
             obj = new JSONObject();
             obj.put("idPartido", rs.getInt("idPartido"));
@@ -402,8 +405,9 @@ public class Partidos {
             obj.put("eq2", rs.getString("eq2"));
             obj.put("icono1", rs.getString("icono1"));
             obj.put("icono2", rs.getString("icono2"));
-            obj.put("goles1", 0);
-            obj.put("goles2", 0);
+            resultado = getResultado(rs.getInt("idPartido"));
+            obj.put("goles1", resultado.getJSONObject(rs.getInt("ideq1") + "").getInt("goles"));
+            obj.put("goles2", resultado.getJSONObject(rs.getInt("ideq2") + "").getInt("goles"));
             json.put(obj);
         }
         rs.close();
@@ -447,6 +451,7 @@ public class Partidos {
             obj.put("iconoEquipo", rs.getString("icono"));
             obj.put("idEvento", rs.getInt("id"));
             obj.put("evento", rs.getString("evento"));
+            obj.put("resultado", getResultado(idPartido));
             json.put(obj);
         }
         rs.close();
@@ -494,6 +499,7 @@ public class Partidos {
             obj.put("iconoEquipo", rs.getString("icono"));
             obj.put("idEvento", rs.getInt("id"));
             obj.put("evento", rs.getString("evento"));
+            obj.put("resultado", getResultado(idPartido));
             json.put(obj);
         }
         rs.close();
@@ -571,7 +577,7 @@ public class Partidos {
     }
 
     public JSONObject getResultado(int idPArtido) throws SQLException, JSONException {
-        buscarSet(id);
+        buscarSet(idPArtido);
         String consulta = "SELECT count(\"Jugador\".\"idEquipo\") as goles,\n"
                 + "	   \"Jugador\".\"idEquipo\"\n"
                 + "FROM public.\"Partidos\"\n"

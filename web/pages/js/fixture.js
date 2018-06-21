@@ -32,16 +32,15 @@ function cargar() {
                 cuerpo+="<th>Equipo 1</th>";                
                 cuerpo+="<th>Equipo 2</th>";                
                 cuerpo+="<th>Fecha</th>";                
-                cuerpo+="<th>Apostar</th>";                
-                cuerpo+="<th>Ver Partido</th>";                
                 cuerpo+="</tr>";                
             }
-            cuerpo+="<tr>";
+            if(obj.estado === 0)
+                cuerpo+="<tr class='bg-success' onclick='popApostar("+obj.idPartido+");'>";
+            else
+                cuerpo+="<tr class='bg-danger'>";
             cuerpo+="<td><span class='flag-icon "+obj.icono1+"'></span>"+obj.eq1+" - "+obj.goles1+"</td>";
             cuerpo+="<td><span class='flag-icon "+obj.icono2+"'></span>"+obj.eq2+" - "+obj.goles2+"</td>";
             cuerpo+="<td>"+obj.fecha+"</td>";
-            cuerpo+="<td><button class='btn btn-success' onclick='popApostar("+obj.idPartido+");'>Apostar</button></td>";            
-            cuerpo+="<td><button class='btn btn-success' onclick='verPartido("+obj.idPartido+",this);'>Ver</button></td>";
             cuerpo+="</tr>";
             grupo=obj.grupo;
         });

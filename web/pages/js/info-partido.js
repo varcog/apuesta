@@ -15,10 +15,10 @@ function cargar() {
         $("select[name=equipo]").html(cuerpo);
         $(".equipo1.info-nombre").text(json.partido.nombre1);
         $(".equipo1.info-bandera").addClass(json.partido.icono1);
-        $(".equipo1.info-marcador").text(0);
+        $(".equipo1.info-marcador").text(0).data("id", json.partido.idEquipo1);
         $(".equipo2.info-nombre").text(json.partido.nombre2);
         $(".equipo2.info-bandera").addClass(json.partido.icono2);
-        $(".equipo2.info-marcador").text(0);
+        $(".equipo2.info-marcador").text(0).data("id", json.partido.idEquipo2);
         $(".info-grupo").text(json.partido.nombreGrupo);
         $(".nombre-estadio").text("Lugar: " + json.partido.nombreEstadio);
         $(".imagen-estadio").attr("src", "../img/estadios/" + json.partido.fotoEstadio);
@@ -239,6 +239,11 @@ function armarEventoRelato(obj) {
     cuerpo+="</div>";
     cuerpo+="</div>";
     cuerpo+="</li>";
+    
+    
+    $(".equipo1.info-marcador").text(obj.resultado[$(".equipo1.info-marcador").data("id")].goles);
+    $(".equipo2.info-marcador").text(obj.resultado[$(".equipo2.info-marcador").data("id")].goles);
+    
     return cuerpo;
 
 }
